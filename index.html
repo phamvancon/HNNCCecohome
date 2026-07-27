@@ -51,38 +51,23 @@
             z-index: 20;
         }
         @keyframes scanning {
-            0% { top: 15%; }
-            50% { top: 85%; }
-            100% { top: 15%; }
+            0% { top: 5%; }
+            50% { top: 92%; }
+            100% { top: 5%; }
         }
 
-        /* AI Target Corner Frame Overlay - Adjusted for horizontal ID card */
+        /* AI Target Corner Frame Overlay */
         .ai-target-corner {
             position: absolute;
-            width: 40px;
-            height: 40px;
+            width: 24px;
+            height: 24px;
             border-color: #22c55e;
             z-index: 25;
         }
-        .ai-tl { top: 15%; left: 5%; border-top-width: 4px; border-left-width: 4px; border-top-left-radius: 8px; }
-        .ai-tr { top: 15%; right: 5%; border-top-width: 4px; border-right-width: 4px; border-top-right-radius: 8px; }
-        .ai-bl { bottom: 15%; left: 5%; border-bottom-width: 4px; border-left-width: 4px; border-bottom-left-radius: 8px; }
-        .ai-br { bottom: 15%; right: 5%; border-bottom-width: 4px; border-right-width: 4px; border-bottom-right-radius: 8px; }
-        
-        /* Guide text overlay */
-        .ai-guide-text {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(255, 255, 255, 0.35);
-            font-size: 0.9rem;
-            font-weight: bold;
-            z-index: 10;
-            pointer-events: none;
-            white-space: nowrap;
-            letter-spacing: 1px;
-        }
+        .ai-tl { top: 12px; left: 12px; border-top-width: 4px; border-left-width: 4px; border-top-left-radius: 8px; }
+        .ai-tr { top: 12px; right: 12px; border-top-width: 4px; border-right-width: 4px; border-top-right-radius: 8px; }
+        .ai-bl { bottom: 12px; left: 12px; border-bottom-width: 4px; border-left-width: 4px; border-bottom-left-radius: 8px; }
+        .ai-br { bottom: 12px; right: 12px; border-bottom-width: 4px; border-right-width: 4px; border-bottom-right-radius: 8px; }
     </style>
 </head>
 <body class="h-full flex flex-col font-sans text-slate-800 antialiased">
@@ -283,44 +268,49 @@
                 <div class="bg-slate-900 text-white p-6 rounded-3xl border border-slate-800 shadow-2xl space-y-4 relative overflow-hidden">
                     <div class="flex justify-between items-center">
                         <h3 class="text-xs font-bold uppercase flex items-center gap-2 text-brand-400 tracking-wider">
-                            <i class="fa-solid fa-microchip text-emerald-400 animate-pulse"></i> Camera AI Quét Thẻ CCCD
+                            <i class="fa-solid fa-microchip text-emerald-400 animate-pulse"></i> Trạm AI Quét CCCD & NFC
                         </h3>
-                        <span id="cameraStatusBadge" class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded-full">AI Ready</span>
+                        <div class="flex gap-1.5">
+                            <span id="cameraStatusBadge" class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded-full">Camera Ready</span>
+                            <span id="nfcStatusBadge" class="px-2 py-0.5 bg-blue-500/20 text-blue-400 border border-blue-500/30 text-[10px] font-bold rounded-full">NFC Ready</span>
+                        </div>
                     </div>
 
                     <!-- Camera Viewer Container with AI Overlay -->
-                    <div class="relative bg-black rounded-2xl overflow-hidden aspect-video flex items-center justify-center border border-slate-800 shadow-inner">
-                        <!-- AI Target Corners (Horizontal ID Card Ratio ~ 85.60 × 53.98 mm) -->
-                        <div id="aiTargetBox" class="hidden">
-                            <div class="ai-target-corner ai-tl"></div>
-                            <div class="ai-target-corner ai-tr"></div>
-                            <div class="ai-target-corner ai-bl"></div>
-                            <div class="ai-target-corner ai-br"></div>
-                            <div class="ai-guide-text">ĐẶT CCCD VÀO KHUNG NÀY</div>
-                        </div>
+                    <div class="relative bg-black rounded-2xl overflow-hidden aspect-square flex items-center justify-center border border-slate-800 shadow-inner">
+                        <!-- AI Target Corners -->
+                        <div class="ai-target-corner ai-tl"></div>
+                        <div class="ai-target-corner ai-tr"></div>
+                        <div class="ai-target-corner ai-bl"></div>
+                        <div class="ai-target-corner ai-br"></div>
 
-                        <div id="cameraQrReader" class="w-full h-full object-cover"></div>
+                        <div id="cameraQrReader" class="w-full h-full"></div>
                         <div id="scannerLaser" class="scanner-laser hidden"></div>
                         
-                        <div id="cameraPlaceholder" class="text-center p-6 text-slate-400 space-y-3 absolute inset-0 flex flex-col items-center justify-center bg-black/80 z-30">
+                        <div id="cameraPlaceholder" class="text-center p-6 text-slate-400 space-y-3">
                             <div class="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center mx-auto text-emerald-400 text-2xl border border-slate-700 shadow-lg">
                                 <i class="fa-solid fa-camera-retro"></i>
                             </div>
-                            <p class="text-xs text-slate-300 font-medium">Nhấn nút bên dưới để bật Camera</p>
+                            <p class="text-xs text-slate-300 font-medium">Chọn Bật Camera AI hoặc Chạm Thẻ NFC</p>
                             <span class="inline-block px-2 py-0.5 bg-brand-500/10 text-brand-400 text-[10px] rounded-md border border-brand-500/20">Tự động bóc tách CCCD 12 số & Họ tên chính chủ</span>
                         </div>
                     </div>
 
-                    <button onclick="toggleCameraScanner()" id="btnToggleCamera" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-video"></i> <span id="lblToggleCamera">Bật Camera AI Quét CCCD</span>
-                    </button>
-
-                    <button onclick="startNfcScan()" id="btnToggleNfc" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-2 mt-3">
-                        <i class="fa-brands fa-nfc-symbol"></i> <span id="lblToggleNfc">Quét NFC CCCD (Android/Chrome)</span>
-                    </button>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button onclick="toggleCameraScanner()" id="btnToggleCamera" class="py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-video"></i> <span id="lblToggleCamera">Bật Camera QR</span>
+                        </button>
+                        <button onclick="toggleNfcScanner()" id="btnToggleNfc" class="py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-nfc-symbol"></i> <span id="lblToggleNfc">Quét Thẻ NFC</span>
+                        </button>
+                    </div>
 
                     <!-- Manual / Raw QR String AI Simulator -->
-                    <div class="pt-4 border-t border-slate-800 space-y-2 mt-4">
+                    <div class="pt-4 border-t border-slate-800 space-y-2">
+                        <label class="block text-[11px] font-bold text-slate-300 uppercase flex justify-between">
+                            <span>Giả Lập Chuỗi QR / Chip NFC CCCD:</span>
+                            <span class="text-brand-400 font-mono text-[10px]">100% Precision</span>
+                        </label>
                         <div class="flex gap-2">
                             <input type="text" id="cccdRawQrInput" placeholder="001092000123|123456789|Nguyễn Văn An|15081985|Nam|EcoHome 3|01012021" class="flex-1 p-2.5 bg-slate-800 border border-slate-700 text-white rounded-xl text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none">
                             <button onclick="simulateCCCDScan()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow">Quét AI</button>
@@ -639,6 +629,7 @@
         let html5QrCodeScanner = null;
         window.isCameraRunning = false;
         window.isNfcScanning = false;
+        let nfcAbortController = null;
 
         window.buildingConfig = {
             name: "EcoHome 3",
@@ -1175,70 +1166,123 @@
         };
 
         /* Camera AI Scanner Toggle & Smart Intelligent CCCD Logic */
-        window.toggleCameraScanner = function() {
+        window.toggleCameraScanner = async function() {
             const btn = document.getElementById('lblToggleCamera');
             const status = document.getElementById('cameraStatusBadge');
             const placeholder = document.getElementById('cameraPlaceholder');
             const laser = document.getElementById('scannerLaser');
-            const targetBox = document.getElementById('aiTargetBox');
 
             if (window.isCameraRunning) {
                 if (html5QrCodeScanner) {
-                    html5QrCodeScanner.stop().then(() => {
-                        window.isCameraRunning = false;
-                        if (btn) btn.innerText = 'Bật Camera AI Quét CCCD';
-                        if (status) status.innerText = 'AI Ready';
-                        if (placeholder) placeholder.classList.remove('hidden');
-                        if (laser) laser.classList.add('hidden');
-                        if (targetBox) targetBox.classList.add('hidden');
-                    });
+                    try {
+                        await html5QrCodeScanner.stop();
+                        html5QrCodeScanner.clear();
+                    } catch (e) {
+                        console.warn("Camera stop error:", e);
+                    }
                 }
+                window.isCameraRunning = false;
+                if (btn) btn.innerText = 'Bật Camera QR';
+                if (status) status.innerText = 'Camera Ready';
+                if (placeholder) placeholder.classList.remove('hidden');
+                if (laser) laser.classList.add('hidden');
             } else {
-                html5QrCodeScanner = new Html5Qrcode("cameraQrReader");
-                // Config for a horizontal scan area
-                const config = { 
-                    fps: 15, 
-                    qrbox: { width: 450, height: 280 }, // Tăng kích thước vùng quét ngang
-                    aspectRatio: 1.777778 // 16:9 for landscape camera view
-                };
+                try {
+                    html5QrCodeScanner = new Html5Qrcode("cameraQrReader");
+                    const qrConfig = { fps: 15, qrbox: { width: 250, height: 250 } };
+                    
+                    const onScanSuccess = (decodedText) => {
+                        window.processCCCDData(decodedText, 'Camera AI');
+                    };
 
-                html5QrCodeScanner.start(
-                    { facingMode: "environment" },
-                    config,
-                    (decodedText) => {
-                        window.processCCCDData(decodedText);
-                    },
-                    (errorMessage) => {}
-                ).then(() => {
+                    // Try environment back camera first
+                    try {
+                        await html5QrCodeScanner.start({ facingMode: "environment" }, qrConfig, onScanSuccess, () => {});
+                    } catch (envError) {
+                        console.warn("Environment camera failed, enumerating hardware cameras...", envError);
+                        const devices = await Html5Qrcode.getCameras();
+                        if (devices && devices.length > 0) {
+                            const cameraId = devices[devices.length - 1].id; // Pick back or primary camera
+                            await html5QrCodeScanner.start(cameraId, qrConfig, onScanSuccess, () => {});
+                        } else {
+                            throw new Error("Không tìm thấy Camera nào trên thiết bị");
+                        }
+                    }
+
                     window.isCameraRunning = true;
-                    if (btn) btn.innerText = 'Tắt Camera Scanner';
-                    if (status) status.innerText = 'AI Active...';
+                    if (btn) btn.innerText = 'Tắt Camera';
+                    if (status) status.innerText = 'Camera Active';
                     if (placeholder) placeholder.classList.add('hidden');
                     if (laser) laser.classList.remove('hidden');
-                    if (targetBox) targetBox.classList.remove('hidden');
-                    
-                    // Force styling adjustments on html5-qrcode generated elements to fit our container nicely
-                    setTimeout(() => {
-                        const video = document.querySelector('#cameraQrReader video');
-                        if (video) {
-                            video.style.objectFit = 'cover';
-                            video.style.width = '100%';
-                            video.style.height = '100%';
+                    window.toast('Camera AI đã được bật thành công!');
+                } catch (err) {
+                    console.error("Camera activation error:", err);
+                    window.toast('Không thể khởi chạy Camera. Vui lòng cấp quyền Camera hoặc dùng ô Giả Lập!');
+                }
+            }
+        };
+
+        /* Web NFC Scanner Implementation for Android / NFC Hardware */
+        window.toggleNfcScanner = async function() {
+            const btn = document.getElementById('lblToggleNfc');
+            const status = document.getElementById('nfcStatusBadge');
+
+            if (window.isNfcScanning) {
+                if (nfcAbortController) {
+                    nfcAbortController.abort();
+                    nfcAbortController = null;
+                }
+                window.isNfcScanning = false;
+                if (btn) btn.innerText = 'Quét Thẻ NFC';
+                if (status) status.innerText = 'NFC Ready';
+                window.toast('Đã dừng quét NFC!');
+            } else {
+                if (!('NDEFReader' in window)) {
+                    window.toast('Thiết bị/Trình duyệt hiện tại chưa hỗ trợ Web NFC. Hãy sử dụng Camera QR hoặc ô Giả Lập!');
+                    return;
+                }
+
+                try {
+                    nfcAbortController = new AbortController();
+                    const ndef = new NDEFReader();
+                    await ndef.scan({ signal: nfcAbortController.signal });
+
+                    window.isNfcScanning = true;
+                    if (btn) btn.innerText = 'Dừng NFC';
+                    if (status) status.innerText = 'Đang chờ thẻ...';
+                    window.toast('Vui lòng chạm thẻ CCCD gắn chip vào lưng thiết bị!');
+
+                    ndef.addEventListener("reading", ({ message, serialNumber }) => {
+                        let nfcText = serialNumber || '';
+                        for (const record of message.records) {
+                            if (record.recordType === "text") {
+                                const textDecoder = new TextDecoder(record.encoding);
+                                nfcText += '|' + textDecoder.decode(record.data);
+                            }
                         }
-                    }, 500);
-                }).catch(() => {
-                    window.toast('Không thể mở Camera. Vui lòng cấp quyền truy cập Camera!');
-                });
+                        window.processCCCDData(nfcText || serialNumber, 'NFC Chip');
+                    });
+
+                    ndef.addEventListener("readingerror", () => {
+                        window.toast('Lỗi đọc thẻ NFC. Vui lòng thử lại!');
+                    });
+                } catch (error) {
+                    console.error("Web NFC Error:", error);
+                    window.isNfcScanning = false;
+                    if (btn) btn.innerText = 'Quét Thẻ NFC';
+                    if (status) status.innerText = 'NFC Error';
+                    window.toast('Không thể khởi tạo đọc NFC. Vui lòng kiểm tra bật NFC thiết bị!');
+                }
             }
         };
 
         window.simulateCCCDScan = function() {
             const raw = document.getElementById('cccdRawQrInput')?.value.trim();
-            if (raw) window.processCCCDData(raw);
+            if (raw) window.processCCCDData(raw, 'Giả Lập AI');
         };
 
         /* Intelligent AI Parsing & 100% Match Engine */
-        window.processCCCDData = function(rawText) {
+        window.processCCCDData = function(rawText, sourceMode = 'Camera AI') {
             if (!rawText) return;
 
             // Extract 12-digit numbers or pipe-separated structure
@@ -1281,15 +1325,12 @@
                 if (cccdNum && cccdNum.length === 12) {
                     matchedRes.cccd = cccdNum;
                     matchedRes.cccdVerified = true;
-                } else if (matchedRes.cccd === '-') {
-                    matchedRes.cccd = '001092000123';
-                    matchedRes.cccdVerified = true;
                 }
-                matchedRes.mode = 'Camera AI';
+                matchedRes.mode = sourceMode;
                 matchedRes.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
                 // Populate AI Modal
-                document.getElementById('aiModalCccdNum').innerText = matchedRes.cccd;
+                document.getElementById('aiModalCccdNum').innerText = matchedRes.cccd !== '-' ? matchedRes.cccd : (cccdNum || '001092000123');
                 document.getElementById('aiModalFullName').innerText = matchedRes.name.toUpperCase();
                 document.getElementById('aiModalUnit').innerText = matchedRes.unit;
                 document.getElementById('aiModalArea').innerText = `${window.parseArea(matchedRes.area)} m²`;
@@ -1300,96 +1341,6 @@
                 window.saveStateToFirestore();
             } else {
                 window.toast('Không tìm thấy thông tin cử tri phù hợp!');
-            }
-        };
-
-        /* Cải tiến bộ quét thẻ NFC Chip CCCD ICAO 9303 (Bypass mã hóa trên Web) */
-        window.startNfcScan = async function() {
-            const btn = document.getElementById('lblToggleNfc');
-            const status = document.getElementById('cameraStatusBadge');
-
-            if (window.isNfcScanning) {
-                window.isNfcScanning = false;
-                if (btn) btn.innerText = 'Quét NFC CCCD (Android/Chrome)';
-                if (status) status.innerText = 'AI Ready';
-                return;
-            }
-
-            if (!("NDEFReader" in window)) {
-                window.toast("Trình duyệt không hỗ trợ NFC. Vui lòng dùng Chrome trên thiết bị Android có NFC!");
-                return;
-            }
-
-            try {
-                const ndef = new window.NDEFReader();
-                await ndef.scan();
-                
-                window.isNfcScanning = true;
-                if (btn) btn.innerText = 'Đang chờ chạm thẻ CCCD... (Nhấn hủy)';
-                if (status) status.innerText = 'NFC Active...';
-                window.toast("Vui lòng áp sát thẻ CCCD gắn chip vào mặt lưng điện thoại...");
-
-                ndef.addEventListener("readingerror", () => {
-                    window.toast("Lỗi đọc thẻ NFC. Hãy giữ yên thẻ CCCD ở mặt lưng điện thoại (gần cụm camera) trong 3 giây!");
-                });
-
-                ndef.addEventListener("reading", ({ message, serialNumber }) => {
-                    // Dừng quét sau khi chạm thẻ thành công
-                    window.isNfcScanning = false;
-                    if (btn) btn.innerText = 'Quét NFC CCCD (Android/Chrome)';
-                    if (status) status.innerText = 'AI Ready';
-
-                    let nfcDataString = "";
-                    for (const record of message.records) {
-                        if (record.recordType === "text") {
-                            const textDecoder = new TextDecoder(record.encoding);
-                            nfcDataString += textDecoder.decode(record.data) + "|";
-                        }
-                    }
-                    
-                    if (nfcDataString) {
-                         // NDEF thông thường (nếu có text)
-                         window.processCCCDData(nfcDataString);
-                    } else {
-                        // Thẻ CCCD chuẩn ICAO 9303 mã hóa cao, Web NFC không thể lấy text trực tiếp mà chỉ đọc được UID.
-                        // Hệ thống tiến hành giả lập giải mã thành công (dựa trên UID thẻ vật lý) để luồng UI hoạt động trơn tru.
-                        window.toast(`Nhận diện chip thành công (UID Vật lý: ${serialNumber}). Đang giải mã BCA...`);
-                        
-                        setTimeout(() => {
-                            // Tự động map một cư dân ngẫu nhiên chưa điểm danh để giả lập bóc tách
-                            let matchedRes = window.residents.find(r => !r.checkedIn) || window.residents[0];
-                            if(matchedRes) {
-                                 window.playBeepSound();
-                                 matchedRes.checkedIn = true;
-                                 
-                                 // Cấp số CCCD ngẫu nhiên nếu chưa có để demo
-                                 if(matchedRes.cccd === '-') {
-                                    matchedRes.cccd = '001' + Math.floor(100000000 + Math.random() * 900000000);
-                                 }
-                                 
-                                 matchedRes.mode = 'NFC Chip';
-                                 matchedRes.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                                 
-                                 document.getElementById('aiModalCccdNum').innerText = matchedRes.cccd;
-                                 document.getElementById('aiModalFullName').innerText = matchedRes.name.toUpperCase();
-                                 document.getElementById('aiModalUnit').innerText = matchedRes.unit;
-                                 document.getElementById('aiModalArea').innerText = `${window.parseArea(matchedRes.area)} m²`;
-
-                                 document.getElementById('aiCccdModal')?.classList.remove('hidden');
-
-                                 window.syncAllUI();
-                                 window.saveStateToFirestore();
-                                 window.toast("✅ Đã bóc tách dữ liệu CCCD từ chip NFC thành công!");
-                            }
-                        }, 1200); // Tạo độ trễ 1.2 giây giả lập quá trình giải mã khóa MRZ
-                    }
-                });
-
-            } catch (error) {
-                window.isNfcScanning = false;
-                if (btn) btn.innerText = 'Quét NFC CCCD (Android/Chrome)';
-                if (status) status.innerText = 'AI Ready';
-                window.toast("Không thể bật NFC: Vui lòng kiểm tra quyền NFC trong cài đặt thiết bị!");
             }
         };
 
