@@ -298,6 +298,108 @@
                     </div>
                 </div>
 
+                <!-- Live Check-in Table Console -->
+                <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="flex flex-wrap items-center justify-between gap-3 mb-4 pb-3 border-b border-slate-100">
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Danh Sách Căn Hộ Điểm Danh Trực Tiếp</h3>
+                            <p class="text-xs text-slate-500">Đã check-in: <strong id="checkedInCountText" class="text-brand-600">0 / 0</strong> căn hộ</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="exportCheckinToCSV()" class="px-3 py-2 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-bold rounded-xl text-xs transition border border-emerald-200 flex items-center gap-1">
+                                <i class="fa-solid fa-file-excel"></i> Xuất File CSV
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Search & Filter Controls -->
+                    <div class="grid sm:grid-cols-3 gap-3 mb-4">
+                        <div class="sm:col-span-2 relative">
+                            <input type="text" id="checkinSearchInput" onkeyup="filterCheckinList()" placeholder="Tìm theo mã căn (B1-0716), họ tên hoặc số CCCD..." class="w-full pl-9 pr-3 py-2 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+                        </div>
+                        <select id="checkinStatusFilter" onchange="filterCheckinList()" class="p-2 border border-slate-300 rounded-xl text-xs bg-white font-semibold text-slate-700">
+                            <option value="all">Tất cả trạng thái</option>
+                            <option value="checked">Đã check-in</option>
+                            <option value="cccd">Xác thực CCCD</option>
+                            <option value="unchecked">Chưa tham dự</option>
+                        </select>
+                    </div>
+
+                    <!-- Table Data -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 uppercase text-[10px]">
+                                    <th class="p-2.5 rounded-l-lg">Mã Căn</th>
+                                    <th class="p-2.5">Họ Tên Cư Dân</th>
+                                    <th class="p-2.5">Số CCCD</th>
+                                    <th class="p-2.5 text-right">Diện Tích</th>
+                                    <th class="p-2.5 text-center">Hình Thức</th>
+                                    <th class="p-2.5 text-center rounded-r-lg">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="checkinTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: ADMIN / ORGANIZING COMMITTEE DASHBOARD (FIXED & RESTORED) -->
+        <section id="view-admin" class="hidden max-w-7xl mx-auto px-4 py-8">
+            <!-- Admin Header Control Banner -->
+            <div class="bg-slate-900 text-white p-6 rounded-2xl card-shadow mb-6 flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-xl">
+                        <i class="fa-solid fa-user-gear"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-lg font-bold">Trung Tâm Điều Hành Quản Trị (Admin Panel)</h2>
+                            <span class="px-2.5 py-0.5 bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 text-[10px] font-bold rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-lock-open text-emerald-400"></i> Mật khẩu: 215151365
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-0.5">Quản lý phiên bỏ phiếu, căn hộ, cử tri, ứng viên BQT & cấu hình Header tòa nhà</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleVotingSession('open')" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1">
+                        <i class="fa-solid fa-play"></i> Mở Tất Cả Biểu Quyết
+                    </button>
+                    <button onclick="toggleVotingSession('close')" class="px-3 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1">
+                        <i class="fa-solid fa-stop"></i> Đóng & Khóa Biểu Quyết
+                    </button>
+                    <button onclick="adminLogout()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white text-xs font-bold rounded-xl transition border border-slate-700">
+                        <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Navigation Sub-tabs -->
+            <div class="flex border-b border-slate-200 mb-6 bg-white rounded-t-2xl px-4 pt-2 overflow-x-auto scrollbar-none">
+                <button onclick="switchAdminTab('overview')" id="tab-adm-overview" class="px-5 py-3 text-xs sm:text-sm font-bold bg-brand-50 text-brand-700 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-chart-line"></i> Tổng Quan & Thống Kê
+                </button>
+                <button onclick="switchAdminTab('resolutions')" id="tab-adm-resolutions" class="px-5 py-3 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-file-signature"></i> Quản Lý Nghị Quyết
+                </button>
+                <button onclick="switchAdminTab('candidates')" id="tab-adm-candidates" class="px-5 py-3 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-users"></i> Ứng Viên Ban Quản Trị
+                </button>
+                <button onclick="switchAdminTab('units')" id="tab-adm-units" class="px-5 py-3 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-building"></i> Quản Lý Căn Hộ & CCCD
+                </button>
+                <button onclick="switchAdminTab('config')" id="tab-adm-config" class="px-5 py-3 text-xs sm:text-sm font-medium text-slate-600 hover:text-slate-900 rounded-t-xl flex items-center gap-2 whitespace-nowrap">
+                    <i class="fa-solid fa-sliders"></i> Cấu Hình Tòa Nhà & Header
+                </button>
+            </div>
+
+            <!-- ADMIN TAB 1: OVERVIEW & ANALYTICS -->
+            <div id="adm-content-overview" class="space-y-6">
                 <!-- KPI Summary Cards -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
@@ -644,6 +746,18 @@
                 <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=APARTMENT_A11204_ECOHOME" alt="QR Code" class="w-44 h-44 mx-auto">
             </div>
             <p class="text-xs font-bold text-brand-700">Căn hộ: A1-1204 - Nguyễn Văn An</p>
+        </div>
+    </div>
+
+    <!-- MODAL 4: CCCD SCAN RESULT / ASSIGNMENT (ADDED) -->
+    <div id="cccdResultModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 text-center card-shadow relative">
+            <button onclick="closeCCCDResultModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div id="cccdModalContent">
+                <!-- Dynamic CCCD Parsing & Verification Content -->
+            </div>
         </div>
     </div>
 
