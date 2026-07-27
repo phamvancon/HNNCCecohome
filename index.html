@@ -1,0 +1,1444 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nền Tảng Hội Nghị Nhà Chung Cư Số - hoinghinhachungcu.vn</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0284c7',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            800: '#075985',
+                            900: '#0c4a6e',
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Admin Data Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .card-shadow { box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05); }
+        .active-tab { border-bottom: 3px solid #0284c7; color: #0284c7; font-weight: 700; }
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: #fff !important; color: #000 !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 antialiased min-h-screen flex flex-col">
+
+    <!-- MAIN NAVIGATION HEADER -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-40 no-print">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16 gap-2">
+                <!-- Brand Logo & Building Selector -->
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-cyan-500 text-white flex items-center justify-center font-black text-xl shadow-md">
+                        <i class="fa-solid fa-building-circle-check"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="font-extrabold text-slate-900 tracking-tight text-sm sm:text-base">hoinghinhachungcu.vn</span>
+                            <span class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 font-bold rounded-full">Chung cư Green Park</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 hidden sm:block">Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD</p>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <div class="flex items-center gap-1 sm:gap-2">
+                    <button onclick="switchView('landing')" id="nav-landing" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-house mr-1"></i> Trang chủ
+                    </button>
+                    <button onclick="switchView('resident')" id="nav-resident" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-user-check mr-1"></i> Cổng Cư Dân
+                    </button>
+                    <button onclick="switchView('checkin')" id="nav-checkin" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-qrcode mr-1"></i> Trạm Check-in
+                    </button>
+                    <button onclick="attemptAdminAccess()" id="nav-admin" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100 flex items-center gap-1">
+                        <i id="adminLockIcon" class="fa-solid fa-lock text-amber-500"></i> Quản Trị / BQT
+                    </button>
+                    <button onclick="switchView('minutes')" id="nav-minutes" class="px-3 py-2 rounded-lg text-xs sm:text-sm font-medium transition text-slate-600 hover:bg-slate-100">
+                        <i class="fa-solid fa-file-contract mr-1"></i> Biên Bản
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- ADMIN LOGIN MODAL -->
+    <div id="adminLoginModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 card-shadow relative">
+            <button onclick="closeAdminLoginModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="text-center mb-6">
+                <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-700 mx-auto flex items-center justify-center text-xl mb-3">
+                    <i class="fa-solid fa-user-shield"></i>
+                </div>
+                <h3 class="text-xl font-bold text-slate-900">Đăng Nhập Quản Trị Viên / BQT</h3>
+                <p class="text-xs text-slate-500 mt-1">Vui lòng nhập mật khẩu xác thực để quản lý hội nghị</p>
+            </div>
+            <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mật khẩu Admin</label>
+                    <div class="relative">
+                        <input type="password" id="adminPasswordInput" required placeholder="Nhập mật khẩu..." class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <i class="fa-solid fa-key absolute left-3.5 top-3.5 text-slate-400"></i>
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket"></i> Xác Nhận Đăng Nhập
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT AREA CONTAINER -->
+    <main class="flex-grow">
+        
+        <!-- VIEW 1: LANDING PAGE OVERVIEW -->
+        <section id="view-landing" class="max-w-7xl mx-auto px-4 py-8 sm:py-12">
+            <!-- Hero Banner -->
+            <div class="bg-gradient-to-r from-slate-900 via-brand-900 to-slate-900 rounded-3xl p-6 sm:p-12 text-white relative overflow-hidden card-shadow mb-10">
+                <div class="relative z-10 max-w-2xl">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 bg-white/10 backdrop-blur-md rounded-full text-xs font-semibold text-cyan-300 mb-4 border border-white/10">
+                        <i class="fa-solid fa-shield-halved"></i> Chuẩn Pháp Lý Thông Tư 06/2019/TT-BXD
+                    </div>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tight leading-tight mb-4">
+                        Giải Pháp Bỏ Phiếu & Check-in Điện Tử Cho Hội Nghị Nhà Chung Cư
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base mb-8 leading-relaxed">
+                        Tối ưu hóa quy trình điểm danh căn hộ, kiểm soát tỷ lệ diện tích $m^2$ dự họp, biểu quyết thông qua nghị quyết và bầu cử Ban Quản Trị minh bạch, chính xác theo thời gian thực.
+                    </p>
+                    <div class="flex flex-wrap gap-3">
+                        <button onclick="switchView('resident')" class="px-6 py-3.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2">
+                            <i class="fa-solid fa-check-to-slot"></i> Tham Gia Bỏ Phiếu Cư Dân
+                        </button>
+                        <button onclick="switchView('checkin')" class="px-6 py-3.5 bg-white/10 hover:bg-white/20 text-white font-bold rounded-xl border border-white/20 transition flex items-center gap-2">
+                            <i class="fa-solid fa-qrcode"></i> Mở Màn Hình Điểm Danh
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Features Grid -->
+            <div class="grid md:grid-cols-3 gap-6 mb-12">
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl mb-4 font-bold">
+                        <i class="fa-solid fa-calculator"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Tính Toán Quorum Tự Động</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        Tự động tổng hợp diện tích $m^2$ căn hộ check-in, đối chiếu điều kiện hợp lệ (>50% tổng diện tích) để mở phiên biểu quyết theo quy định pháp luật.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 font-bold">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Bảo Mật & Kháng Gian Lận</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        Mỗi căn hộ được cấp mã QR định danh duy nhất. Phiếu bầu được mã hóa SHA-256 chống thay đổi kết quả sau khi gửi.
+                    </p>
+                </div>
+
+                <div class="bg-white p-6 rounded-2xl border border-slate-200 card-shadow">
+                    <div class="w-12 h-12 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl mb-4 font-bold">
+                        <i class="fa-solid fa-file-invoice"></i>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Biên Bản & Nghị Quyết Chuẩn Mẫu</h3>
+                    <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                        Xuất file Biên bản kiểm phiếu & Nghị quyết hội nghị hoàn chỉnh theo mẫu pháp lý ngay khi chốt phiên bỏ phiếu.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 2: RESIDENT VOTING PORTAL -->
+        <section id="view-resident" class="hidden max-w-5xl mx-auto px-4 py-8">
+            <!-- Resident Identification Header -->
+            <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow mb-6 flex flex-wrap justify-between items-center gap-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-brand-600 text-white flex items-center justify-center font-bold text-2xl">
+                        A12
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-bold text-slate-900">Căn Hộ A-1204</h2>
+                            <span class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">Đã Điểm Danh</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">Chủ sở hữu: <strong>Nguyễn Văn An</strong> | Diện tích: <strong>85.5 m²</strong> | Quyền biểu quyết: <strong>0.42% Total</strong></p>
+                    </div>
+                </div>
+                <button onclick="openQRModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition flex items-center gap-1.5">
+                    <i class="fa-solid fa-qrcode text-brand-600"></i> Xem QR Check-in
+                </button>
+            </div>
+
+            <!-- Resident Navigation Sub-tabs -->
+            <div class="flex border-b border-slate-200 mb-6 bg-white rounded-t-2xl px-4 pt-2">
+                <button onclick="switchResidentTab('voting')" id="tab-res-voting" class="px-6 py-3 text-sm font-bold active-tab flex items-center gap-2">
+                    <i class="fa-solid fa-vote-yea"></i> Biểu Quyết Nghị Quyết
+                </button>
+                <button onclick="switchResidentTab('election')" id="tab-res-election" class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-users"></i> Bầu Cử Ban Quản Trị
+                </button>
+                <button onclick="switchResidentTab('proxy')" id="tab-res-proxy" class="px-6 py-3 text-sm font-medium text-slate-500 hover:text-slate-800 flex items-center gap-2">
+                    <i class="fa-solid fa-file-signature"></i> Giấy Ủy Quyền (Proxy)
+                </button>
+            </div>
+
+            <!-- SUB-TAB 1: RESOLUTION VOTING -->
+            <div id="res-content-voting" class="space-y-6">
+                <!-- Dynamic Resident Resolutions -->
+            </div>
+
+            <!-- SUB-TAB 2: BOARD ELECTION -->
+            <div id="res-content-election" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="mb-6">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-bold text-slate-900">Bầu Cử Thành Viên Ban Quản Trị Nhiệm Kỳ 2026-2029</h3>
+                            <span class="text-xs bg-brand-50 text-brand-700 border border-brand-200 px-3 py-1 rounded-full font-bold">Chọn Tối Đa 3 Ứng Viên</span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-1">Căn hộ bỏ phiếu cho tối đa 3 nhân sự đại diện quyền lợi toàn thể cư dân tòa nhà.</p>
+                    </div>
+
+                    <!-- Candidates Grid -->
+                    <div class="grid sm:grid-cols-2 gap-4 mb-6" id="candidatesList">
+                        <!-- Dynamic Candidates Cards -->
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <p class="text-xs text-slate-500">Đã chọn: <strong id="selectedCount" class="text-brand-600">0</strong> / 3 Ứng viên</p>
+                        <button onclick="submitElectionVote()" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow transition">
+                            Gửi Phiếu Bầu Cử
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SUB-TAB 3: PROXY AUTHORIZATION -->
+            <div id="res-content-proxy" class="hidden">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow max-w-2xl mx-auto">
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Đăng Ký Giấy Ủy Quyền Biểu Quyết</h3>
+                    <p class="text-xs text-slate-500 mb-6">Trường hợp chủ hộ không tham dự trực tiếp có thể ủy quyền hợp pháp cho cư dân khác hoặc Ban đại diện.</p>
+
+                    <form onsubmit="submitProxyForm(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Họ Tên Người Được Ủy Quyền</label>
+                            <input type="text" required placeholder="Ví dụ: Nguyễn Văn B" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Căn Hộ Người Nhận UQ</label>
+                                <input type="text" required placeholder="Ví dụ: B-102" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Số CCCD / CMND</label>
+                                <input type="text" required placeholder="001092xxxxxx" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow transition">
+                            Xác Nhận Đăng Ký Ủy Quyền
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 3: CHECK-IN DESK STATION -->
+        <section id="view-checkin" class="hidden max-w-6xl mx-auto px-4 py-8">
+            <div class="grid lg:grid-cols-3 gap-6">
+                <!-- QR Scanner Simulation Box -->
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow text-center">
+                    <h3 class="text-base font-bold text-slate-900 mb-4">Trạm Quét Mã QR Điểm Danh</h3>
+                    <div class="w-full aspect-square bg-slate-900 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center border-4 border-dashed border-brand-500/50 mb-4">
+                        <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-bounce top-1/2"></div>
+                        <i class="fa-solid fa-qrcode text-6xl text-slate-600 mb-3"></i>
+                        <p class="text-xs text-slate-400 font-medium">Hướng camera vào mã QR của Cư Dân</p>
+                    </div>
+                    <button onclick="simulateQRScan()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-bolt"></i> Giả Lập Quét QR Nhanh
+                    </button>
+                </div>
+
+                <!-- Instant Search & Checked-in Table -->
+                <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Danh Sách Căn Hộ Tham Dự</h3>
+                            <p class="text-xs text-slate-500">Tìm kiếm nhanh theo Số Căn hoặc Tên Chủ Sở Hữu</p>
+                        </div>
+                        <div class="px-3 py-1 bg-brand-50 text-brand-700 border border-brand-200 rounded-lg text-xs font-bold">
+                            Đã Check-in: <span id="checkedInCountText">12 / 16</span>
+                        </div>
+                    </div>
+
+                    <!-- Search Input Bar -->
+                    <div class="relative mb-4">
+                        <input type="text" id="checkinSearchInput" onkeyup="filterCheckinList()" placeholder="Nhập số căn (ví dụ: A-1204) hoặc tên cư dân..." class="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3.5 text-slate-400"></i>
+                    </div>
+
+                    <!-- Resident Table -->
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 uppercase">
+                                    <th class="p-3 rounded-l-lg">Mã Căn Hộ</th>
+                                    <th class="p-3">Họ Tên Cư Dân</th>
+                                    <th class="p-3 text-right">Diện Tích</th>
+                                    <th class="p-3 text-center">Hình Thức</th>
+                                    <th class="p-3 text-center rounded-r-lg">Trạng Thái</th>
+                                </tr>
+                            </thead>
+                            <tbody id="checkinTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 4: ADMIN / BAN QUẢN TRỊ DASHBOARD -->
+        <section id="view-admin" class="hidden max-w-7xl mx-auto px-4 py-8">
+            <!-- Active Admin Status Bar -->
+            <div class="bg-slate-900 text-white p-4 rounded-2xl mb-6 shadow-md flex flex-wrap items-center justify-between gap-4">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <span class="text-sm font-bold">Phiên Quản Trị Viên Đang Hoạt Động</span>
+                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-500/30">Đã Xác Thực</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Quyền hạn: Tùy chỉnh Cấu hình, Căn hộ, Nghị quyết & Danh sách Bầu cử</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="adminLogout()" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1">
+                        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
+                    </button>
+                </div>
+            </div>
+
+            <!-- Admin Sub-navigation Tabs -->
+            <div class="flex flex-wrap gap-2 border-b border-slate-200 mb-6 bg-white p-2 rounded-xl shadow-sm">
+                <button onclick="switchAdminTab('overview')" id="tab-adm-overview" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-brand-50 text-brand-700 transition flex items-center gap-2">
+                    <i class="fa-solid fa-chart-line"></i> Tổng Quan Realtime
+                </button>
+                <button onclick="switchAdminTab('resolutions')" id="tab-adm-resolutions" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-file-circle-check"></i> Quản Lý Nghị Quyết
+                </button>
+                <button onclick="switchAdminTab('candidates')" id="tab-adm-candidates" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-users-gear"></i> Ứng Viên BQT
+                </button>
+                <button onclick="switchAdminTab('units')" id="tab-adm-units" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-building"></i> Danh Sách Căn Hộ
+                </button>
+                <button onclick="switchAdminTab('config')" id="tab-adm-config" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i> Cấu Hình Tòa Nhà
+                </button>
+            </div>
+
+            <!-- ADMIN TAB 1: OVERVIEW -->
+            <div id="adm-content-overview" class="space-y-6">
+                <!-- Header Status -->
+                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-slate-900">Trung Tâm Điều Hành Hội Nghị Nhà Chung Cư</h2>
+                        <p class="text-xs text-slate-500">Dữ liệu đồng bộ thời gian thực theo chuẩn Thông tư 06/2019/TT-BXD</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleVotingSession('open')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-play"></i> Mở Phiên Biểu Quyết
+                        </button>
+                        <button onclick="toggleVotingSession('close')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-stop"></i> Chốt & Đóng Bỏ Phiếu
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Summary Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                        <div class="flex justify-between items-center text-slate-500 text-xs font-semibold mb-2">
+                            <span>TỔNG DIỆN TÍCH THAM DỰ</span>
+                            <i class="fa-solid fa-chart-area text-brand-600 text-base"></i>
+                        </div>
+                        <div class="text-2xl font-black text-slate-900" id="adminTotalArea">13,700 m²</div>
+                        <div class="mt-2 flex items-center gap-2 text-xs">
+                            <div class="w-full bg-slate-100 rounded-full h-2">
+                                <div id="adminAreaProgress" class="bg-brand-600 h-2 rounded-full" style="width: 68.5%"></div>
+                            </div>
+                            <span class="font-bold text-brand-700" id="adminAreaPercent">68.5%</span>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                        <div class="flex justify-between items-center text-slate-500 text-xs font-semibold mb-2">
+                            <span>SỐ CĂN HỘ CHECK-IN</span>
+                            <i class="fa-solid fa-building-user text-emerald-600 text-base"></i>
+                        </div>
+                        <div class="text-2xl font-black text-slate-900" id="adminCheckedUnits">12 / 16 Căn</div>
+                        <div class="mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1" id="adminQuorumStatus">
+                            <i class="fa-solid fa-circle-check"></i> Đạt điều kiện hợp lệ (>50%)
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                        <div class="flex justify-between items-center text-slate-500 text-xs font-semibold mb-2">
+                            <span>TỶ LỆ ỦY QUYỀN (PROXY)</span>
+                            <i class="fa-solid fa-user-shield text-amber-500 text-base"></i>
+                        </div>
+                        <div class="text-2xl font-black text-slate-900" id="adminProxyCount">3 Căn hộ</div>
+                        <div class="mt-2 text-xs text-slate-400">
+                            Đã kiểm tra hồ sơ chữ ký
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200 card-shadow">
+                        <div class="flex justify-between items-center text-slate-500 text-xs font-semibold mb-2">
+                            <span>TRẠNG THÁI BIỂU QUYẾT</span>
+                            <i class="fa-solid fa-box-archive text-purple-600 text-base"></i>
+                        </div>
+                        <div class="text-2xl font-black text-emerald-600" id="adminSessionStatus">Đang Diễn Ra</div>
+                        <div class="mt-2 text-xs text-slate-400">
+                            Phiếu băm an toàn SHA-256
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics Charts Grid -->
+                <div class="grid lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 card-shadow">
+                        <h3 class="text-base font-bold text-slate-900 mb-4">Kết Quả Biểu Quyết Nghị Quyết 01 (Mức Phí Quản Lý)</h3>
+                        <div class="h-64 relative">
+                            <canvas id="chartResolution1"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 card-shadow">
+                        <h3 class="text-base font-bold text-slate-900 mb-4">Kết Quả Bầu Cử Ban Quản Trị Nhiệm Kỳ 2026-2029</h3>
+                        <div class="h-64 relative">
+                            <canvas id="chartElection"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 2: RESOLUTIONS MANAGEMENT -->
+            <div id="adm-content-resolutions" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Danh Sách Nghị Quyết Biểu Quyết</h3>
+                            <p class="text-xs text-slate-500">Tạo mới, chỉnh sửa hoặc đóng/mở từng biểu quyết cụ thể</p>
+                        </div>
+                        <button onclick="openAddResolutionModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Thêm Nghị Quyết Mới
+                        </button>
+                    </div>
+
+                    <div class="space-y-4" id="adminResolutionsList">
+                        <!-- Dynamic Resolutions Admin Cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 3: CANDIDATES MANAGEMENT -->
+            <div id="adm-content-candidates" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Danh Sách Ứng Viên Bầu Cử Ban Quản Trị</h3>
+                            <p class="text-xs text-slate-500">Cập nhật hồ sơ ứng cử viên cho cư dân bình chọn</p>
+                        </div>
+                        <button onclick="openAddCandidateModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-user-plus"></i> Thêm Ứng Viên Mới
+                        </button>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4" id="adminCandidatesList">
+                        <!-- Dynamic Candidates Admin Cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 4: UNITS & RESIDENTS MANAGEMENT -->
+            <div id="adm-content-units" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                        <div>
+                            <h3 class="text-lg font-bold text-slate-900">Quản Lý Căn Hộ & Diện Tích m²</h3>
+                            <p class="text-xs text-slate-500">Thêm mới căn hộ, điều chỉnh diện tích và điểm danh trực tiếp</p>
+                        </div>
+                        <button onclick="openAddUnitModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Thêm Căn Hộ Mới
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs border-collapse">
+                            <thead>
+                                <tr class="bg-slate-100 text-slate-600 uppercase">
+                                    <th class="p-3 rounded-l-lg">Mã Căn Hộ</th>
+                                    <th class="p-3">Họ Tên Chủ Sở Hữu</th>
+                                    <th class="p-3 text-right">Diện Tích (m²)</th>
+                                    <th class="p-3 text-center">Trạng Thái Check-in</th>
+                                    <th class="p-3 text-center rounded-r-lg">Thao Tác Admin</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminUnitsTableBody" class="divide-y divide-slate-100">
+                                <!-- Dynamic Units Admin Rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ADMIN TAB 5: BUILDING CONFIG -->
+            <div id="adm-content-config" class="hidden space-y-6">
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow max-w-2xl">
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">Cấu Hình Thông Tin Dự Án & Hội Nghị</h3>
+                    <p class="text-xs text-slate-500 mb-6">Thay đổi thông tin căn bản tòa nhà và quy định pháp lý</p>
+
+                    <form onsubmit="handleConfigSubmit(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tên Tòa Nhà / Dự Án</label>
+                            <input type="text" id="cfgBuildingName" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tổng Diện Tích (m²)</label>
+                                <input type="number" id="cfgTotalArea" step="0.1" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tỷ Lệ Quorum Yêu Cầu (%)</label>
+                                <input type="number" id="cfgQuorumRequired" step="1" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
+                            </div>
+                        </div>
+                        <button type="submit" class="px-6 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow transition">
+                            Lưu Cấu Hình Tòa Nhà
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- VIEW 5: PRINTABLE MEETING MINUTES & RESOLUTION -->
+        <section id="view-minutes" class="hidden max-w-4xl mx-auto px-4 py-8">
+            <div class="bg-white p-8 sm:p-12 rounded-2xl border border-slate-200 card-shadow printable-area text-slate-900">
+                <div class="text-center mb-8 pb-6 border-b border-slate-200">
+                    <p class="font-bold uppercase text-xs tracking-wider">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
+                    <p class="text-xs font-semibold underline mb-4">Độc lập - Tự do - Hạnh phúc</p>
+                    <h2 class="text-xl font-black uppercase mt-4">BIÊN BẢN HỘI NGHỊ NHÀ CHUNG CƯ GREEN PARK TOWER</h2>
+                    <p class="text-xs text-slate-500 mt-1">Hội nghị Thường niên Năm 2026 - Ngày 27/07/2026</p>
+                </div>
+
+                <div class="space-y-4 text-xs sm:text-sm leading-relaxed mb-8">
+                    <p><strong>I. THỜI GIAN & ĐỊA ĐIỂM:</strong></p>
+                    <p class="pl-4">- Thời gian: 08h30, Ngày 27 tháng 07 năm 2026</p>
+                    <p class="pl-4">- Địa điểm: Hội trường Tầng 2, Tòa nhà Green Park Tower, TP. Hồ Chí Minh</p>
+
+                    <p class="mt-4"><strong>II. THÀNH PHẦN THAM DỰ & QUORUM:</strong></p>
+                    <p class="pl-4">- Tổng số căn hộ đại diện tham dự: <strong id="docCheckedUnits">12 căn hộ</strong></p>
+                    <p class="pl-4">- Tổng diện tích m² tham dự check-in: <strong id="docCheckedArea">13,700 m²</strong> đạt tỷ lệ <strong id="docAreaPercent" class="text-brand-700">68.5%</strong> tổng diện tích toàn tòa nhà.</p>
+                    <p class="pl-4 text-emerald-700 font-semibold">- Kết luận: Hội nghị đạt đủ điều kiện tiến hành hợp lệ theo quy định Thông tư 06/2019/TT-BXD.</p>
+
+                    <p class="mt-4"><strong>III. KẾT QUẢ BIỂU QUYẾT & BẦU CỬ:</strong></p>
+                    <p class="pl-4"><strong>1. Nghị quyết 01/2026 (Mức Phí Dịch Vụ Vận Hành):</strong> Tán thành: 75% | Không tán thành: 20% | Phiếu trắng: 5% ➔ <strong>THÔNG QUA</strong></p>
+                    <p class="pl-4"><strong>2. Kết quả Bầu cử Ban Quản Trị:</strong></p>
+                    <ul class="pl-8 list-disc space-y-1" id="docElectionResults">
+                        <!-- Dynamic Election Results -->
+                    </ul>
+                </div>
+
+                <div class="grid grid-cols-2 text-center text-xs mt-12 pt-8 border-t border-slate-200">
+                    <div>
+                        <p class="font-bold uppercase">Đại Diện Ban Quản Trị</p>
+                        <p class="text-slate-400 mt-16">(Ký & Ghi rõ họ tên)</p>
+                    </div>
+                    <div>
+                        <p class="font-bold uppercase">Trưởng Ban Kiểm Phiếu</p>
+                        <p class="text-slate-400 mt-16">(Ký & Ghi rõ họ tên)</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 text-center no-print">
+                    <button onclick="window.print()" class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-xl text-xs shadow transition">
+                        <i class="fa-solid fa-print mr-1.5"></i> In Biên Bản / Xuất PDF
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL: RESIDENT QR CODE DISPLAY -->
+    <div id="qrModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 text-center card-shadow relative">
+            <button onclick="closeQRModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <h3 class="text-lg font-bold text-slate-900 mb-1">Mã QR Check-in Cá Nhân</h3>
+            <p class="text-xs text-slate-500 mb-4">Xuất trình tại bàn đón tiếp để quét điểm danh nhanh</p>
+            <div class="p-4 bg-slate-100 rounded-2xl inline-block mb-4 border border-slate-200">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=APARTMENT_A1204_GREENPARK" alt="QR Code" class="w-44 h-44 mx-auto">
+            </div>
+            <p class="text-xs font-bold text-brand-700">Căn hộ: A-1204 - Nguyễn Văn An</p>
+        </div>
+    </div>
+
+    <!-- ADMIN MODALS FOR ADDING DATA -->
+    <!-- Modal: Add/Edit Resolution -->
+    <div id="resolutionModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 card-shadow relative">
+            <button onclick="closeResolutionModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4" id="resModalTitle">Thêm Nghị Quyết Mới</h3>
+            <form onsubmit="saveResolution(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mã Nghị Quyết</label>
+                    <input type="text" id="resModalCode" required placeholder="vd: Nghị quyết 03/2026" class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tiêu Đề Nghị Quyết</label>
+                    <input type="text" id="resModalTitleInput" required placeholder="Nhập tiêu đề..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mô Tả Chi Tiết Nội Dung</label>
+                    <textarea id="resModalDesc" rows="3" required placeholder="Trình bày nội dung đề xuất..." class="w-full p-3 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500"></textarea>
+                </div>
+                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow">Lưu Nghị Quyết</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Candidate -->
+    <div id="candidateModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-lg w-full p-6 card-shadow relative">
+            <button onclick="closeCandidateModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Thêm Ứng Viên Bầu Cử BQT</h3>
+            <form onsubmit="saveCandidate(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Họ và Tên Ứng Viên</label>
+                    <input type="text" id="candNameInput" required placeholder="Họ tên..." class="w-full p-3 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Chuyên Môn & Căn Hộ</label>
+                    <input type="text" id="candRoleInput" required placeholder="vd: Kỹ sư CNTT (Căn A-502)" class="w-full p-3 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Kinh Nghiệm / Giới Thiệu</label>
+                    <input type="text" id="candExpInput" required placeholder="Tóm tắt kinh nghiệm công tác..." class="w-full p-3 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm shadow">Thêm Ứng Viên</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal: Add Unit -->
+    <div id="unitModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 card-shadow relative">
+            <button onclick="closeUnitModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <h3 class="text-lg font-bold text-slate-900 mb-4">Thêm Căn Hộ Mới</h3>
+            <form onsubmit="saveUnit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Mã Căn Hộ (*)</label>
+                    <input type="text" id="unitCodeInput" required placeholder="vd: C-1502" class="w-full p-3 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tên Chủ Căn Hộ (*)</label>
+                    <input type="text" id="unitOwnerInput" required placeholder="Họ và tên..." class="w-full p-3 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Diện Tích (m²) (*)</label>
+                    <input type="number" step="0.1" id="unitAreaInput" required placeholder="85.0" class="w-full p-3 border border-slate-300 rounded-xl text-sm">
+                </div>
+                <button type="submit" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow">Lưu Căn Hộ</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 hidden transition-all duration-300">
+        <div class="bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-xl border border-slate-700 flex items-center gap-3">
+            <i class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
+            <span id="toastMsg" class="text-xs font-bold">Thao tác thành công!</span>
+        </div>
+    </div>
+
+    <!-- APPLICATION JAVASCRIPT STATE LOGIC -->
+    <script>
+        const ADMIN_PASSWORD_HASH = "215151365";
+        let isAdminLoggedIn = false;
+
+        let buildingConfig = {
+            name: "Green Park Tower",
+            totalArea: 20000,
+            quorumPercentRequired: 50
+        };
+
+        // Reactive Resident Registry State
+        let residents = [
+            { unit: 'A-101', name: 'Trần Văn Hoàng', area: 72.0, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'A-102', name: 'Lê Thị Mai', area: 85.5, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'A-201', name: 'Nguyễn Tiến Dũng', area: 90.0, checkedIn: true, mode: 'Ủy quyền' },
+            { unit: 'A-202', name: 'Phạm Minh Trí', area: 68.0, checkedIn: false, mode: '-' },
+            { unit: 'A-301', name: 'Đỗ Thị Huệ', area: 110.0, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'A-302', name: 'Vũ Quốc Khánh', area: 78.5, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'A-1204', name: 'Nguyễn Văn An', area: 85.5, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'B-101', name: 'Bùi Hoài Nam', area: 95.0, checkedIn: true, mode: 'Ủy quyền' },
+            { unit: 'B-102', name: 'Đặng Kim Anh', area: 82.0, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'B-201', name: 'Hoàng Văn Thái', area: 105.0, checkedIn: false, mode: '-' },
+            { unit: 'B-202', name: 'Nghiêm Xuân Trường', area: 75.0, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'B-301', name: 'Phan Như Ngọc', area: 88.0, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'B-302', name: 'Cao Văn Sơn', area: 92.5, checkedIn: true, mode: 'Ủy quyền' },
+            { unit: 'B-401', name: 'Hồ Thị Thanh', area: 70.0, checkedIn: false, mode: '-' },
+            { unit: 'B-402', name: 'Trịnh Quốc Bảo', area: 81.0, checkedIn: true, mode: 'Trực tiếp' },
+            { unit: 'B-501', name: 'Đào Duy Anh', area: 100.0, checkedIn: false, mode: '-' }
+        ];
+
+        // Reactive Resolutions State
+        let resolutions = [
+            {
+                id: 1,
+                code: 'Nghị quyết 01/2026',
+                badgeColor: 'bg-brand-50 text-brand-700 border-brand-200',
+                title: 'Thông qua Mức Giá Dịch Vụ Vận Hành Quản Lý Tòa Nhà Năm 2026',
+                description: 'Đề xuất điều chỉnh mức phí dịch vụ vận hành từ 12.000 VNĐ/m²/tháng lên 13.500 VNĐ/m²/tháng để bổ sung hệ thống an ninh AI và bảo trì định kỳ thang máy.',
+                options: [
+                    { val: 'agree', text: 'Tán thành mức phí 13.500 VNĐ/m²/tháng' },
+                    { val: 'disagree', text: 'Không tán thành (Giữ nguyên mức 12.000 VNĐ/m²/tháng)' },
+                    { val: 'abstain', text: 'Không có ý kiến / Phiếu trắng' }
+                ],
+                isOpen: true
+            },
+            {
+                id: 2,
+                code: 'Nghị quyết 02/2026',
+                badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
+                title: 'Lựa Chọn Đơn Vị Vận Hành Bãi Xe & Thang Máy Tòa Nhà',
+                description: 'Căn cứ hồ sơ thầu, Ban Quản Trị đề xuất lựa chọn 1 trong 2 đơn vị cung cấp giải pháp vận hành hệ thống thông minh cho giai đoạn 2026-2028.',
+                options: [
+                    { val: 'compA', text: 'Lựa chọn Công ty Cổ phần Quản lý Vận hành Vinahomes' },
+                    { val: 'compB', text: 'Lựa chọn Công ty TNHH Dịch vụ Đô thị SaviPro' }
+                ],
+                isOpen: true
+            }
+        ];
+
+        // Reactive Candidates State
+        let candidates = [
+            { id: 1, name: 'Nguyễn Văn An', role: 'Kỹ sư Xây Dựng (Căn A-1204)', exp: '10 năm kinh nghiệm quản lý dự án BĐS', votes: 14 },
+            { id: 2, name: 'Trần Thị Bình', role: 'Kế toán trưởng (Căn B-201)', exp: 'Thâm niên 12 năm quản lý tài chính', votes: 12 },
+            { id: 3, name: 'Phạm Văn Cường', role: 'Luật sư (Căn A-301)', exp: 'Chuyên gia tư vấn pháp luật nhà ở', votes: 11 },
+            { id: 4, name: 'Lê Hoàng Nam', role: 'Chuyên gia IT (Căn B-102)', exp: 'Tư vấn giải pháp tòa nhà thông minh', votes: 7 },
+            { id: 5, name: 'Hoàng Minh Đức', role: 'Cựu BQT nhiệm kỳ I (Căn A-102)', exp: 'Có kinh nghiệm làm việc với CĐT', votes: 5 }
+        ];
+
+        let selectedCandidateIds = [];
+        let chartRes1Instance = null;
+        let chartElectionInstance = null;
+
+        function attemptAdminAccess() {
+            if (isAdminLoggedIn) {
+                switchView('admin');
+            } else {
+                document.getElementById('adminLoginModal').classList.remove('hidden');
+                document.getElementById('adminPasswordInput').focus();
+            }
+        }
+
+        function closeAdminLoginModal() {
+            document.getElementById('adminLoginModal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPasswordInput').value;
+            if (pass === ADMIN_PASSWORD_HASH) {
+                isAdminLoggedIn = true;
+                closeAdminLoginModal();
+                document.getElementById('adminPasswordInput').value = '';
+                
+                const lockIcon = document.getElementById('adminLockIcon');
+                if (lockIcon) lockIcon.className = 'fa-solid fa-circle-check text-emerald-500';
+
+                toast('Đăng nhập Quản Trị Viên thành công!');
+                switchView('admin');
+            } else {
+                toast('Mật khẩu không chính xác! Vui lòng thử lại.');
+            }
+        }
+
+        function adminLogout() {
+            isAdminLoggedIn = false;
+            const lockIcon = document.getElementById('adminLockIcon');
+            if (lockIcon) lockIcon.className = 'fa-solid fa-lock text-amber-500';
+            switchView('landing');
+            toast('Đã đăng xuất khỏi phiên Quản Trị.');
+        }
+
+        function switchView(viewName) {
+            if (viewName === 'admin' && !isAdminLoggedIn) {
+                attemptAdminAccess();
+                return;
+            }
+
+            const views = ['landing', 'resident', 'checkin', 'admin', 'minutes'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                const nav = document.getElementById(`nav-${v}`);
+                if (v === viewName) {
+                    if (el) el.classList.remove('hidden');
+                    if (nav) nav.classList.add('bg-brand-50', 'text-brand-700', 'font-bold');
+                } else {
+                    if (el) el.classList.add('hidden');
+                    if (nav) nav.classList.remove('bg-brand-50', 'text-brand-700', 'font-bold');
+                }
+            });
+
+            if (viewName === 'resident') renderResidentResolutions();
+            if (viewName === 'admin') {
+                renderCharts();
+                recalculateQuorum();
+            }
+            if (viewName === 'checkin') renderCheckinTable();
+            if (viewName === 'minutes') updateMinutesData();
+        }
+
+        function switchAdminTab(tabName) {
+            const tabs = ['overview', 'resolutions', 'candidates', 'units', 'config'];
+            tabs.forEach(t => {
+                const content = document.getElementById(`adm-content-${t}`);
+                const btn = document.getElementById(`tab-adm-${t}`);
+                if (t === tabName) {
+                    if (content) content.classList.remove('hidden');
+                    if (btn) {
+                        btn.classList.add('bg-brand-50', 'text-brand-700');
+                        btn.classList.remove('text-slate-600');
+                    }
+                } else {
+                    if (content) content.classList.add('hidden');
+                    if (btn) {
+                        btn.classList.remove('bg-brand-50', 'text-brand-700');
+                        btn.classList.add('text-slate-600');
+                    }
+                }
+            });
+
+            if (tabName === 'resolutions') renderAdminResolutions();
+            if (tabName === 'candidates') renderAdminCandidates();
+            if (tabName === 'units') renderAdminUnits();
+            if (tabName === 'config') populateConfigForm();
+        }
+
+        function switchResidentTab(tabName) {
+            const tabs = ['voting', 'election', 'proxy'];
+            tabs.forEach(t => {
+                const content = document.getElementById(`res-content-${t}`);
+                const btn = document.getElementById(`tab-res-${t}`);
+                if (t === tabName) {
+                    if (content) content.classList.remove('hidden');
+                    if (btn) {
+                        btn.classList.add('active-tab');
+                        btn.classList.remove('text-slate-500');
+                    }
+                } else {
+                    if (content) content.classList.add('hidden');
+                    if (btn) {
+                        btn.classList.remove('active-tab');
+                        btn.classList.add('text-slate-500');
+                    }
+                }
+            });
+        }
+
+        function renderResidentResolutions() {
+            const container = document.getElementById('res-content-voting');
+            if (!container) return;
+            container.innerHTML = resolutions.map(r => `
+                <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
+                    <div class="flex items-center justify-between mb-3">
+                        <span class="px-3 py-1 rounded-md text-xs font-bold ${r.badgeColor || 'bg-brand-50 text-brand-700 border-brand-200'} border">
+                            ${r.code}
+                        </span>
+                        <span class="text-xs font-bold flex items-center gap-1 ${r.isOpen ? 'text-emerald-600' : 'text-rose-500'}">
+                            <span class="w-2 h-2 rounded-full ${r.isOpen ? 'bg-emerald-500 animate-ping' : 'bg-rose-500'}"></span>
+                            ${r.isOpen ? 'Đang mở bình chọn' : 'Đã đóng biểu quyết'}
+                        </span>
+                    </div>
+                    <h3 class="text-lg font-bold text-slate-900 mb-2">${r.title}</h3>
+                    <p class="text-sm text-slate-600 mb-4 leading-relaxed">${r.description}</p>
+
+                    <div class="space-y-3 mb-6">
+                        ${r.options.map(opt => `
+                            <label class="flex items-center p-3 rounded-xl border border-slate-200 hover:bg-slate-50 cursor-pointer transition">
+                                <input type="radio" name="res_${r.id}" value="${opt.val}" ${!r.isOpen ? 'disabled' : ''} class="w-4 h-4 text-brand-600 focus:ring-brand-500">
+                                <span class="ml-3 text-sm font-medium text-slate-800">${opt.text}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+
+                    <div class="flex items-center justify-between pt-4 border-t border-slate-100">
+                        <span class="text-xs text-slate-400">
+                            <i class="fa-solid fa-lock mr-1"></i> Mã hóa sha256 an toàn
+                        </span>
+                        <button onclick="submitVote(${r.id})" ${!r.isOpen ? 'disabled class="px-5 py-2.5 bg-slate-200 text-slate-400 font-bold rounded-xl text-sm cursor-not-allowed"' : 'class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-sm shadow transition"'}>
+                            Xác Nhận Bỏ Phiếu
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function submitVote(resId) {
+            const selected = document.querySelector(`input[name="res_${resId}"]:checked`);
+            if (!selected) {
+                toast('Vui lòng chọn 1 phương án trước khi ghi nhận!');
+                return;
+            }
+            toast(`Đã ghi nhận biểu quyết của Căn A-1204 cho Nghị quyết 0${resId}!`);
+        }
+
+        function renderCandidates() {
+            const container = document.getElementById('candidatesList');
+            if (!container) return;
+            container.innerHTML = candidates.map(c => `
+                <div onclick="toggleCandidate(${c.id})" id="cand-card-${c.id}" class="p-4 rounded-xl border border-slate-200 bg-white hover:border-brand-500 cursor-pointer transition flex items-start gap-3">
+                    <div class="w-10 h-10 rounded-full bg-brand-100 text-brand-700 font-bold flex items-center justify-center shrink-0">
+                        ${c.id}
+                    </div>
+                    <div class="flex-grow">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-slate-900 text-sm">${c.name}</h4>
+                            <span id="cand-check-${c.id}" class="text-slate-300"><i class="fa-solid fa-circle-check text-lg"></i></span>
+                        </div>
+                        <p class="text-xs font-semibold text-brand-700 mt-0.5">${c.role}</p>
+                        <p class="text-xs text-slate-500 mt-1">${c.exp}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function toggleCandidate(id) {
+            const idx = selectedCandidateIds.indexOf(id);
+            if (idx > -1) {
+                selectedCandidateIds.splice(idx, 1);
+            } else {
+                if (selectedCandidateIds.length >= 3) {
+                    toast('Chỉ được chọn tối đa 3 ứng viên!');
+                    return;
+                }
+                selectedCandidateIds.push(id);
+            }
+
+            candidates.forEach(c => {
+                const card = document.getElementById(`cand-card-${c.id}`);
+                const check = document.getElementById(`cand-check-${c.id}`);
+                if (card && check) {
+                    if (selectedCandidateIds.includes(c.id)) {
+                        card.classList.add('border-brand-500', 'bg-brand-50/40');
+                        check.classList.remove('text-slate-300');
+                        check.classList.add('text-brand-600');
+                    } else {
+                        card.classList.remove('border-brand-500', 'bg-brand-50/40');
+                        check.classList.add('text-slate-300');
+                        check.classList.remove('text-brand-600');
+                    }
+                }
+            });
+
+            const selCount = document.getElementById('selectedCount');
+            if (selCount) selCount.innerText = selectedCandidateIds.length;
+        }
+
+        function submitElectionVote() {
+            if (selectedCandidateIds.length === 0) {
+                toast('Vui lòng chọn ít nhất 1 ứng viên!');
+                return;
+            }
+            selectedCandidateIds.forEach(id => {
+                const cand = candidates.find(c => c.id === id);
+                if (cand) cand.votes = (cand.votes || 0) + 1;
+            });
+            toast('Đã ghi nhận phiếu bầu cử Ban Quản Trị!');
+            renderCharts();
+        }
+
+        function submitProxyForm(e) {
+            e.preventDefault();
+            toast('Đăng ký ủy quyền thành công! Đã gửi mã xác nhận.');
+            e.target.reset();
+        }
+
+        function renderCheckinTable(filterText = '') {
+            const tbody = document.getElementById('checkinTableBody');
+            if (!tbody) return;
+
+            const filtered = residents.filter(r => 
+                r.unit.toLowerCase().includes(filterText.toLowerCase()) || 
+                r.name.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            tbody.innerHTML = filtered.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-900">${r.unit}</td>
+                    <td class="p-3 font-medium text-slate-700">${r.name}</td>
+                    <td class="p-3 text-right font-semibold text-slate-800">${r.area.toFixed(1)} m²</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${r.mode === 'Trực tiếp' ? 'bg-blue-100 text-blue-700' : r.mode === 'Ủy quyền' ? 'bg-amber-100 text-amber-700' : 'bg-slate-100 text-slate-500'}">
+                            ${r.mode}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center">
+                        ${r.checkedIn ? 
+                            `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Đã điểm danh</span>` : 
+                            `<button onclick="doCheckin('${r.unit}')" class="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs shadow">Check-in</button>`
+                        }
+                    </td>
+                </tr>
+            `).join('');
+
+            const countText = document.getElementById('checkedInCountText');
+            if (countText) countText.innerText = `${residents.filter(r => r.checkedIn).length} / ${residents.length}`;
+        }
+
+        function filterCheckinList() {
+            const input = document.getElementById('checkinSearchInput');
+            const query = input ? input.value : '';
+            renderCheckinTable(query);
+        }
+
+        function doCheckin(unitCode) {
+            const res = residents.find(r => r.unit === unitCode);
+            if (res) {
+                res.checkedIn = true;
+                res.mode = 'Trực tiếp';
+                renderCheckinTable();
+                recalculateQuorum();
+                toast(`Đã điểm danh thành công cho căn hộ ${unitCode}`);
+            }
+        }
+
+        function simulateQRScan() {
+            const unchecked = residents.filter(r => !r.checkedIn);
+            if (unchecked.length === 0) {
+                toast('Tất cả căn hộ đã điểm danh hoàn tất!');
+                return;
+            }
+            const target = unchecked[0];
+            target.checkedIn = true;
+            target.mode = 'Trực tiếp';
+            renderCheckinTable();
+            recalculateQuorum();
+            toast(`Quét QR Thành Công: ${target.unit} - ${target.name}`);
+        }
+
+        function renderAdminResolutions() {
+            const container = document.getElementById('adminResolutionsList');
+            if (!container) return;
+            container.innerHTML = resolutions.map(r => `
+                <div class="p-4 border border-slate-200 rounded-xl bg-slate-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <span class="font-bold text-xs px-2 py-0.5 rounded bg-brand-100 text-brand-800">${r.code}</span>
+                            <span class="text-xs font-bold ${r.isOpen ? 'text-emerald-600' : 'text-rose-500'}">• ${r.isOpen ? 'Đang mở' : 'Đã đóng'}</span>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-sm">${r.title}</h4>
+                        <p class="text-xs text-slate-500 line-clamp-1">${r.description}</p>
+                    </div>
+                    <div class="flex items-center gap-2 shrink-0">
+                        <button onclick="toggleResolutionStatus(${r.id})" class="px-3 py-1.5 border ${r.isOpen ? 'border-amber-300 text-amber-700 hover:bg-amber-100' : 'border-emerald-300 text-emerald-700 hover:bg-emerald-100'} bg-white rounded-lg text-xs font-bold">
+                            ${r.isOpen ? 'Đóng' : 'Mở lại'}
+                        </button>
+                        <button onclick="deleteResolution(${r.id})" class="px-3 py-1.5 border border-rose-200 text-rose-600 hover:bg-rose-50 bg-white rounded-lg text-xs font-bold">
+                            <i class="fa-solid fa-trash"></i> Xóa
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminCandidates() {
+            const container = document.getElementById('adminCandidatesList');
+            if (!container) return;
+            container.innerHTML = candidates.map(c => `
+                <div class="p-4 border border-slate-200 rounded-xl bg-slate-50 flex items-start justify-between gap-3">
+                    <div>
+                        <h4 class="font-bold text-slate-900 text-sm">${c.name}</h4>
+                        <p class="text-xs font-bold text-brand-700">${c.role}</p>
+                        <p class="text-xs text-slate-500 mt-1">${c.exp}</p>
+                    </div>
+                    <button onclick="deleteCandidate(${c.id})" class="text-rose-500 hover:text-rose-700 p-2">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function renderAdminUnits() {
+            const tbody = document.getElementById('adminUnitsTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = residents.map(r => `
+                <tr class="hover:bg-slate-50">
+                    <td class="p-3 font-bold text-slate-900">${r.unit}</td>
+                    <td class="p-3 font-medium text-slate-700">${r.name}</td>
+                    <td class="p-3 text-right font-semibold text-slate-800">${r.area.toFixed(1)} m²</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${r.checkedIn ? 'bg-emerald-100 text-emerald-700' : 'bg-slate-100 text-slate-500'}">
+                            ${r.checkedIn ? 'Đã điểm danh' : 'Chưa tham dự'}
+                        </span>
+                    </td>
+                    <td class="p-3 text-center flex items-center justify-center gap-2">
+                        <button onclick="toggleUnitCheckin('${r.unit}')" class="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 rounded text-slate-800 font-bold text-xs">
+                            ${r.checkedIn ? 'Hủy Checkin' : 'Điểm danh'}
+                        </button>
+                        <button onclick="deleteUnit('${r.unit}')" class="text-rose-600 hover:text-rose-800 p-1">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function openAddResolutionModal() {
+            const codeInput = document.getElementById('resModalCode');
+            if (codeInput) codeInput.value = `Nghị quyết 0${resolutions.length + 1}/2026`;
+            const titleInput = document.getElementById('resModalTitleInput');
+            if (titleInput) titleInput.value = '';
+            const descInput = document.getElementById('resModalDesc');
+            if (descInput) descInput.value = '';
+            document.getElementById('resolutionModal').classList.remove('hidden');
+        }
+
+        function closeResolutionModal() {
+            document.getElementById('resolutionModal').classList.add('hidden');
+        }
+
+        function saveResolution(e) {
+            e.preventDefault();
+            const code = document.getElementById('resModalCode').value;
+            const title = document.getElementById('resModalTitleInput').value;
+            const desc = document.getElementById('resModalDesc').value;
+
+            resolutions.push({
+                id: Date.now(),
+                code: code,
+                badgeColor: 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                title: title,
+                description: desc,
+                options: [
+                    { val: 'agree', text: 'Tán thành' },
+                    { val: 'disagree', text: 'Không tán thành' },
+                    { val: 'abstain', text: 'Không có ý kiến' }
+                ],
+                isOpen: true
+            });
+
+            closeResolutionModal();
+            renderAdminResolutions();
+            renderResidentResolutions();
+            toast('Thêm nghị quyết thành công!');
+        }
+
+        function toggleResolutionStatus(id) {
+            const res = resolutions.find(r => r.id === id);
+            if (res) {
+                res.isOpen = !res.isOpen;
+                renderAdminResolutions();
+                renderResidentResolutions();
+                toast(`Đã ${res.isOpen ? 'mở lại' : 'đóng'} biểu quyết!`);
+            }
+        }
+
+        function deleteResolution(id) {
+            resolutions = resolutions.filter(r => r.id !== id);
+            renderAdminResolutions();
+            renderResidentResolutions();
+            toast('Đã xóa nghị quyết!');
+        }
+
+        function openAddCandidateModal() {
+            document.getElementById('candidateModal').classList.remove('hidden');
+        }
+
+        function closeCandidateModal() {
+            document.getElementById('candidateModal').classList.add('hidden');
+        }
+
+        function saveCandidate(e) {
+            e.preventDefault();
+            const name = document.getElementById('candNameInput').value;
+            const role = document.getElementById('candRoleInput').value;
+            const exp = document.getElementById('candExpInput').value;
+
+            candidates.push({
+                id: candidates.length + 1,
+                name: name,
+                role: role,
+                exp: exp,
+                votes: 0
+            });
+
+            closeCandidateModal();
+            renderAdminCandidates();
+            renderCandidates();
+            toast('Đã thêm ứng viên bầu BQT!');
+        }
+
+        function deleteCandidate(id) {
+            candidates = candidates.filter(c => c.id !== id);
+            renderAdminCandidates();
+            renderCandidates();
+            toast('Đã xóa ứng viên!');
+        }
+
+        function openAddUnitModal() {
+            document.getElementById('unitModal').classList.remove('hidden');
+        }
+
+        function closeUnitModal() {
+            document.getElementById('unitModal').classList.add('hidden');
+        }
+
+        function saveUnit(e) {
+            e.preventDefault();
+            const code = document.getElementById('unitCodeInput').value;
+            const owner = document.getElementById('unitOwnerInput').value;
+            const area = parseFloat(document.getElementById('unitAreaInput').value);
+
+            residents.push({
+                unit: code,
+                name: owner,
+                area: area,
+                checkedIn: false,
+                mode: '-'
+            });
+
+            closeUnitModal();
+            renderAdminUnits();
+            renderCheckinTable();
+            recalculateQuorum();
+            toast(`Đã thêm căn hộ ${code}!`);
+        }
+
+        function toggleUnitCheckin(unitCode) {
+            const res = residents.find(r => r.unit === unitCode);
+            if (res) {
+                res.checkedIn = !res.checkedIn;
+                res.mode = res.checkedIn ? 'Trực tiếp' : '-';
+                renderAdminUnits();
+                renderCheckinTable();
+                recalculateQuorum();
+                toast(`Đã cập nhật trạng thái căn hộ ${unitCode}`);
+            }
+        }
+
+        function deleteUnit(unitCode) {
+            residents = residents.filter(r => r.unit !== unitCode);
+            renderAdminUnits();
+            renderCheckinTable();
+            recalculateQuorum();
+            toast('Đã xóa căn hộ!');
+        }
+
+        function populateConfigForm() {
+            const nameEl = document.getElementById('cfgBuildingName');
+            if (nameEl) nameEl.value = buildingConfig.name;
+            const areaEl = document.getElementById('cfgTotalArea');
+            if (areaEl) areaEl.value = buildingConfig.totalArea;
+            const quorumEl = document.getElementById('cfgQuorumRequired');
+            if (quorumEl) quorumEl.value = buildingConfig.quorumPercentRequired;
+        }
+
+        function handleConfigSubmit(e) {
+            e.preventDefault();
+            buildingConfig.name = document.getElementById('cfgBuildingName').value;
+            buildingConfig.totalArea = parseFloat(document.getElementById('cfgTotalArea').value);
+            buildingConfig.quorumPercentRequired = parseFloat(document.getElementById('cfgQuorumRequired').value);
+            recalculateQuorum();
+            toast('Cập nhật cấu hình tòa nhà thành công!');
+        }
+
+        function toggleVotingSession(type) {
+            const statusEl = document.getElementById('adminSessionStatus');
+            if (type === 'open') {
+                resolutions.forEach(r => r.isOpen = true);
+                if (statusEl) {
+                    statusEl.innerText = 'Đang Diễn Ra';
+                    statusEl.className = 'text-2xl font-black text-emerald-600';
+                }
+                toast('Đã mở tất cả các phiên bỏ phiếu!');
+            } else {
+                resolutions.forEach(r => r.isOpen = false);
+                if (statusEl) {
+                    statusEl.innerText = 'Đã Đóng Biểu Quyết';
+                    statusEl.className = 'text-2xl font-black text-rose-600';
+                }
+                toast('Đã chốt và khóa tất cả các phiếu biểu quyết!');
+            }
+            renderAdminResolutions();
+            renderResidentResolutions();
+        }
+
+        function recalculateQuorum() {
+            const checkedUnits = residents.filter(r => r.checkedIn).length;
+            const checkedArea = residents.filter(r => r.checkedIn).reduce((sum, r) => sum + r.area, 0);
+            const totalArea = buildingConfig.totalArea;
+            const percent = ((checkedArea / totalArea) * 100).toFixed(1);
+
+            const adminTotal = document.getElementById('adminTotalArea');
+            if (adminTotal) adminTotal.innerText = `${checkedArea.toLocaleString()} m²`;
+
+            const adminProgress = document.getElementById('adminAreaProgress');
+            if (adminProgress) adminProgress.style.width = `${percent}%`;
+
+            const adminAreaPct = document.getElementById('adminAreaPercent');
+            if (adminAreaPct) adminAreaPct.innerText = `${percent}%`;
+
+            const adminUnits = document.getElementById('adminCheckedUnits');
+            if (adminUnits) adminUnits.innerText = `${checkedUnits} / ${residents.length} Căn`;
+
+            const isValid = percent >= buildingConfig.quorumPercentRequired;
+            const statusEl = document.getElementById('adminQuorumStatus');
+            if (statusEl) {
+                if (isValid) {
+                    statusEl.className = 'mt-2 text-xs text-emerald-600 font-bold flex items-center gap-1';
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-check"></i> Đạt điều kiện hợp lệ (>${buildingConfig.quorumPercentRequired}%)`;
+                } else {
+                    statusEl.className = 'mt-2 text-xs text-rose-600 font-bold flex items-center gap-1';
+                    statusEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Chưa đủ điều kiện (<${buildingConfig.quorumPercentRequired}%)`;
+                }
+            }
+        }
+
+        function renderCharts() {
+            const c1 = document.getElementById('chartResolution1');
+            if (c1) {
+                const ctx1 = c1.getContext('2d');
+                if (chartRes1Instance) chartRes1Instance.destroy();
+                chartRes1Instance = new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Tán thành (13.5k/m²)', 'Không tán thành', 'Phiếu trắng'],
+                        datasets: [{
+                            data: [75, 20, 5],
+                            backgroundColor: ['#10b981', '#f43f5e', '#cbd5e1']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+            }
+
+            const c2 = document.getElementById('chartElection');
+            if (c2) {
+                const ctx2 = c2.getContext('2d');
+                if (chartElectionInstance) chartElectionInstance.destroy();
+                chartElectionInstance = new Chart(ctx2, {
+                    type: 'bar',
+                    data: {
+                        labels: candidates.map(c => c.name),
+                        datasets: [{
+                            label: 'Số phiếu bầu',
+                            data: candidates.map(c => c.votes || 0),
+                            backgroundColor: '#0284c7',
+                            borderRadius: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true, ticks: { stepSize: 2 } } }
+                    }
+                });
+            }
+        }
+
+        function updateMinutesData() {
+            const checkedUnits = residents.filter(r => r.checkedIn).length;
+            const checkedArea = residents.filter(r => r.checkedIn).reduce((sum, r) => sum + r.area, 0);
+            const totalArea = buildingConfig.totalArea;
+            const percent = ((checkedArea / totalArea) * 100).toFixed(1);
+
+            const docUnits = document.getElementById('docCheckedUnits');
+            if (docUnits) docUnits.innerText = `${checkedUnits} căn hộ`;
+
+            const docArea = document.getElementById('docCheckedArea');
+            if (docArea) docArea.innerText = `${checkedArea.toLocaleString()} m²`;
+
+            const docPct = document.getElementById('docAreaPercent');
+            if (docPct) docPct.innerText = `${percent}%`;
+
+            const electionList = document.getElementById('docElectionResults');
+            if (electionList) {
+                electionList.innerHTML = candidates.map(c => `
+                    <li><strong>${c.name}:</strong> ${c.votes || 0}/${checkedUnits} phiếu - <span class="${(c.votes || 0) >= checkedUnits/2 ? 'text-emerald-700 font-bold' : 'text-slate-500'}">${(c.votes || 0) >= checkedUnits/2 ? 'TRÚNG CỬ' : 'Không trúng cử'}</span></li>
+                `).join('');
+            }
+        }
+
+        function openQRModal() {
+            document.getElementById('qrModal').classList.remove('hidden');
+        }
+
+        function closeQRModal() {
+            document.getElementById('qrModal').classList.add('hidden');
+        }
+
+        function toast(message) {
+            const t = document.getElementById('toast');
+            const msg = document.getElementById('toastMsg');
+            if (msg) msg.innerText = message;
+            if (t) {
+                t.classList.remove('hidden');
+                setTimeout(() => {
+                    t.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        window.onload = function() {
+            renderCandidates();
+            renderCheckinTable();
+            renderResidentResolutions();
+            recalculateQuorum();
+        };
+    </script>
+</body>
+</html>
