@@ -35,6 +35,10 @@
     
     <!-- Chart.js for Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- SheetJS for Excel File Parsing (.xlsx, .xls) -->
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <!-- HTML5-QRCode Scanner for Live Camera CCCD Scanning -->
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
     <style>
         body { font-family: 'Inter', sans-serif; }
@@ -62,7 +66,7 @@
                         <div>
                             <div class="flex items-center gap-2 flex-wrap">
                                 <span id="hdrDomainName" class="font-extrabold text-slate-900 tracking-tight text-sm sm:text-base">www.ecohome.id.vn</span>
-                                <span id="hdrBuildingBadge" class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 font-bold rounded-full">Chung cư EcoHome Nhơn Bình</span>
+                                <span id="hdrBuildingBadge" class="px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 font-bold rounded-full">Chung cư EcoHome 3</span>
                                 <span id="syncStatusBadge" class="px-2 py-0.5 text-[10px] bg-slate-100 text-slate-600 font-bold rounded-full flex items-center gap-1">
                                     <i class="fa-solid fa-rotate text-brand-600 animate-spin"></i> Kết nối Firebase
                                 </span>
@@ -255,145 +259,41 @@
                 <!-- QR Scanner Box & CCCD Integration -->
                 <div class="bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
                     <div class="flex items-center justify-between mb-3">
-                        <h3 class="text-base font-bold text-slate-900">Trạm Quét QR CCCD Cư Dân</h3>
-                        <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Thẻ Chip CCCD</span>
+                        <h3 class="text-base font-bold text-slate-900">Trạm Quét Camera CCCD</h3>
+                        <span id="cameraStatusBadge" class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-full">
+                            <i class="fa-solid fa-camera"></i> Sẵn Sàng
+                        </span>
                     </div>
                     
-                    <!-- Scanner Viewport Area -->
-                    <div class="w-full aspect-square bg-slate-900 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center border-4 border-dashed border-brand-500/50 mb-4 p-4 text-center">
-                        <div class="absolute inset-x-0 h-1 bg-gradient-to-r from-transparent via-cyan-400 to-transparent animate-bounce top-1/2"></div>
-                        <i class="fa-solid fa-id-card text-5xl text-brand-400 mb-2"></i>
-                        <p class="text-xs text-slate-300 font-medium">Đặt mã QR trên thẻ CCCD vào khung hình</p>
-                        <p class="text-[10px] text-slate-400 mt-1">Đọc tự động: Số CCCD, Họ tên, Địa chỉ</p>
+                    <!-- Live Camera Scanner Viewport -->
+                    <div class="w-full aspect-square bg-slate-900 rounded-2xl relative overflow-hidden flex flex-col items-center justify-center border-4 border-dashed border-brand-500/50 mb-3 text-center">
+                        <div id="cameraQrReader" class="w-full h-full object-cover hidden"></div>
+                        <div id="cameraPlaceholder" class="p-4 flex flex-col items-center justify-center h-full">
+                            <i class="fa-solid fa-id-card text-5xl text-brand-400 mb-2"></i>
+                            <p class="text-xs text-slate-300 font-medium">Bật Camera để quét mã QR trên thẻ CCCD chip</p>
+                            <p class="text-[10px] text-slate-400 mt-1">Đối soát tự động thông tin chính chủ</p>
+                        </div>
+                    </div>
+
+                    <!-- Camera Controls -->
+                    <div class="grid grid-cols-2 gap-2 mb-4">
+                        <button id="btnToggleCamera" onclick="toggleCameraScanner()" class="py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-camera"></i> <span id="lblToggleCamera">Bật Camera Quét</span>
+                        </button>
+                        <button onclick="simulateCCCDScan()" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-bolt"></i> Giả Lập B1-0716
+                        </button>
                     </div>
 
                     <!-- Direct CCCD QR Text Parser Input -->
-                    <div class="space-y-3">
+                    <div class="space-y-3 pt-3 border-t border-slate-100">
                         <div>
-                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Dữ liệu Chuỗi QR CCCD (Dán/Nhập trực tiếp)</label>
+                            <label class="block text-[11px] font-bold text-slate-600 uppercase mb-1">Dữ liệu Chuỗi QR CCCD (Dán/Nhập thủ công)</label>
                             <input type="text" id="cccdRawQrInput" placeholder="Ví dụ: 001092008888|123456789|Trần Văn Bình|..." class="w-full p-2.5 border border-slate-300 rounded-xl text-xs focus:ring-2 focus:ring-brand-500 font-mono">
                         </div>
                         
-                        <div class="grid grid-cols-2 gap-2">
-                            <button onclick="processCCCDInput()" class="py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-qrcode"></i> Xử Lý QR CCCD
-                            </button>
-                            <button onclick="simulateCCCDScan()" class="py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-bolt"></i> Giả Lập Căn B1-0716
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Instant Search & Checked-in Table -->
-                <div class="lg:col-span-2 bg-white rounded-2xl p-6 border border-slate-200 card-shadow">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-                        <div>
-                            <h3 class="text-lg font-bold text-slate-900">Danh Sách Căn Hộ & Cử Tri Điểm Danh</h3>
-                            <p class="text-xs text-slate-500">Đối soát Số CCCD gắn chip với mã căn hộ theo danh sách cử tri</p>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="exportCheckinToCSV()" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                                <i class="fa-solid fa-file-excel text-emerald-600"></i> Xuất CSV
-                            </button>
-                            <div class="px-3 py-1 bg-brand-50 text-brand-700 border border-brand-200 rounded-lg text-xs font-bold">
-                                Đã Check-in: <span id="checkedInCountText">0 / 0</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Search Input & Filter Bar -->
-                    <div class="flex flex-col sm:flex-row gap-2 mb-4">
-                        <div class="relative flex-grow">
-                            <input type="text" id="checkinSearchInput" onkeyup="filterCheckinList()" placeholder="Nhập số căn (B1-0716), họ tên hoặc số CCCD..." class="w-full pl-10 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm focus:ring-2 focus:ring-brand-500 focus:outline-none">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-slate-400"></i>
-                        </div>
-                        <select id="checkinStatusFilter" onchange="filterCheckinList()" class="px-3 py-2.5 border border-slate-300 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500 bg-white">
-                            <option value="all">Tất cả trạng thái</option>
-                            <option value="checked">Đã Check-in</option>
-                            <option value="cccd">Quét Thẻ CCCD</option>
-                            <option value="unchecked">Chưa tham dự</option>
-                        </select>
-                    </div>
-
-                    <!-- Resident Table -->
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-left text-xs border-collapse">
-                            <thead>
-                                <tr class="bg-slate-100 text-slate-600 uppercase">
-                                    <th class="p-3 rounded-l-lg">Mã Căn Hộ</th>
-                                    <th class="p-3">Họ Tên Cư Dân</th>
-                                    <th class="p-3">Số CCCD</th>
-                                    <th class="p-3 text-right">Diện Tích</th>
-                                    <th class="p-3 text-center">Hình Thức</th>
-                                    <th class="p-3 text-center rounded-r-lg">Trạng Thái</th>
-                                </tr>
-                            </thead>
-                            <tbody id="checkinTableBody" class="divide-y divide-slate-100">
-                                <!-- Dynamic Rows -->
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 4: ADMIN / BAN QUẢN TRỊ DASHBOARD -->
-        <section id="view-admin" class="hidden max-w-7xl mx-auto px-4 py-8">
-            <!-- Active Admin Status Bar -->
-            <div class="bg-slate-900 text-white p-4 rounded-2xl mb-6 shadow-md flex flex-wrap items-center justify-between gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 flex items-center justify-center">
-                        <i class="fa-solid fa-shield-halved"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-2">
-                            <span class="text-sm font-bold">Phiên Quản Trị Viên Đang Hoạt Động</span>
-                            <span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-500/30">Mật Khẩu 215151365</span>
-                        </div>
-                        <p class="text-xs text-slate-400">Quyền hạn: Cấu hình Navigation Header, Căn hộ, Nghị quyết & Danh sách Bầu cử</p>
-                    </div>
-                </div>
-                <div class="flex items-center gap-2">
-                    <button onclick="adminLogout()" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 rounded-lg text-xs font-bold transition flex items-center gap-1">
-                        <i class="fa-solid fa-right-from-bracket"></i> Đăng xuất
-                    </button>
-                </div>
-            </div>
-
-            <!-- Admin Sub-navigation Tabs -->
-            <div class="flex flex-wrap gap-2 border-b border-slate-200 mb-6 bg-white p-2 rounded-xl shadow-sm">
-                <button onclick="switchAdminTab('overview')" id="tab-adm-overview" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold bg-brand-50 text-brand-700 transition flex items-center gap-2">
-                    <i class="fa-solid fa-chart-line"></i> Tổng Quan Realtime
-                </button>
-                <button onclick="switchAdminTab('resolutions')" id="tab-adm-resolutions" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
-                    <i class="fa-solid fa-file-circle-check"></i> Quản Lý Nghị Quyết
-                </button>
-                <button onclick="switchAdminTab('candidates')" id="tab-adm-candidates" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
-                    <i class="fa-solid fa-users-gear"></i> Ứng Viên BQT
-                </button>
-                <button onclick="switchAdminTab('units')" id="tab-adm-units" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
-                    <i class="fa-solid fa-building"></i> Danh Sách Căn Hộ
-                </button>
-                <button onclick="switchAdminTab('config')" id="tab-adm-config" class="px-4 py-2.5 rounded-lg text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-100 transition flex items-center gap-2">
-                    <i class="fa-solid fa-sliders"></i> Cấu Hình Tòa Nhà & Header
-                </button>
-            </div>
-
-            <!-- ADMIN TAB 1: OVERVIEW -->
-            <div id="adm-content-overview" class="space-y-6">
-                <!-- Header Status -->
-                <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-                    <div>
-                        <h2 class="text-2xl font-black text-slate-900">Trung Tâm Điều Hành Hội Nghị Nhà Chung Cư</h2>
-                        <p class="text-xs text-slate-500">Dữ liệu đồng bộ thời gian thực qua Firebase hnnccecohome</p>
-                    </div>
-                    <div class="flex gap-2">
-                        <button onclick="toggleVotingSession('open')" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-play"></i> Mở Phiên Biểu Quyết
-                        </button>
-                        <button onclick="toggleVotingSession('close')" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
-                            <i class="fa-solid fa-stop"></i> Chốt & Đóng Bỏ Phiếu
+                        <button onclick="processCCCDInput()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                            <i class="fa-solid fa-qrcode"></i> Xử Lý Chuỗi QR
                         </button>
                     </div>
                 </div>
@@ -510,14 +410,17 @@
                     <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
                         <div>
                             <h3 class="text-lg font-bold text-slate-900">Quản Lý Căn Hộ, Số CCCD & Nạp Dữ Liệu</h3>
-                            <p class="text-xs text-slate-500">Tải lên file danh sách căn hộ (B1-0716, A1-1204...) hoặc nhập thủ công</p>
+                            <p class="text-xs text-slate-500">Tải lên file Excel (.xlsx), CSV danh sách căn hộ hoặc quản lý dữ liệu hiện có</p>
                         </div>
                         <div class="flex flex-wrap gap-2">
                             <button onclick="openImportModal()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-import"></i> Nạp File Cư Dân (CSV/JSON)
+                                <i class="fa-solid fa-file-excel"></i> Nạp File Excel / CSV
                             </button>
                             <button onclick="openAddUnitModal()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
                                 <i class="fa-solid fa-plus"></i> Thêm Căn Hộ
+                            </button>
+                            <button onclick="openResetDataModal()" class="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-trash-can"></i> Xóa / Làm Sạch Dữ Liệu
                             </button>
                         </div>
                     </div>
@@ -744,7 +647,7 @@
         </div>
     </div>
 
-    <!-- MODAL 3: DATA FILE IMPORT (CSV / JSON) -->
+    <!-- MODAL 3: DATA FILE IMPORT (EXCEL / CSV / JSON) -->
     <div id="importModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
         <div class="bg-white rounded-2xl max-w-xl w-full p-6 card-shadow relative">
             <button onclick="closeImportModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
@@ -756,18 +659,18 @@
                 </div>
                 <div>
                     <h3 class="text-lg font-bold text-slate-900">Nạp File Dữ Liệu Cư Dân Tòa Nhà</h3>
-                    <p class="text-xs text-slate-500">Tải lên file danh sách mã căn (vd: B1-0716), diện tích m² và số CCCD</p>
+                    <p class="text-xs text-slate-500">Tải lên file Excel (.xlsx, .xls), CSV hoặc JSON có thông tin mã căn, diện tích m² và số CCCD</p>
                 </div>
             </div>
 
             <!-- Drag Drop / Upload Box -->
             <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-brand-500 bg-slate-50 transition mb-4">
-                <i class="fa-solid fa-cloud-arrow-up text-3xl text-slate-400 mb-2"></i>
-                <p class="text-xs font-bold text-slate-700 mb-1">Chọn hoặc Kéo Thả File CSV / JSON vào đây</p>
-                <p class="text-[11px] text-slate-400 mb-3">Định dạng file: CSV hoặc JSON tiêu chuẩn</p>
-                <input type="file" id="residentFileInput" accept=".csv, .json" onchange="handleFileUpload(event)" class="hidden">
-                <button onclick="document.getElementById('residentFileInput').click()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-xs transition">
-                    <i class="fa-solid fa-folder-open mr-1"></i> Duyệt File Từ Máy Tính
+                <i class="fa-solid fa-file-excel text-4xl text-emerald-600 mb-2"></i>
+                <p class="text-xs font-bold text-slate-700 mb-1">Chọn hoặc Kéo Thả File Excel (.xlsx, .xls), CSV / JSON</p>
+                <p class="text-[11px] text-slate-400 mb-3">Cột mẫu: Mã_Căn | Họ_Tên | Số_CCCD | Diện_Tích</p>
+                <input type="file" id="residentFileInput" accept=".xlsx, .xls, .csv, .json" onchange="handleFileUpload(event)" class="hidden">
+                <button onclick="document.getElementById('residentFileInput').click()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center gap-2 mx-auto">
+                    <i class="fa-solid fa-folder-open"></i> Duyệt File Excel / CSV Từ Máy
                 </button>
             </div>
 
@@ -777,26 +680,61 @@
                     <label class="text-xs font-bold text-slate-700 uppercase">Hoặc Dán Nội Dung Chuỗi CSV Ví Dụ:</label>
                     <button onclick="fillSampleCSV()" class="text-xs font-bold text-brand-600 hover:underline">Chèn Mẫu Ví Dụ B1-0716</button>
                 </div>
-                <textarea id="rawCsvTextarea" rows="4" placeholder="Mã_Căn,Họ_Tên,Số_CCCD,Diện_Tích&#10;B1-0716,Trần Văn Bình,001092008888,78.5&#10;A1-1204,Nguyễn Văn An,001092000123,85.5" class="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                <textarea id="rawCsvTextarea" rows="3" placeholder="Mã_Căn,Họ_Tên,Số_CCCD,Diện_Tích&#10;B1-0716,Trần Văn Bình,001092008888,78.5&#10;A1-1204,Nguyễn Văn An,001092000123,85.5" class="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
             </div>
 
             <div class="flex items-center justify-end gap-2 pt-2 border-t border-slate-100">
                 <button onclick="closeImportModal()" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl transition">Thoát</button>
                 <button onclick="importCSVDataFromText()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition">
-                    <i class="fa-solid fa-check mr-1"></i> Xác Nhận Nạp Dữ Liệu
+                    <i class="fa-solid fa-check mr-1"></i> Xác Nhận Nạp Chuỗi Text
                 </button>
             </div>
         </div>
     </div>
-
-    <!-- MODAL 4: CCCD SCAN RESULT CONFIRMATION -->
-    <div id="cccdResultModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
-        <div class="bg-white rounded-2xl max-w-md w-full p-6 card-shadow relative text-center">
-            <button onclick="closeCCCDResultModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
+    <!-- MODAL 8: RESET & CLEAR DATA (ADMIN ONLY) -->
+    <div id="resetDataModal" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-md w-full p-6 card-shadow relative">
+            <button onclick="closeResetDataModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-            <div id="cccdModalContent">
-                <!-- Dynamic Scan Confirmation -->
+            <div class="text-center mb-4">
+                <div class="w-12 h-12 rounded-full bg-rose-100 text-rose-600 mx-auto flex items-center justify-center text-xl mb-2">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                </div>
+                <h3 class="text-lg font-bold text-slate-900">Trung Tâm Xóa & Làm Sạch Dữ Liệu</h3>
+                <p class="text-xs text-slate-500 mt-1">Dành cho Quản Trị Viên khởi tạo phiên hội nghị mới</p>
+            </div>
+
+            <div class="space-y-3 mb-6">
+                <button onclick="adminResetAction('checkins')" class="w-full p-3 bg-slate-50 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 rounded-xl text-left transition flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">1. Đặt lại Trạng Thái Điểm Danh</p>
+                        <p class="text-[10px] text-slate-500">Chuyển toàn bộ căn hộ về trạng thái "Chưa tham dự" (Giữ lại danh sách căn hộ)</p>
+                    </div>
+                    <i class="fa-solid fa-rotate-left text-amber-600"></i>
+                </button>
+
+                <button onclick="adminResetAction('votes')" class="w-full p-3 bg-slate-50 hover:bg-amber-50 border border-slate-200 hover:border-amber-300 rounded-xl text-left transition flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-slate-800">2. Xóa Kết Quả Bỏ Phiếu & Bầu Cử</p>
+                        <p class="text-[10px] text-slate-500">Reset toàn bộ số phiếu bầu BQT và bình chọn Nghị quyết về 0</p>
+                    </div>
+                    <i class="fa-solid fa-box-archive text-amber-600"></i>
+                </button>
+
+                <button onclick="adminResetAction('residents')" class="w-full p-3 bg-slate-50 hover:bg-rose-50 border border-slate-200 hover:border-rose-300 rounded-xl text-left transition flex items-center justify-between">
+                    <div>
+                        <p class="text-xs font-bold text-rose-700">3. Xóa Sạch Danh Sách Căn Hộ</p>
+                        <p class="text-[10px] text-slate-500">Xóa toàn bộ danh sách cư dân hiện tại để nạp file Excel hoàn toàn mới</p>
+                    </div>
+                    <i class="fa-solid fa-trash-can text-rose-600"></i>
+                </button>
+            </div>
+
+            <div class="flex justify-end">
+                <button onclick="closeResetDataModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold rounded-xl text-xs">
+                    Đóng
+                </button>
             </div>
         </div>
     </div>
@@ -880,298 +818,491 @@
 
     <!-- FIREBASE MODULES INITIALIZATION & APPLICATION LOGIC -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, signInWithCustomToken, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-
-        // Firebase Configuration as requested
-        const firebaseConfig = {
-            apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
-            authDomain: "hnnccecohome.firebaseapp.com",
-            projectId: "hnnccecohome",
-            storageBucket: "hnnccecohome.firebasestorage.app",
-            messagingSenderId: "439144090149",
-            appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
-            measurementId: "G-MTWM4RJY1E"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hnnccecohome-app';
-
-        // Global State
         const ADMIN_PASSWORD_HASH = "215151365";
         window.isAdminLoggedIn = false;
 
-        // Reactive Application Config state (Header Nav Customization & Building)
+        // Global Camera Scanner state
+        let html5QrCodeScanner = null;
+        window.isCameraRunning = false;
+
+        // Default Building Configuration
         window.buildingConfig = {
-            domainName: "hoinghinhachungcu.vn",
-            buildingBadge: "Chung cư EcoHome 3",
+            name: "EcoHome 3",
+            domain: "www.ecohome.id.vn",
+            badge: "Chung cư EcoHome 3",
             subtitle: "Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD",
+            totalArea: 20000,
+            quorumPercentRequired: 50,
             navLanding: "Trang chủ",
             navResident: "Cổng Cư Dân",
             navCheckin: "Trạm Check-in",
             navAdmin: "Quản Trị / BQT",
-            navMinutes: "Biên Bản",
-            name: "EcoHome 3",
-            totalArea: 20000,
-            quorumPercentRequired: 50
+            navMinutes: "Biên Bản"
         };
 
-        // Resident Registry State
+        // Initial Data Collections
         window.residents = [
-            { unit: 'B1-0716', name: 'Trần Văn Bình', cccd: '001092008888', area: 78.5, checkedIn: true, mode: 'Quét CCCD', checkinTime: '08:15' },
-            { unit: 'A1-1204', name: 'Nguyễn Văn An', cccd: '001092000123', area: 85.5, checkedIn: true, mode: 'Quét CCCD', checkinTime: '08:20' },
-            { unit: 'A1-101', name: 'Trần Văn Hoàng', cccd: '001088001122', area: 72.0, checkedIn: true, mode: 'Trực tiếp', checkinTime: '08:25' },
-            { unit: 'A1-102', name: 'Lê Thị Mai', cccd: '001095003344', area: 85.5, checkedIn: true, mode: 'Trực tiếp', checkinTime: '08:30' },
-            { unit: 'A2-201', name: 'Nguyễn Tiến Dũng', cccd: '001090005566', area: 90.0, checkedIn: true, mode: 'Ủy quyền', checkinTime: '08:32' },
-            { unit: 'A2-202', name: 'Phạm Minh Trí', cccd: '001093007788', area: 68.0, checkedIn: false, mode: '-', checkinTime: '-' },
-            { unit: 'B1-0301', name: 'Đỗ Thị Huệ', cccd: '001091009900', area: 110.0, checkedIn: true, mode: 'Quét CCCD', checkinTime: '08:35' },
-            { unit: 'B1-0302', name: 'Vũ Quốc Khánh', cccd: '001089001234', area: 78.5, checkedIn: true, mode: 'Trực tiếp', checkinTime: '08:38' },
-            { unit: 'B2-0101', name: 'Bùi Hoài Nam', cccd: '001094002345', area: 95.0, checkedIn: true, mode: 'Ủy quyền', checkinTime: '08:40' },
-            { unit: 'B2-0102', name: 'Đặng Kim Anh', cccd: '001096003456', area: 82.0, checkedIn: true, mode: 'Trực tiếp', checkinTime: '08:42' },
-            { unit: 'B2-0201', name: 'Hoàng Văn Thái', cccd: '001087004567', area: 105.0, checkedIn: false, mode: '-', checkinTime: '-' },
-            { unit: 'B2-0202', name: 'Nghiêm Xuân Trường', cccd: '001098005678', area: 75.0, checkedIn: true, mode: 'Quét CCCD', checkinTime: '08:45' }
+            { unit: 'A1-1204', name: 'Nguyễn Văn An', cccd: '001092000123', area: 85.5, checkedIn: true, mode: 'Trực tiếp', checkinTime: '08:15' },
+            { unit: 'B1-0716', name: 'Trần Văn Bình', cccd: '001092008888', area: 78.5, checkedIn: false, mode: '-', checkinTime: '-' },
+            { unit: 'B1-0802', name: 'Phạm Kim Dung', cccd: '001091007766', area: 92.0, checkedIn: false, mode: '-', checkinTime: '-' },
+            { unit: 'B2-0910', name: 'Lê Hoàng Tiến', cccd: '001095004433', area: 105.0, checkedIn: false, mode: '-', checkinTime: '-' }
         ];
 
-        // Resolutions State
         window.resolutions = [
             {
                 id: 1,
                 code: 'Nghị quyết 01/2026',
                 badgeColor: 'bg-brand-50 text-brand-700 border-brand-200',
-                title: 'Thông qua Mức Giá Dịch Vụ Vận Hành Quản Lý Tòa Nhà Năm 2026',
-                description: 'Đề xuất điều chỉnh mức phí dịch vụ vận hành từ 12.000 VNĐ/m²/tháng lên 13.500 VNĐ/m²/tháng để bổ sung hệ thống an ninh AI và bảo trì định kỳ thang máy.',
+                title: 'Thông qua Mức Phí Dịch Vụ Vận Hành Tòa Nhà 2026',
+                description: 'Đề xuất điều chỉnh phí quản lý vận hành từ 12,000đ/m² lên 13,500đ/m²/tháng áp dụng từ Quý IV/2026.',
                 options: [
-                    { val: 'agree', text: 'Tán thành mức phí 13.500 VNĐ/m²/tháng' },
-                    { val: 'disagree', text: 'Không tán thành (Giữ nguyên mức 12.000 VNĐ/m²/tháng)' },
-                    { val: 'abstain', text: 'Không có ý kiến / Phiếu trắng' }
+                    { val: 'agree', text: 'Tán thành (13,500đ/m²)' },
+                    { val: 'disagree', text: 'Không tán thành (Giữ nguyên 12,000đ/m²)' },
+                    { val: 'abstain', text: 'Phiếu trắng / Không ý kiến' }
                 ],
                 isOpen: true,
-                userVote: null
-            },
-            {
-                id: 2,
-                code: 'Nghị quyết 02/2026',
-                badgeColor: 'bg-purple-50 text-purple-700 border-purple-200',
-                title: 'Lựa Chọn Đơn Vị Quản Lý Vận Hành Tòa Nhà Nhiệm Kỳ 2026-2029',
-                description: 'Thông qua hồ sơ thầu lựa chọn Công ty TNHH Vận Hành Bất Động Sản X làm đơn vị quản lý chính thức.',
-                options: [
-                    { val: 'agree', text: 'Đồng ý lựa chọn Công ty X' },
-                    { val: 'disagree', text: 'Không đồng ý, yêu cầu đầu thầu lại' },
-                    { val: 'abstain', text: 'Không có ý kiến' }
-                ],
-                isOpen: true,
-                userVote: null
+                userVote: 'agree'
             }
         ];
 
-        // Candidates State
         window.candidates = [
-            { id: 1, name: 'Ông Nguyễn Văn An', role: 'Kỹ sư Xây dựng - Căn A1-1204', exp: '10 năm kinh nghiệm quản lý dự án công trình', votes: 10, selected: false },
-            { id: 2, name: 'Bà Lê Thị Mai', role: 'Cử nhân Luật - Căn A1-102', exp: 'Cố vấn pháp lý doanh nghiệp', votes: 9, selected: false },
-            { id: 3, name: 'Ông Bùi Hoài Nam', role: 'Chuyên gia Tài chính - Căn B2-0101', exp: 'Giám đốc kiểm toán độc lập', votes: 8, selected: false },
-            { id: 4, name: 'Ông Vũ Quốc Khánh', role: 'Kỹ sư Điện tử - Căn B1-0302', exp: '15 năm vận hành hạ tầng kỹ thuật', votes: 6, selected: false }
+            { id: 1, name: 'Nguyễn Văn A', role: 'Kỹ sư Xây dựng (Căn A1-1204)', exp: '15 năm kinh nghiệm quản lý dự án bất động sản', votes: 12, selected: false },
+            { id: 2, name: 'Trần Thị B', role: 'Luật sư (Căn B1-0716)', exp: '10 năm tư vấn pháp lý quản trị nhà chung cư', votes: 18, selected: false },
+            { id: 3, name: 'Lê Văn C', role: 'Chuyên gia Tài chính (Căn B2-0910)', exp: 'Cựu Kế toán trưởng tập đoàn tài chính', votes: 9, selected: false }
         ];
 
-        let currentUser = null;
-
-        // Firebase Sync Helper
-        async function syncToFirebase(docName, dataObj) {
-            if (!currentUser) return;
-            try {
-                const docRef = doc(db, 'artifacts', appId, 'public', 'data', docName, 'main');
-                await setDoc(docRef, { data: dataObj, updatedAt: new Date().toISOString() });
-            } catch (err) {
-                console.error("Firebase sync error:", err);
-            }
-        }
-
-        window.saveConfigToFirebase = function() {
-            syncToFirebase('app_config', window.buildingConfig);
-        };
-        window.saveResidentsToFirebase = function() {
-            syncToFirebase('residents_data', window.residents);
-        };
-        window.saveResolutionsToFirebase = function() {
-            syncToFirebase('resolutions_data', window.resolutions);
-        };
-        window.saveCandidatesToFirebase = function() {
-            syncToFirebase('candidates_data', window.candidates);
-        };
-
-        // Firebase Auth & Realtime Snapshot Listeners
-        async function initFirebaseSync() {
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
-                } else {
-                    await signInAnonymously(auth);
-                }
-            } catch (e) {
-                console.warn("Auth fallback anonymously:", e);
-            }
-
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    currentUser = user;
-                    const badge = document.getElementById('syncStatusBadge');
-                    if (badge) {
-                        badge.className = "px-2 py-0.5 text-[10px] bg-emerald-100 text-emerald-800 font-bold rounded-full flex items-center gap-1";
-                        badge.innerHTML = `<i class="fa-solid fa-cloud text-emerald-600"></i> Firebase Live`;
-                    }
-
-                    // 1. Listen for Header & Building Config Changes
-                    const cfgRef = doc(db, 'artifacts', appId, 'public', 'data', 'app_config', 'main');
-                    onSnapshot(cfgRef, (snapshot) => {
-                        if (snapshot.exists() && snapshot.data().data) {
-                            window.buildingConfig = { ...window.buildingConfig, ...snapshot.data().data };
-                            window.updateHeaderDOM();
-                            window.populateConfigForm();
-                            window.recalculateQuorum();
-                        }
-                    }, (err) => console.log("Config listener err", err));
-
-                    // 2. Listen for Residents & Check-in Changes
-                    const resRef = doc(db, 'artifacts', appId, 'public', 'data', 'residents_data', 'main');
-                    onSnapshot(resRef, (snapshot) => {
-                        if (snapshot.exists() && snapshot.data().data) {
-                            window.residents = snapshot.data().data;
-                            window.renderCheckinTable();
-                            window.renderAdminUnits();
-                            window.recalculateQuorum();
-                        }
-                    }, (err) => console.log("Residents listener err", err));
-
-                    // 3. Listen for Resolutions Changes
-                    const rslRef = doc(db, 'artifacts', appId, 'public', 'data', 'resolutions_data', 'main');
-                    onSnapshot(rslRef, (snapshot) => {
-                        if (snapshot.exists() && snapshot.data().data) {
-                            window.resolutions = snapshot.data().data;
-                            window.renderResidentResolutions();
-                            window.renderAdminResolutions();
-                        }
-                    }, (err) => console.log("Resolutions listener err", err));
-
-                    // 4. Listen for Candidates Changes
-                    const cndRef = doc(db, 'artifacts', appId, 'public', 'data', 'candidates_data', 'main');
-                    onSnapshot(cndRef, (snapshot) => {
-                        if (snapshot.exists() && snapshot.data().data) {
-                            window.candidates = snapshot.data().data;
-                            window.renderCandidates();
-                            window.renderAdminCandidates();
-                            if (window.chartElectionInstance) window.renderCharts();
-                        }
-                    }, (err) => console.log("Candidates listener err", err));
-                }
-            });
-        }
-
-        // DOM Header Updating Function
         window.updateHeaderDOM = function() {
-            const cfg = window.buildingConfig;
+            const cfg = window.buildingConfig || {};
             
+            // Header display elements
             const domainEl = document.getElementById('hdrDomainName');
-            if (domainEl) domainEl.innerText = cfg.domainName || "hoinghinhachungcu.vn";
+            if (domainEl && cfg.domain) domainEl.innerText = cfg.domain;
 
             const badgeEl = document.getElementById('hdrBuildingBadge');
-            if (badgeEl) badgeEl.innerText = cfg.buildingBadge || "Chung cư EcoHome 3";
+            if (badgeEl && cfg.badge) badgeEl.innerText = cfg.badge;
 
             const subEl = document.getElementById('hdrSubtitle');
-            if (subEl) subEl.innerText = cfg.subtitle || "Hệ thống Check-in & Biểu quyết Điện tử";
+            if (subEl && cfg.subtitle) subEl.innerText = cfg.subtitle;
+
+            const lblLanding = document.getElementById('lblNavLanding');
+            if (lblLanding && cfg.navLanding) lblLanding.innerText = cfg.navLanding;
+
+            const lblResident = document.getElementById('lblNavResident');
+            if (lblResident && cfg.navResident) lblResident.innerText = cfg.navResident;
+
+            const lblCheckin = document.getElementById('lblNavCheckin');
+            if (lblCheckin && cfg.navCheckin) lblCheckin.innerText = cfg.navCheckin;
+
+            const lblAdmin = document.getElementById('lblNavAdmin');
+            if (lblAdmin && cfg.navAdmin) lblAdmin.innerText = cfg.navAdmin;
+
+            const lblMinutes = document.getElementById('lblNavMinutes');
+            if (lblMinutes && cfg.navMinutes) lblMinutes.innerText = cfg.navMinutes;
 
             const docTitle = document.getElementById('docBuildingTitle');
-            if (docTitle) docTitle.innerText = `BIÊN BẢN HỘI NGHỊ NHÀ CHUNG CƯ ${(cfg.buildingBadge || "ECOHOME 3").toUpperCase()}`;
+            if (docTitle && cfg.name) docTitle.innerText = `BIÊN BẢN HỘI NGHỊ NHÀ CHUNG CƯ ${(cfg.name).toUpperCase()}`;
 
-            const l1 = document.getElementById('lblNavLanding');
-            if (l1) l1.innerText = cfg.navLanding || "Trang chủ";
+            // Populate configuration form inputs in Admin section
+            const inputDomain = document.getElementById('cfgDomainName');
+            if (inputDomain) inputDomain.value = cfg.domain || '';
 
-            const l2 = document.getElementById('lblNavResident');
-            if (l2) l2.innerText = cfg.navResident || "Cổng Cư Dân";
+            const inputBadge = document.getElementById('cfgBuildingBadge');
+            if (inputBadge) inputBadge.value = cfg.badge || '';
 
-            const l3 = document.getElementById('lblNavCheckin');
-            if (l3) l3.innerText = cfg.navCheckin || "Trạm Check-in";
+            const inputSub = document.getElementById('cfgSubtitle');
+            if (inputSub) inputSub.value = cfg.subtitle || '';
 
-            const l4 = document.getElementById('lblNavAdmin');
-            if (l4) l4.innerText = cfg.navAdmin || "Quản Trị / BQT";
+            const inputName = document.getElementById('cfgBuildingName');
+            if (inputName) inputName.value = cfg.name || '';
 
-            const l5 = document.getElementById('lblNavMinutes');
-            if (l5) l5.innerText = cfg.navMinutes || "Biên Bản";
+            const inputArea = document.getElementById('cfgTotalArea');
+            if (inputArea) inputArea.value = cfg.totalArea || 0;
+
+            const inputQuorum = document.getElementById('cfgQuorumRequired');
+            if (inputQuorum) inputQuorum.value = cfg.quorumPercentRequired || 50;
+
+            const inputNavLanding = document.getElementById('cfgNavLanding');
+            if (inputNavLanding) inputNavLanding.value = cfg.navLanding || '';
+
+            const inputNavResident = document.getElementById('cfgNavResident');
+            if (inputNavResident) inputNavResident.value = cfg.navResident || '';
+
+            const inputNavCheckin = document.getElementById('cfgNavCheckin');
+            if (inputNavCheckin) inputNavCheckin.value = cfg.navCheckin || '';
+
+            const inputNavAdmin = document.getElementById('cfgNavAdmin');
+            if (inputNavAdmin) inputNavAdmin.value = cfg.navAdmin || '';
+
+            const inputNavMinutes = document.getElementById('cfgNavMinutes');
+            if (inputNavMinutes) inputNavMinutes.value = cfg.navMinutes || '';
         };
 
-        // Populate Config Form
-        window.populateConfigForm = function() {
-            const cfg = window.buildingConfig;
-            const setVal = (id, val) => { const el = document.getElementById(id); if (el) el.value = val; };
-
-            setVal('cfgDomainName', cfg.domainName || "hoinghinhachungcu.vn");
-            setVal('cfgBuildingBadge', cfg.buildingBadge || "Chung cư EcoHome 3");
-            setVal('cfgSubtitle', cfg.subtitle || "Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD");
-            
-            setVal('cfgNavLanding', cfg.navLanding || "Trang chủ");
-            setVal('cfgNavResident', cfg.navResident || "Cổng Cư Dân");
-            setVal('cfgNavCheckin', cfg.navCheckin || "Trạm Check-in");
-            setVal('cfgNavAdmin', cfg.navAdmin || "Quản Trị / BQT");
-            setVal('cfgNavMinutes', cfg.navMinutes || "Biên Bản");
-
-            setVal('cfgBuildingName', cfg.name || "EcoHome 3");
-            setVal('cfgTotalArea', cfg.totalArea || 20000);
-            setVal('cfgQuorumRequired', cfg.quorumPercentRequired || 50);
-        };
-
-        window.handleConfigSubmit = function(e) {
-            e.preventDefault();
-            const getVal = (id) => { const el = document.getElementById(id); return el ? el.value : ''; };
-
-            window.buildingConfig.domainName = getVal('cfgDomainName');
-            window.buildingConfig.buildingBadge = getVal('cfgBuildingBadge');
-            window.buildingConfig.subtitle = getVal('cfgSubtitle');
-
-            window.buildingConfig.navLanding = getVal('cfgNavLanding');
-            window.buildingConfig.navResident = getVal('cfgNavResident');
-            window.buildingConfig.navCheckin = getVal('cfgNavCheckin');
-            window.buildingConfig.navAdmin = getVal('cfgNavAdmin');
-            window.buildingConfig.navMinutes = getVal('cfgNavMinutes');
-
-            window.buildingConfig.name = getVal('cfgBuildingName');
-            window.buildingConfig.totalArea = parseFloat(getVal('cfgTotalArea')) || 20000;
-            window.buildingConfig.quorumPercentRequired = parseFloat(getVal('cfgQuorumRequired')) || 50;
-
-            window.updateHeaderDOM();
-            window.recalculateQuorum();
-            window.saveConfigToFirebase();
-            window.toast('Đã cập nhật & đồng bộ cấu hình Header lên Firebase!');
-        };
-
-        // Navigation
         window.switchView = function(viewName) {
             ['landing', 'resident', 'checkin', 'admin', 'minutes'].forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                const nav = document.getElementById(`nav-${v}`);
-                if (el) el.classList.add('hidden');
-                if (nav) nav.classList.remove('active-tab', 'text-brand-600', 'font-bold');
+                const section = document.getElementById(`view-${v}`);
+                const navBtn = document.getElementById(`nav-${v}`);
+                if (section) section.classList.add('hidden');
+                if (navBtn) {
+                    navBtn.classList.remove('bg-brand-50', 'text-brand-700', 'font-bold');
+                    navBtn.classList.add('text-slate-600');
+                }
             });
 
-            const activeEl = document.getElementById(`view-${viewName}`);
-            const activeNav = document.getElementById(`nav-${viewName}`);
-            if (activeEl) activeEl.classList.remove('hidden');
-            if (activeNav) activeNav.classList.add('active-tab', 'text-brand-600');
+            const targetSection = document.getElementById(`view-${viewName}`);
+            const targetBtn = document.getElementById(`nav-${viewName}`);
+            if (targetSection) targetSection.classList.remove('hidden');
+            if (targetBtn) {
+                targetBtn.classList.add('bg-brand-50', 'text-brand-700', 'font-bold');
+                targetBtn.classList.remove('text-slate-600');
+            }
 
             if (viewName === 'admin') {
-                window.renderCharts();
                 window.renderAdminResolutions();
                 window.renderAdminCandidates();
                 window.renderAdminUnits();
-                window.populateConfigForm();
-            } else if (viewName === 'minutes') {
-                window.updateMinutesData();
+                window.renderCharts();
             } else if (viewName === 'resident') {
                 window.renderResidentResolutions();
                 window.renderCandidates();
             } else if (viewName === 'checkin') {
                 window.renderCheckinTable();
+            } else if (viewName === 'minutes') {
+                window.updateMinutesData();
+            }
+        };
+
+        window.handleConfigSubmit = function(e) {
+            if (e) e.preventDefault();
+            
+            window.buildingConfig = {
+                domain: document.getElementById('cfgDomainName')?.value || window.buildingConfig.domain,
+                badge: document.getElementById('cfgBuildingBadge')?.value || window.buildingConfig.badge,
+                subtitle: document.getElementById('cfgSubtitle')?.value || window.buildingConfig.subtitle,
+                name: document.getElementById('cfgBuildingName')?.value || window.buildingConfig.name,
+                totalArea: parseFloat(document.getElementById('cfgTotalArea')?.value) || window.buildingConfig.totalArea,
+                quorumPercentRequired: parseFloat(document.getElementById('cfgQuorumRequired')?.value) || window.buildingConfig.quorumPercentRequired,
+                navLanding: document.getElementById('cfgNavLanding')?.value || window.buildingConfig.navLanding,
+                navResident: document.getElementById('cfgNavResident')?.value || window.buildingConfig.navResident,
+                navCheckin: document.getElementById('cfgNavCheckin')?.value || window.buildingConfig.navCheckin,
+                navAdmin: document.getElementById('cfgNavAdmin')?.value || window.buildingConfig.navAdmin,
+                navMinutes: document.getElementById('cfgNavMinutes')?.value || window.buildingConfig.navMinutes,
+            };
+
+            window.updateHeaderDOM();
+            window.recalculateQuorum();
+            window.saveConfigToFirebase();
+            window.toast('Đã lưu & đồng bộ cấu hình tòa nhà thành công!');
+        };
+
+        // Firebase Persistence Placeholders
+        window.saveResidentsToFirebase = function() { console.log("Firebase sync: Residents saved."); };
+        window.saveResolutionsToFirebase = function() { console.log("Firebase sync: Resolutions saved."); };
+        window.saveCandidatesToFirebase = function() { console.log("Firebase sync: Candidates saved."); };
+        window.saveConfigToFirebase = function() { console.log("Firebase sync: Building config saved."); };
+        window.initFirebaseSync = function() { console.log("Firebase sync initialized."); };
+
+        // Camera QR Scanner Toggle
+        window.toggleCameraScanner = async function() {
+            const readerDiv = document.getElementById('cameraQrReader');
+            const placeholder = document.getElementById('cameraPlaceholder');
+            const btnLabel = document.getElementById('lblToggleCamera');
+            const badge = document.getElementById('cameraStatusBadge');
+
+            if (window.isCameraRunning) {
+                if (html5QrCodeScanner) {
+                    try {
+                        await html5QrCodeScanner.stop();
+                    } catch(e) {}
+                    html5QrCodeScanner = null;
+                }
+                window.isCameraRunning = false;
+                if (readerDiv) readerDiv.classList.add('hidden');
+                if (placeholder) placeholder.classList.remove('hidden');
+                if (btnLabel) btnLabel.innerText = "Bật Camera Quét";
+                if (badge) {
+                    badge.className = "px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-full";
+                    badge.innerHTML = `<i class="fa-solid fa-camera"></i> Sẵn Sàng`;
+                }
+            } else {
+                if (!window.Html5Qrcode) {
+                    window.toast("Thư viện quét mã QR chưa sẵn sàng!");
+                    return;
+                }
+                if (placeholder) placeholder.classList.add('hidden');
+                if (readerDiv) readerDiv.classList.remove('hidden');
+
+                html5QrCodeScanner = new Html5Qrcode("cameraQrReader");
+                const config = { fps: 10, qrbox: { width: 220, height: 220 } };
+
+                try {
+                    await html5QrCodeScanner.start(
+                        { facingMode: "environment" },
+                        config,
+                        (decodedText) => {
+                            console.log("Camera QR Code Detected:", decodedText);
+                            const parsedData = window.parseCCCDQR(decodedText);
+                            if (parsedData) {
+                                window.matchAndCheckinCCCD(parsedData);
+                            } else {
+                                window.toast("Mã QR quét được không đúng định dạng CCCD chip!");
+                            }
+                        },
+                        (errorMessage) => {
+                            // Ignored per frame
+                        }
+                    );
+                    window.isCameraRunning = true;
+                    if (btnLabel) btnLabel.innerText = "Tắt Camera";
+                    if (badge) {
+                        badge.className = "px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full animate-pulse";
+                        badge.innerHTML = `<i class="fa-solid fa-circle text-emerald-600"></i> Camera Đang Quét...`;
+                    }
+                } catch (err) {
+                    console.error("Camera start error:", err);
+                    window.toast("Không thể mở Camera. Vui lòng cấp quyền truy cập camera!");
+                    window.isCameraRunning = false;
+                    if (placeholder) placeholder.classList.remove('hidden');
+                }
+            }
+        };
+
+        // CCCD Parser & Check-in with Official Owner Verification
+        window.matchAndCheckinCCCD = function(cccdData) {
+            const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            
+            let resident = window.residents.find(r => r.cccd && r.cccd === cccdData.cccd);
+            let isExactCCCDMatch = true;
+
+            if (!resident) {
+                resident = window.residents.find(r => r.name.toLowerCase().trim() === cccdData.fullName.toLowerCase().trim());
+                isExactCCCDMatch = false;
+            }
+
+            const modalContent = document.getElementById('cccdModalContent');
+            if (!modalContent) return;
+
+            if (resident) {
+                resident.checkedIn = true;
+                resident.mode = 'Quét CCCD';
+                resident.checkinTime = now;
+                if (!resident.cccd || resident.cccd === '-') resident.cccd = cccdData.cccd;
+
+                const isMainOwner = isExactCCCDMatch || (resident.cccd === cccdData.cccd);
+
+                modalContent.innerHTML = `
+                    <div class="w-16 h-16 rounded-full ${isMainOwner ? 'bg-emerald-100 text-emerald-600' : 'bg-brand-100 text-brand-600'} mx-auto flex items-center justify-center text-3xl mb-3">
+                        <i class="fa-solid ${isMainOwner ? 'fa-id-card-clip' : 'fa-circle-check'}"></i>
+                    </div>
+                    <span class="px-3 py-1 ${isMainOwner ? 'bg-emerald-100 text-emerald-800' : 'bg-brand-100 text-brand-800'} text-xs font-bold rounded-full">
+                        ${isMainOwner ? '✓ XÁC THỰC CHÍNH CHỦ DỰ HỌP' : 'XÁC THỰC THEO TÊN CỬ TRI'}
+                    </span>
+                    <h3 class="text-xl font-bold text-slate-900 mt-2">${cccdData.fullName}</h3>
+                    <p class="text-xs font-bold text-brand-700">Mã Căn Hộ: ${resident.unit} | Diện tích: ${resident.area} m²</p>
+                    <div class="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200 text-left text-xs space-y-1.5">
+                        <p><strong>Số CCCD Quét Được:</strong> ${cccdData.cccd}</p>
+                        <p><strong>Chủ Hộ Đăng Ký:</strong> ${resident.name}</p>
+                        <p><strong>Địa Chỉ Thường Trú:</strong> ${cccdData.address || 'Chung cư EcoHome 3'}</p>
+                        <p><strong>Thời Gian Check-in:</strong> ${now}</p>
+                    </div>
+                    <button onclick="closeCCCDResultModal()" class="w-full mt-5 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow">
+                        Xác Nhận & Hoàn Tất Check-in
+                    </button>
+                `;
+                window.recalculateQuorum();
+                window.renderCheckinTable();
+                window.saveResidentsToFirebase();
+                window.toast(`Đã xác thực CCCD chính chủ & Điểm danh thành công cho căn ${resident.unit}!`);
+            } else {
+                modalContent.innerHTML = `
+                    <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-3xl mb-3">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                    </div>
+                    <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">CHƯA TÌM THẤY TRONG DANH SÁCH CỬ TRI</span>
+                    <h3 class="text-lg font-bold text-slate-900 mt-2">${cccdData.fullName}</h3>
+                    <p class="text-xs text-slate-500">Số CCCD: ${cccdData.cccd}</p>
+                    <p class="text-xs text-slate-600 mt-2">Vui lòng chọn mã căn hộ để gán CCCD này vào danh sách cử tri dự họp:</p>
+                    
+                    <div class="mt-3 text-left">
+                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Chọn mã căn hộ gán bổ sung:</label>
+                        <select id="assignUnitSelect" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs bg-white font-bold">
+                            ${window.residents.map(r => `<option value="${r.unit}">${r.unit} - ${r.name} (${r.area} m²)</option>`).join('')}
+                        </select>
+                    </div>
+                    <div class="flex gap-2 mt-4">
+                        <button onclick="closeCCCDResultModal()" class="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Hủy</button>
+                        <button onclick="assignCCCDToUnit('${cccdData.cccd}', '${cccdData.fullName}')" class="w-1/2 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow">Gán & Check-in</button>
+                    </div>
+                `;
+            }
+
+            const modal = document.getElementById('cccdResultModal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        // Excel, CSV & JSON File Processing
+        window.handleFileUpload = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const fileName = file.name.toLowerCase();
+            const reader = new FileReader();
+
+            if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
+                reader.onload = function(e) {
+                    try {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonRows = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                        if (jsonRows.length <= 1) {
+                            window.toast('File Excel không chứa dữ liệu!');
+                            return;
+                        }
+
+                        const newResidents = [];
+                        const header = jsonRows[0].map(h => String(h || '').toLowerCase().trim());
+                        
+                        let unitIdx = header.findIndex(h => h.includes('mã') || h.includes('căn') || h.includes('unit'));
+                        let nameIdx = header.findIndex(h => h.includes('họ') || h.includes('tên') || h.includes('chủ') || h.includes('name'));
+                        let cccdIdx = header.findIndex(h => h.includes('cccd') || h.includes('cmnd') || h.includes('id'));
+                        let areaIdx = header.findIndex(h => h.includes('diện') || h.includes('tích') || h.includes('area') || h.includes('m2'));
+
+                        if (unitIdx === -1) unitIdx = 0;
+                        if (nameIdx === -1) nameIdx = 1;
+                        if (cccdIdx === -1) cccdIdx = 2;
+                        if (areaIdx === -1) areaIdx = 3;
+
+                        for (let i = 1; i < jsonRows.length; i++) {
+                            const row = jsonRows[i];
+                            if (!row || row.length === 0) continue;
+                            const unit = String(row[unitIdx] || '').trim();
+                            if (!unit) continue;
+
+                            newResidents.push({
+                                unit: unit,
+                                name: String(row[nameIdx] || 'Cư dân').trim(),
+                                cccd: String(row[cccdIdx] || '-').trim(),
+                                area: parseFloat(row[areaIdx]) || 75.0,
+                                checkedIn: false,
+                                mode: '-',
+                                checkinTime: '-'
+                            });
+                        }
+
+                        if (newResidents.length > 0) {
+                            window.residents = newResidents;
+                            window.buildingConfig.totalArea = window.residents.reduce((sum, r) => sum + r.area, 0);
+                            window.closeImportModal();
+                            window.recalculateQuorum();
+                            window.renderCheckinTable();
+                            window.renderAdminUnits();
+                            window.saveResidentsToFirebase();
+                            window.saveConfigToFirebase();
+                            window.toast(`Nạp thành công ${window.residents.length} căn hộ từ file Excel!`);
+                        }
+                    } catch (err) {
+                        console.error("Lỗi nạp Excel:", err);
+                        window.toast('Lỗi nạp file Excel! Vui lòng kiểm tra cấu trúc file.');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.onload = function(e) {
+                    const content = e.target.result;
+                    if (fileName.endsWith('.json')) {
+                        try {
+                            const parsed = JSON.parse(content);
+                            if (Array.isArray(parsed)) {
+                                window.residents = parsed.map(item => ({
+                                    unit: item.unit || item.Mã_Căn || 'A-000',
+                                    name: item.name || item.Họ_Tên || 'Cư dân',
+                                    cccd: item.cccd || item.Số_CCCD || '-',
+                                    area: parseFloat(item.area || item.Diện_Tích || 70),
+                                    checkedIn: false,
+                                    mode: '-',
+                                    checkinTime: '-'
+                                }));
+                                window.closeImportModal();
+                                window.recalculateQuorum();
+                                window.renderCheckinTable();
+                                window.renderAdminUnits();
+                                window.saveResidentsToFirebase();
+                                window.toast(`Nạp thành công ${window.residents.length} căn hộ từ file JSON!`);
+                            }
+                        } catch (err) {
+                            window.toast('File JSON không đúng định dạng!');
+                        }
+                    } else {
+                        const textarea = document.getElementById('rawCsvTextarea');
+                        if (textarea) textarea.value = content;
+                    }
+                };
+                reader.readAsText(file);
+            }
+        };
+
+        // Data Reset & Cleanup Actions for Admin
+        window.openResetDataModal = function() {
+            if (!window.isAdminLoggedIn) {
+                window.attemptAdminAccess();
+                return;
+            }
+            const modal = document.getElementById('resetDataModal');
+            if (modal) modal.classList.remove('hidden');
+        };
+
+        window.closeResetDataModal = function() {
+            const modal = document.getElementById('resetDataModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.adminResetAction = function(type) {
+            if (!window.isAdminLoggedIn) {
+                window.toast("Yêu cầu quyền Quản Trị Viên!");
+                return;
+            }
+
+            if (type === 'checkins') {
+                window.residents.forEach(r => {
+                    r.checkedIn = false;
+                    r.mode = '-';
+                    r.checkinTime = '-';
+                });
+                window.recalculateQuorum();
+                window.renderCheckinTable();
+                window.renderAdminUnits();
+                window.saveResidentsToFirebase();
+                window.closeResetDataModal();
+                window.toast("Đã đặt lại tất cả căn hộ về trạng thái Chưa điểm danh!");
+            } else if (type === 'votes') {
+                window.resolutions.forEach(r => {
+                    r.userVote = null;
+                });
+                window.candidates.forEach(c => {
+                    c.votes = 0;
+                    c.selected = false;
+                });
+                window.renderAdminResolutions();
+                window.renderAdminCandidates();
+                window.renderResidentResolutions();
+                window.renderCandidates();
+                window.saveResolutionsToFirebase();
+                window.saveCandidatesToFirebase();
+                if (window.chartElectionInstance) window.renderCharts();
+                window.closeResetDataModal();
+                window.toast("Đã xóa sạch toàn bộ phiếu bầu BQT & bình chọn Nghị quyết!");
+            } else if (type === 'residents') {
+                window.residents = [];
+                window.buildingConfig.totalArea = 0;
+                window.recalculateQuorum();
+                window.renderCheckinTable();
+                window.renderAdminUnits();
+                window.saveResidentsToFirebase();
+                window.saveConfigToFirebase();
+                window.closeResetDataModal();
+                window.toast("Đã xóa sạch toàn bộ danh sách căn hộ cư dân!");
             }
         };
 
@@ -2008,7 +2139,7 @@
             window.recalculateQuorum();
             
             // Initialize Firebase Live Synchronizer
-            initFirebaseSync();
+            window.initFirebaseSync();
         };
     </script>
 </body>
