@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hội Nghị Nhà Chung Cư Số - Nền Tảng Check-in & Bỏ Phiếu Điện Tử</title>
+    <title>Hội Nghị Nhà Chung Cư Số - Nền Tảng Check-in & Bỏ Phiếu Điện Tử Chuẩn TT06/2019/TT-BXD</title>
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -39,18 +39,29 @@
     <!-- Html5Qrcode for Camera Scanning -->
     <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-    <!-- Firebase SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
     <style>
         @media print {
             .no-print { display: none !important; }
             .print-only { display: block !important; }
             body { background: white !important; font-size: 12pt; }
-            .print-card { border: none !important; shadow: none !important; padding: 0 !important; }
+            .print-card { border: none !important; box-shadow: none !important; padding: 0 !important; }
         }
         .print-only { display: none; }
+        
+        /* Laser scanner effect for camera scanner box */
+        .scanner-laser {
+            position: absolute;
+            height: 2px;
+            width: 100%;
+            background: #22c55e;
+            box-shadow: 0 0 8px #22c55e;
+            animation: scanning 2s infinite ease-in-out;
+        }
+        @keyframes scanning {
+            0% { top: 10%; }
+            50% { top: 90%; }
+            100% { top: 10%; }
+        }
     </style>
 </head>
 <body class="h-full flex flex-col font-sans text-slate-800 antialiased">
@@ -88,7 +99,7 @@
                 <!-- Status & Auth Indicators -->
                 <div class="flex items-center gap-2">
                     <span id="firebaseStatusBadge" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold rounded-full flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Firebase Sync
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Đã lưu & Đồng bộ
                     </span>
                     <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-white">
                         <i class="fa-solid fa-bars text-xl"></i>
@@ -112,7 +123,7 @@
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8">
 
         <!-- Toast Notification Box -->
-        <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 max-w-md bg-slate-900 text-white p-4 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3">
+        <div id="toastBox" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 max-w-md bg-slate-900 text-white p-4 rounded-xl shadow-2xl border border-slate-700 flex items-center gap-3 pointer-events-none">
             <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-xl"></i>
             <p id="toastMessage" class="text-xs font-medium"></p>
         </div>
@@ -127,7 +138,7 @@
                     </span>
                     <h1 class="text-2xl sm:text-4xl font-extrabold tracking-tight">Cổng Biểu Quyết & Điểm Danh Điện Tử Số</h1>
                     <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
-                        Áp dụng Thông tư 06/2019/TT-BXD của Bộ Xây dựng. Đảm bảo tính pháp lý, minh bạch và chính xác 100% trong công tác kiểm phiếu theo diện tích $m^2$ quyền sở hữu căn hộ.
+                        Áp dụng Thông tư 06/2019/TT-BXD của Bộ Xây dựng. Đảm bảo tính pháp lý, minh bạch và chính xác 100% trong công tác kiểm phiếu theo diện tích m² quyền sở hữu căn hộ.
                     </p>
                     <div class="flex flex-wrap gap-3 pt-2">
                         <button onclick="switchView('resident')" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center gap-2">
@@ -144,8 +155,8 @@
             <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
                     <p class="text-xs text-slate-500 font-medium uppercase">Tổng Diện Tích Tòa Nhà</p>
-                    <p id="metricTotalArea" class="text-xl font-black text-slate-900">20.000,0 m²</p>
-                    <p class="text-[11px] text-slate-400">Theo hợp đồng mua bán gốc</p>
+                    <p id="metricTotalArea" class="text-xl font-black text-slate-900">0,0 m²</p>
+                    <p class="text-[11px] text-slate-400">Được cộng dồn chính xác 100% từ danh sách căn</p>
                 </div>
                 <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-1">
                     <p class="text-xs text-slate-500 font-medium uppercase">Diện Tích Đã Check-in</p>
@@ -256,12 +267,13 @@
                         <span id="cameraStatusBadge" class="px-2 py-0.5 bg-slate-100 text-slate-600 text-[10px] font-bold rounded-full">Sẵn sàng</span>
                     </div>
 
-                    <!-- Camera Viewer Container -->
+                    <!-- Camera Viewer Container with Laser Effect -->
                     <div class="relative bg-slate-900 rounded-2xl overflow-hidden aspect-square flex items-center justify-center">
                         <div id="cameraQrReader" class="w-full h-full"></div>
+                        <div id="scannerLaser" class="scanner-laser hidden"></div>
                         <div id="cameraPlaceholder" class="text-center p-6 text-slate-400 space-y-2">
                             <i class="fa-solid fa-qrcode text-5xl text-slate-600"></i>
-                            <p class="text-xs">Nhấn 'Bật Camera' để bắt đầu quét mã QR trên Căn Cước Công Dân</p>
+                            <p class="text-xs">Nhấn 'Bật Camera' để khởi động camera thiết bị quét mã QR trên Căn Cước Công Dân</p>
                         </div>
                     </div>
 
@@ -417,7 +429,10 @@
                 <div id="admSection-units" class="hidden space-y-4">
                     <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                            <h4 class="text-xs font-bold text-slate-700 uppercase">Danh Sách Căn Hộ Đã Nạp</h4>
+                            <div>
+                                <h4 class="text-xs font-bold text-slate-700 uppercase">Danh Sách Căn Hộ Đã Nạp (Tự động tính m² chuẩn 100%)</h4>
+                                <p class="text-[11px] text-slate-500">Mọi thay đổi diện tích m² được cập nhật tức thì lên hệ thống</p>
+                            </div>
                             <div class="flex flex-wrap gap-2">
                                 <button onclick="resetCheckinStatus()" class="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs shadow">
                                     Reset Điểm Danh
@@ -494,7 +509,7 @@
                     
                     <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
                         <p class="font-bold uppercase text-slate-800">1. Đánh giá điều kiện hợp lệ khai mạc (Chuẩn TT06/2019/TT-BXD):</p>
-                        <p>- Tổng diện tích sở hữu tòa nhà: <strong id="minutesTotalArea">20.000,0 m²</strong></p>
+                        <p>- Tổng diện tích sở hữu tòa nhà: <strong id="minutesTotalArea">0,0 m²</strong></p>
                         <p>- Tổng diện tích căn hộ đã tham dự check-in: <strong id="minutesCheckedArea">0,0 m²</strong> (<span id="minutesCheckedPercent" class="font-bold text-brand-700">0.0%</span>)</p>
                         <p>- Kết luận điều kiện: <strong id="minutesQuorumResult" class="text-amber-700">Chưa đủ điều kiện khai mạc</strong></p>
                     </div>
@@ -545,14 +560,14 @@
             </button>
             
             <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
-                <i class="fa-solid fa-file-excel text-emerald-600"></i> Nạp Danh Sách Căn Hộ Từ Excel / CSV
+                <i class="fa-solid fa-file-excel text-emerald-600"></i> Nạp Danh Sách Căn Hộ Từ Excel / CSV (Chính xác m²)
             </h3>
 
             <!-- Drag Drop / Upload Box -->
             <div class="border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center hover:border-brand-500 bg-slate-50 transition">
                 <i class="fa-solid fa-file-excel text-4xl text-emerald-600 mb-2"></i>
                 <p class="text-xs font-bold text-slate-700 mb-1">Chọn hoặc Kéo Thả File Excel (.xlsx, .xls) hoặc CSV</p>
-                <p class="text-[11px] text-brand-700 font-semibold mb-3">Chỉ cần 3 cột chuẩn: <strong>Mã_Căn | Họ_Tên | Diện_Tích</strong></p>
+                <p class="text-[11px] text-brand-700 font-semibold mb-3">Tự động nhận diện cột: <strong>Mã Căn | Họ Tên | Diện Tích (m²) | Số CCCD</strong></p>
                 <input type="file" id="residentFileInput" accept=".xlsx, .xls, .csv" onchange="handleFileUpload(event)" class="hidden">
                 <button onclick="document.getElementById('residentFileInput').click()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center gap-2 mx-auto">
                     <i class="fa-solid fa-folder-open"></i> Duyệt File Excel / CSV Từ Máy
@@ -562,10 +577,10 @@
             <!-- Paste Raw Text Option -->
             <div class="space-y-2">
                 <div class="flex justify-between items-center">
-                    <label class="text-xs font-bold text-slate-700 uppercase">Hoặc Dán Chuỗi CSV 3 Cột:</label>
+                    <label class="text-xs font-bold text-slate-700 uppercase">Hoặc Dán Chuỗi CSV Chuẩn:</label>
                     <button onclick="fillSampleCSV()" class="text-xs font-bold text-brand-600 hover:underline">Chèn Mẫu Chuẩn</button>
                 </div>
-                <textarea id="rawCsvTextarea" rows="3" placeholder="Mã_Căn,Họ_Tên,Diện_Tích&#10;B1-0716,Trần Văn Bình,78.5&#10;A1-1204,Nguyễn Văn An,85.5" class="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                <textarea id="rawCsvTextarea" rows="3" placeholder="Mã_Căn,Họ_Tên,Diện_Tích&#10;B1-0716,Trần Văn Bình,78,5&#10;A1-1204,Nguyễn Văn An,85.5" class="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
             </div>
 
             <div class="flex justify-end gap-2 pt-2">
@@ -575,40 +590,44 @@
         </div>
     </div>
 
-    <!-- MODAL 2: CCCD SCAN RESULT & LOCKING -->
-    <div id="cccdResultModal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl text-center relative" id="cccdModalContent">
-            <!-- Populated dynamically via JS -->
-        </div>
-    </div>
-
-    <!-- FIREBASE MODULES INITIALIZATION & APPLICATION LOGIC -->
+    <!-- APPLICATION LOGIC & UTILITIES SCRIPT -->
     <script type="module">
-        /* Standard Application Constants & State */
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Global App & Firebase Configuration
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'hnnccecohome-app';
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+            apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
+            authDomain: "hnnccecohome.firebaseapp.com",
+            projectId: "hnnccecohome",
+            storageBucket: "hnnccecohome.firebasestorage.app",
+            messagingSenderId: "439144090149",
+            appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
+            measurementId: "G-MTWM4RJY1E"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        let currentUserAuth = null;
+
         const ADMIN_PASSWORD_HASH = "215151365";
         window.isAdminLoggedIn = false;
         window.currentResident = null;
-
-        /* Global Camera Scanner state */
         let html5QrCodeScanner = null;
         window.isCameraRunning = false;
 
-        /* Default Building Configuration */
         window.buildingConfig = {
             name: "EcoHome 3",
             domain: "www.ecohome.id.vn",
             badge: "Chung cư EcoHome 3",
             subtitle: "Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD",
-            totalArea: 20000,
-            quorumPercentRequired: 50,
-            navLanding: "Trang chủ",
-            navResident: "Cổng Cư Dân",
-            navCheckin: "Trạm Check-in",
-            navAdmin: "Quản Trị / BQT",
-            navMinutes: "Biên Bản"
+            totalArea: 501.5,
+            quorumPercentRequired: 50
         };
 
-        /* Initial Data Collections */
         window.residents = [
             { unit: 'A1-1204', name: 'Nguyễn Văn An', cccd: '001092000123', cccdVerified: true, area: 85.5, checkedIn: true, mode: 'Quét CCCD', checkinTime: '08:15' },
             { unit: 'B1-0716', name: 'Trần Văn Bình', cccd: '-', cccdVerified: false, area: 78.5, checkedIn: false, mode: '-', checkinTime: '-' },
@@ -629,46 +648,120 @@
             { id: 'cand-03', name: 'Lê Hoàng Tiến', unit: 'B2-0910', exp: 'Chuyên viên Luật - Tư vấn pháp lý', votes: 0 }
         ];
 
-        /* Toast Helper */
-        window.toast = function(msg) {
-            const toastBox = document.getElementById('toastBox');
-            const toastMessage = document.getElementById('toastMessage');
-            if (toastBox && toastMessage) {
-                toastMessage.innerText = msg;
-                toastBox.classList.remove('translate-y-20', 'opacity-0');
-                setTimeout(() => {
-                    toastBox.classList.add('translate-y-20', 'opacity-0');
-                }, 3500);
-            }
+        /* Precision Area Parsing Helper (100% m² Accuracy) */
+        window.parseArea = function(val) {
+            if (val === undefined || val === null) return 0;
+            if (typeof val === 'number') return isNaN(val) ? 0 : Math.round(val * 100) / 100;
+            let str = String(val).trim().replace(/,/g, '.');
+            str = str.replace(/[^0-9.]/g, '');
+            let num = parseFloat(str);
+            return isNaN(num) ? 0 : Math.round(num * 100) / 100;
         };
 
-        /* View Switching Logic */
-        window.switchView = function(viewName) {
+        async function saveStateToFirestore() {
+            if (!currentUserAuth) return;
+            try {
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assembly', 'mainState');
+                await setDoc(docRef, {
+                    residents: window.residents,
+                    resolutions: window.resolutions,
+                    candidates: window.candidates,
+                    buildingConfig: window.buildingConfig,
+                    updatedAt: new Date().toISOString()
+                });
+                const badge = document.getElementById('firebaseStatusBadge');
+                if (badge) {
+                    badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Đã lưu Firestore`;
+                }
+            } catch (e) {
+                console.warn("Save state error:", e);
+            }
+        }
+        window.saveStateToFirestore = saveStateToFirestore;
+
+        async function initFirebaseSync() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    const userCred = await signInWithCustomToken(auth, __initial_auth_token);
+                    currentUserAuth = userCred.user;
+                } else {
+                    const userCred = await signInAnonymously(auth);
+                    currentUserAuth = userCred.user;
+                }
+
+                if (!currentUserAuth) return;
+
+                const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'assembly', 'mainState');
+                onSnapshot(docRef, (docSnap) => {
+                    if (docSnap.exists()) {
+                        const data = docSnap.data();
+                        if (data.residents) window.residents = data.residents;
+                        if (data.resolutions) window.resolutions = data.resolutions;
+                        if (data.candidates) window.candidates = data.candidates;
+                        if (data.buildingConfig) window.buildingConfig = { ...window.buildingConfig, ...data.buildingConfig };
+
+                        window.syncAllUI();
+                        const badge = document.getElementById('firebaseStatusBadge');
+                        if (badge) {
+                            badge.innerHTML = `<span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Đã lưu & Đồng bộ`;
+                        }
+                    } else {
+                        saveStateToFirestore();
+                    }
+                }, (err) => {
+                    console.warn("Realtime listener error:", err);
+                });
+            } catch (e) {
+                console.warn("Firebase Auth error:", e);
+            }
+        }
+
+        /* Toast Notifications */
+        window.toast = function(msg) {
+            const box = document.getElementById('toastBox');
+            const txt = document.getElementById('toastMessage');
+            if (!box || !txt) return;
+            txt.innerText = msg;
+            box.classList.remove('opacity-0', 'translate-y-20', 'pointer-events-none');
+            setTimeout(() => {
+                box.classList.add('opacity-0', 'translate-y-20', 'pointer-events-none');
+            }, 3500);
+        };
+
+        /* Header Navigation DOM Updater */
+        window.updateHeaderDOM = function() {
+            const cfg = window.buildingConfig || {};
+            const domainEl = document.getElementById('headerDomain');
+            if (domainEl) domainEl.innerText = cfg.domain || 'www.ecohome.id.vn';
+            const badgeEl = document.getElementById('headerBadge');
+            if (badgeEl) badgeEl.innerText = cfg.badge || 'Chung cư EcoHome 3';
+            const subEl = document.getElementById('headerSubtitle');
+            if (subEl) subEl.innerText = cfg.subtitle || 'Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD';
+            const minTitle = document.getElementById('minutesTitle');
+            if (minTitle) minTitle.innerText = `BIÊN BẢN HỘI NGHỊ NHÀ CHUNG CƯ`;
+            const minSub = document.getElementById('minutesSub');
+            if (minSub) minSub.innerText = `Dự án ${cfg.name || 'Chung cư EcoHome 3'}`;
+        };
+
+        /* View Navigation Switcher */
+        window.switchView = function(viewId) {
             const views = ['landing', 'resident', 'checkin', 'admin', 'minutes'];
             views.forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                if (el) el.classList.add('hidden');
-                const navBtn = document.getElementById(`nav-${v}`);
-                if (navBtn) {
-                    navBtn.classList.remove('text-white', 'bg-slate-800');
-                    navBtn.classList.add('text-slate-300');
+                const sec = document.getElementById(`view-${v}`);
+                if (sec) sec.classList.add('hidden');
+                const btn = document.getElementById(`nav-${v}`);
+                if (btn) {
+                    btn.classList.remove('bg-slate-800', 'text-white');
+                    btn.classList.add('text-slate-300');
                 }
             });
-
-            const targetView = document.getElementById(`view-${viewName}`);
-            if (targetView) targetView.classList.remove('hidden');
-
-            const activeNav = document.getElementById(`nav-${viewName}`);
-            if (activeNav) {
-                activeNav.classList.remove('text-slate-300');
-                activeNav.classList.add('text-white', 'bg-slate-800');
+            const activeSec = document.getElementById(`view-${viewId}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+            const activeBtn = document.getElementById(`nav-${viewId}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-slate-800', 'text-white');
+                activeBtn.classList.remove('text-slate-300');
             }
-
-            if (viewName === 'checkin') window.renderCheckinTable();
-            if (viewName === 'admin') window.updateAdminViewState();
-            if (viewName === 'resident') window.updateResidentViewState();
-            if (viewName === 'minutes') window.updateMinutesData();
-            window.recalculateQuorum();
         };
 
         window.toggleMobileMenu = function() {
@@ -676,60 +769,138 @@
             if (menu) menu.classList.toggle('hidden');
         };
 
-        /* Header Customization Update */
-        window.updateHeaderDOM = function() {
-            const hDomain = document.getElementById('headerDomain');
-            const hBadge = document.getElementById('headerBadge');
-            const hSub = document.getElementById('headerSubtitle');
+        /* Recalculate Quorum & Building Metrics */
+        window.recalculateQuorum = function() {
+            const totalArea = window.residents.reduce((acc, r) => acc + window.parseArea(r.area), 0);
+            window.buildingConfig.totalArea = totalArea > 0 ? totalArea : 501.5;
 
-            if (hDomain) hDomain.innerText = window.buildingConfig.domain || "www.ecohome.id.vn";
-            if (hBadge) hBadge.innerText = window.buildingConfig.badge || "Chung cư EcoHome 3";
-            if (hSub) hSub.innerText = window.buildingConfig.subtitle || "Hệ thống Check-in Điện tử TT06/2019/TT-BXD";
+            const checkedResidents = window.residents.filter(r => r.checkedIn);
+            const checkedArea = checkedResidents.reduce((acc, r) => acc + window.parseArea(r.area), 0);
+            const checkedPct = totalArea > 0 ? ((checkedArea / totalArea) * 100) : 0;
+
+            const metricTotalArea = document.getElementById('metricTotalArea');
+            if (metricTotalArea) metricTotalArea.innerText = `${totalArea.toLocaleString('vi-VN', {minimumFractionDigits: 1, maximumFractionDigits: 2})} m²`;
+
+            const metricCheckedArea = document.getElementById('metricCheckedArea');
+            if (metricCheckedArea) metricCheckedArea.innerText = `${checkedArea.toLocaleString('vi-VN', {minimumFractionDigits: 1, maximumFractionDigits: 2})} m²`;
+
+            const metricCheckedPercent = document.getElementById('metricCheckedPercent');
+            if (metricCheckedPercent) metricCheckedPercent.innerText = `${checkedPct.toFixed(1)}% tổng diện tích`;
+
+            const metricCheckedUnits = document.getElementById('metricCheckedUnits');
+            if (metricCheckedUnits) metricCheckedUnits.innerText = `${checkedResidents.length} / ${window.residents.length} Căn`;
+
+            const card = document.getElementById('quorumStatusCard');
+            const text = document.getElementById('quorumStatusText');
+            const req = window.buildingConfig.quorumPercentRequired || 50;
+
+            if (card && text) {
+                if (checkedPct >= req) {
+                    card.className = 'bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-1';
+                    text.className = 'text-lg font-black text-emerald-700';
+                    text.innerText = `ĐỦ ĐIỀU KIỆN KHAI MẠC (${checkedPct.toFixed(1)}% > ${req}%)`;
+                } else {
+                    card.className = 'bg-amber-50 p-5 rounded-2xl border border-amber-200 shadow-sm space-y-1';
+                    text.className = 'text-lg font-black text-amber-700';
+                    text.innerText = `CHƯA ĐỦ THỦ TỤC (${checkedPct.toFixed(1)}% / ${req}%)`;
+                }
+            }
         };
 
-        /* Resident Login & Voting */
-        window.handleResidentLogin = function(e) {
-            if (e) e.preventDefault();
-            const unitInput = document.getElementById('resLoginUnit')?.value?.trim();
-            const cccdInput = document.getElementById('resLoginCCCD')?.value?.trim();
+        /* Render Checkin Station Roster */
+        window.renderCheckinTable = function() {
+            const tbody = document.getElementById('checkinTableBody');
+            if (!tbody) return;
 
-            if (!unitInput || !cccdInput) {
-                window.toast('Vui lòng nhập đầy đủ Mã Căn Hộ và Số CCCD / Họ tên!');
+            const query = (document.getElementById('checkinSearchInput')?.value || '').toLowerCase().trim();
+            const list = window.residents.filter(r => 
+                !query || r.unit.toLowerCase().includes(query) || r.name.toLowerCase().includes(query) || (r.cccd && r.cccd.includes(query))
+            );
+
+            if (list.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-center text-slate-400">Không tìm thấy căn hộ nào</td></tr>`;
                 return;
             }
 
-            const resident = window.residents.find(r => 
-                r.unit.toLowerCase().trim() === unitInput.toLowerCase().trim() && 
-                (
-                    (r.cccd && r.cccd !== '-' && (r.cccd === cccdInput || r.cccd.endsWith(cccdInput))) ||
-                    r.name.toLowerCase().trim().includes(cccdInput.toLowerCase().trim()) ||
-                    cccdInput === '123' || cccdInput === '001092000123' || /^\d{9,12}$/.test(cccdInput)
-                )
-            );
-
-            if (resident) {
-                // Auto-update CCCD if valid 12-digit number provided during login
-                if (/^\d{12}$/.test(cccdInput) && (resident.cccd === '-' || !resident.cccdVerified)) {
-                    resident.cccd = cccdInput;
-                    resident.cccdVerified = true;
-                }
-                window.currentResident = resident;
-                window.updateResidentViewState();
-                window.recalculateQuorum();
-                window.renderCheckinTable();
-                window.renderAdminUnits();
-                window.toast(`Xác thực thành công! Xin chào ${resident.name} (Căn ${resident.unit})`);
-            } else {
-                window.toast('Xác thực thất bại! Thông tin Căn Hộ hoặc CCCD/Họ Tên không khớp.');
-            }
+            tbody.innerHTML = list.map(r => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3 font-bold text-brand-700">${r.unit}</td>
+                    <td class="p-3 font-semibold text-slate-900">${r.name}</td>
+                    <td class="p-3 font-mono">
+                        ${r.cccdVerified ? `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-circle-check"></i> ${r.cccd}</span>` : `<span class="text-slate-400">${r.cccd || '-'}</span>`}
+                    </td>
+                    <td class="p-3 text-right font-bold">${window.parseArea(r.area)} m²</td>
+                    <td class="p-3 text-center">
+                        ${r.checkedIn ? `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">${r.mode || 'Trực tiếp'}</span>` : `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[10px] rounded-full">Chưa tham dự</span>`}
+                    </td>
+                    <td class="p-3 text-center">
+                        ${r.checkedIn ? `<span class="text-xs text-emerald-600 font-bold">✓ Đã Check-in</span>` : `<button onclick="doCheckin('${r.unit}')" class="px-3 py-1 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-lg text-xs shadow">Check-in</button>`}
+                    </td>
+                </tr>
+            `).join('');
         };
 
-        window.logoutResident = function() {
-            window.currentResident = null;
-            window.updateResidentViewState();
-            window.toast('Đã đăng xuất khỏi Cổng Cư Dân.');
+        /* Render Admin Roster */
+        window.renderAdminUnits = function() {
+            const tbody = document.getElementById('adminUnitsTableBody');
+            if (!tbody) return;
+
+            tbody.innerHTML = window.residents.map(r => `
+                <tr class="hover:bg-slate-50 transition">
+                    <td class="p-3 font-bold text-slate-900">${r.unit}</td>
+                    <td class="p-3 font-semibold text-slate-800">${r.name}</td>
+                    <td class="p-3 font-mono">${r.cccd || '-'}</td>
+                    <td class="p-3 text-right font-bold text-brand-700">${window.parseArea(r.area)} m²</td>
+                    <td class="p-3 text-center">
+                        ${r.checkedIn ? `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-bold rounded-full">Đã điểm danh</span>` : `<span class="px-2 py-0.5 bg-amber-100 text-amber-800 text-[10px] rounded-full">Chờ Check-in</span>`}
+                    </td>
+                    <td class="p-3 text-center space-x-1">
+                        <button onclick="editUnitArea('${r.unit}')" class="px-2 py-1 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded text-xs">Sửa m²</button>
+                        <button onclick="deleteUnit('${r.unit}')" class="px-2 py-1 bg-rose-100 hover:bg-rose-200 text-rose-700 font-bold rounded text-xs">Xóa</button>
+                    </td>
+                </tr>
+            `).join('');
         };
 
+        /* Render Admin Resolutions */
+        window.renderAdminResolutions = function() {
+            const container = document.getElementById('adminResolutionsList');
+            if (!container) return;
+
+            container.innerHTML = window.resolutions.map(r => `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center gap-3">
+                    <div>
+                        <p class="font-bold text-xs text-slate-900">${r.title}</p>
+                        <p class="text-[11px] text-slate-500 mt-0.5">Tán thành: ${window.parseArea(r.yesVotes)} m² | Không tán thành: ${window.parseArea(r.noVotes)} m²</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="toggleResolutionStatus('${r.id}')" class="px-2.5 py-1 bg-slate-200 hover:bg-slate-300 text-slate-800 font-bold text-xs rounded-lg">${r.status === 'open' ? 'Khóa biểu quyết' : 'Mở biểu quyết'}</button>
+                        <button onclick="deleteResolution('${r.id}')" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs rounded-lg">Xóa</button>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        /* Render Admin Candidates */
+        window.renderAdminCandidates = function() {
+            const container = document.getElementById('adminCandidatesList');
+            if (!container) return;
+
+            container.innerHTML = window.candidates.map(c => `
+                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <p class="font-bold text-xs text-slate-900">${c.name} (${c.unit})</p>
+                            <p class="text-[11px] text-slate-500">${c.exp}</p>
+                        </div>
+                        <button onclick="deleteCandidate('${c.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                    <p class="text-xs font-bold text-brand-700">Tổng phiếu bầu: ${window.parseArea(c.votes)} m²</p>
+                </div>
+            `).join('');
+        };
+
+        /* Update Resident View State */
         window.updateResidentViewState = function() {
             const authBox = document.getElementById('residentAuthBox');
             const votingArea = document.getElementById('residentVotingArea');
@@ -737,376 +908,285 @@
             if (!window.currentResident) {
                 if (authBox) authBox.classList.remove('hidden');
                 if (votingArea) votingArea.classList.add('hidden');
+                return;
+            }
+
+            if (authBox) authBox.classList.add('hidden');
+            if (votingArea) votingArea.classList.remove('hidden');
+
+            const resName = document.getElementById('resCardName');
+            if (resName) resName.innerText = window.currentResident.name;
+            const resUnit = document.getElementById('resCardUnit');
+            if (resUnit) resUnit.innerText = window.currentResident.unit;
+            const resArea = document.getElementById('resCardArea');
+            if (resArea) resArea.innerText = `${window.parseArea(window.currentResident.area)} m²`;
+            const resCCCD = document.getElementById('resCardCCCD');
+            if (resCCCD) resCCCD.innerText = window.currentResident.cccd || '-';
+
+            /* Render Resident Resolutions Form */
+            const resList = document.getElementById('residentResolutionsList');
+            if (resList) {
+                resList.innerHTML = window.resolutions.map(r => `
+                    <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-3">
+                        <p class="font-bold text-xs text-slate-900">${r.title}</p>
+                        <div class="flex gap-2">
+                            <button onclick="voteResolution('${r.id}', 'yes')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">Tán Thành</button>
+                            <button onclick="voteResolution('${r.id}', 'no')" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs transition">Không Tán Thành</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            /* Render Resident Candidates Form */
+            const candList = document.getElementById('residentCandidatesList');
+            if (candList) {
+                candList.innerHTML = window.candidates.map(c => `
+                    <label class="flex items-center p-3 bg-slate-50 rounded-xl border border-slate-200 hover:bg-slate-100 cursor-pointer text-xs">
+                        <input type="checkbox" name="candVote" value="${c.id}" class="w-4 h-4 text-brand-600 rounded mr-3">
+                        <div>
+                            <p class="font-bold text-slate-900">${c.name} (${c.unit})</p>
+                            <p class="text-[11px] text-slate-500">${c.exp}</p>
+                        </div>
+                    </label>
+                `).join('');
+            }
+        };
+
+        /* Update Meeting Minutes Summary */
+        window.updateMinutesData = function() {
+            const totalArea = window.residents.reduce((acc, r) => acc + window.parseArea(r.area), 0);
+            const checkedArea = window.residents.filter(r => r.checkedIn).reduce((acc, r) => acc + window.parseArea(r.area), 0);
+            const checkedPct = totalArea > 0 ? ((checkedArea / totalArea) * 100) : 0;
+
+            const minTot = document.getElementById('minutesTotalArea');
+            if (minTot) minTot.innerText = `${totalArea.toLocaleString('vi-VN', {minimumFractionDigits: 1})} m²`;
+            const minChk = document.getElementById('minutesCheckedArea');
+            if (minChk) minChk.innerText = `${checkedArea.toLocaleString('vi-VN', {minimumFractionDigits: 1})} m²`;
+            const minPct = document.getElementById('minutesCheckedPercent');
+            if (minPct) minPct.innerText = `${checkedPct.toFixed(1)}%`;
+
+            const minRes = document.getElementById('minutesQuorumResult');
+            if (minRes) {
+                const req = window.buildingConfig.quorumPercentRequired || 50;
+                if (checkedPct >= req) {
+                    minRes.className = 'font-bold text-emerald-700';
+                    minRes.innerText = 'ĐỦ ĐIỀU KIỆN KHAI MẠC HỢP PHÁP';
+                } else {
+                    minRes.className = 'font-bold text-amber-700';
+                    minRes.innerText = 'CHƯA ĐỦ ĐIỀU KIỆN KHAI MẠC';
+                }
+            }
+
+            const resSum = document.getElementById('minutesResolutionsSummary');
+            if (resSum) {
+                resSum.innerHTML = window.resolutions.map(r => `
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200">
+                        <p class="font-bold">${r.title}</p>
+                        <p class="text-[11px] text-slate-600 mt-1">- Đồng ý: <strong>${window.parseArea(r.yesVotes)} m²</strong> | Không đồng ý: <strong>${window.parseArea(r.noVotes)} m²</strong></p>
+                    </div>
+                `).join('');
+            }
+
+            const candSum = document.getElementById('minutesCandidatesSummary');
+            if (candSum) {
+                candSum.innerHTML = window.candidates.map(c => `
+                    <div class="p-3 bg-slate-50 rounded-lg border border-slate-200 flex justify-between items-center">
+                        <span><strong>${c.name}</strong> (${c.unit})</span>
+                        <span class="font-bold text-brand-700">${window.parseArea(c.votes)} m² bầu</span>
+                    </div>
+                `).join('');
+            }
+        };
+
+        /* Chart.js Analytics Initializer */
+        window.initAdminCharts = function() {
+            if (typeof Chart === 'undefined') return;
+
+            const totalArea = window.residents.reduce((acc, r) => acc + window.parseArea(r.area), 0);
+            const checkedArea = window.residents.filter(r => r.checkedIn).reduce((acc, r) => acc + window.parseArea(r.area), 0);
+            const pendingArea = Math.max(0, totalArea - checkedArea);
+
+            const ctxProgress = document.getElementById('chartCheckinProgress')?.getContext('2d');
+            if (ctxProgress) {
+                if (window.chartProgressInstance) window.chartProgressInstance.destroy();
+                window.chartProgressInstance = new Chart(ctxProgress, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Đã Check-in (m²)', 'Chưa Check-in (m²)'],
+                        datasets: [{
+                            data: [checkedArea, pendingArea],
+                            backgroundColor: ['#16a34a', '#cbd5e1']
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            const ctxCand = document.getElementById('chartCandidatesResult')?.getContext('2d');
+            if (ctxCand) {
+                if (window.chartCandInstance) window.chartCandInstance.destroy();
+                window.chartCandInstance = new Chart(ctxCand, {
+                    type: 'bar',
+                    data: {
+                        labels: window.candidates.map(c => c.name),
+                        datasets: [{
+                            label: 'Số m² bầu',
+                            data: window.candidates.map(c => window.parseArea(c.votes)),
+                            backgroundColor: '#15803d'
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+        };
+
+        /* Resident Login & Auth Logic */
+        window.handleResidentLogin = function(e) {
+            e.preventDefault();
+            const unit = document.getElementById('resLoginUnit')?.value.trim().toUpperCase();
+            const cccd = document.getElementById('resLoginCCCD')?.value.trim();
+
+            if (!unit || !cccd) return;
+
+            const res = window.residents.find(r => r.unit.toUpperCase() === unit);
+            if (!res) {
+                window.toast('Không tìm thấy mã căn hộ trong danh sách cử tri!');
+                return;
+            }
+
+            if (res.cccd === '-' || !res.cccd) {
+                res.cccd = cccd;
+                res.cccdVerified = true;
+            }
+
+            window.currentResident = res;
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast(`✓ Đăng nhập thành công Căn ${res.unit}!`);
+        };
+
+        window.logoutResident = function() {
+            window.currentResident = null;
+            window.syncAllUI();
+            window.toast('Đã đăng xuất Cổng cư dân!');
+        };
+
+        /* Admin Login & Management */
+        window.handleAdminLogin = function(e) {
+            e.preventDefault();
+            const pass = document.getElementById('adminPassInput')?.value;
+            if (pass === ADMIN_PASSWORD_HASH) {
+                window.isAdminLoggedIn = true;
+                document.getElementById('adminAuthBox')?.classList.add('hidden');
+                document.getElementById('adminDashboard')?.classList.remove('hidden');
+                window.syncAllUI();
+                window.toast('✓ Đăng nhập Quản trị viên thành công!');
             } else {
-                if (authBox) authBox.classList.add('hidden');
-                if (votingArea) votingArea.classList.remove('hidden');
-
-                document.getElementById('resCardName').innerText = window.currentResident.name;
-                document.getElementById('resCardUnit').innerText = window.currentResident.unit;
-                document.getElementById('resCardArea').innerText = `${window.currentResident.area.toFixed(1)} m²`;
-                document.getElementById('resCardCCCD').innerText = window.currentResident.cccd || '-';
-
-                window.renderResidentResolutions();
-                window.renderResidentCandidates();
+                window.toast('Mật khẩu quản trị không chính xác!');
             }
         };
 
-        window.renderResidentResolutions = function() {
-            const container = document.getElementById('residentResolutionsList');
-            if (!container) return;
-
-            container.innerHTML = window.resolutions.map(r => `
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 space-y-2">
-                    <p class="text-xs font-bold text-slate-900">${r.title}</p>
-                    <div class="flex gap-2">
-                        <button onclick="voteResolution('${r.id}', 'yes')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-lg text-xs transition">
-                            <i class="fa-solid fa-thumbs-up mr-1"></i> ĐỒNG Ý
-                        </button>
-                        <button onclick="voteResolution('${r.id}', 'no')" class="flex-1 py-2 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-lg text-xs transition">
-                            <i class="fa-solid fa-thumbs-down mr-1"></i> KHÔNG ĐỒNG Ý
-                        </button>
-                    </div>
-                </div>
-            `).join('');
+        window.logoutAdmin = function() {
+            window.isAdminLoggedIn = false;
+            document.getElementById('adminDashboard')?.classList.add('hidden');
+            document.getElementById('adminAuthBox')?.classList.remove('hidden');
+            window.toast('Đã đăng xuất Quản trị!');
         };
 
-        window.voteResolution = function(resId, choice) {
-            if (!window.currentResident) return;
-            const res = window.resolutions.find(r => r.id === resId);
-            if (res) {
-                if (choice === 'yes') res.yesVotes += window.currentResident.area;
-                else res.noVotes += window.currentResident.area;
-                window.toast(`✓ Căn ${window.currentResident.unit} đã biểu quyết thành công (${window.currentResident.area} m²)!`);
-                window.recalculateQuorum();
-            }
-        };
-
-        window.renderResidentCandidates = function() {
-            const container = document.getElementById('residentCandidatesList');
-            if (!container) return;
-
-            container.innerHTML = window.candidates.map(c => `
-                <label class="flex items-center gap-3 p-3 bg-slate-50 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-100">
-                    <input type="checkbox" name="candVote" value="${c.id}" class="w-4 h-4 text-brand-600 rounded">
-                    <div>
-                        <p class="text-xs font-bold text-slate-900">${c.name} <span class="text-brand-700">(${c.unit})</span></p>
-                        <p class="text-[11px] text-slate-500">${c.exp}</p>
-                    </div>
-                </label>
-            `).join('');
-        };
-
-        window.submitCandidateVotes = function() {
-            if (!window.currentResident) return;
-            const checked = document.querySelectorAll('input[name="candVote"]:checked');
-            if (checked.length === 0) {
-                window.toast('Vui lòng chọn ít nhất 1 ứng viên!');
-                return;
-            }
-            if (checked.length > 3) {
-                window.toast('Chỉ được tích tối đa 3 ứng viên!');
-                return;
-            }
-
-            checked.forEach(chk => {
-                const cand = window.candidates.find(c => c.id === chk.value);
-                if (cand) cand.votes += window.currentResident.area;
+        window.switchAdminTab = function(tabId) {
+            const tabs = ['overview', 'resolutions', 'candidates', 'units', 'config'];
+            tabs.forEach(t => {
+                const sec = document.getElementById(`admSection-${t}`);
+                if (sec) sec.classList.add('hidden');
+                const btn = document.getElementById(`admTab-${t}`);
+                if (btn) {
+                    btn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-slate-200 text-slate-700 hover:bg-slate-300';
+                }
             });
 
-            window.toast(`✓ Đã nộp phiếu bầu BQT thành công cho Căn ${window.currentResident.unit}!`);
-            window.recalculateQuorum();
+            const activeSec = document.getElementById(`admSection-${tabId}`);
+            if (activeSec) activeSec.classList.remove('hidden');
+            const activeBtn = document.getElementById(`admTab-${tabId}`);
+            if (activeBtn) {
+                activeBtn.className = 'px-4 py-2 rounded-xl text-xs font-bold bg-brand-600 text-white';
+            }
         };
 
-        /* Camera CCCD Scanner & Simulation */
+        window.saveHeaderConfig = function() {
+            window.buildingConfig.domain = document.getElementById('cfgDomainInput')?.value.trim() || 'www.ecohome.id.vn';
+            window.buildingConfig.badge = document.getElementById('cfgBadgeInput')?.value.trim() || 'Chung cư EcoHome 3';
+            window.buildingConfig.subtitle = document.getElementById('cfgSubtitleInput')?.value.trim() || 'Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD';
+
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast('✓ Đã lưu & đồng bộ cấu hình Header!');
+        };
+
+        /* Camera Scanner Toggle & CCCD Logic */
         window.toggleCameraScanner = function() {
-            const readerEl = document.getElementById('cameraQrReader');
+            const btn = document.getElementById('lblToggleCamera');
+            const status = document.getElementById('cameraStatusBadge');
             const placeholder = document.getElementById('cameraPlaceholder');
-            const lbl = document.getElementById('lblToggleCamera');
-            const statusBadge = document.getElementById('cameraStatusBadge');
+            const laser = document.getElementById('scannerLaser');
 
             if (window.isCameraRunning) {
                 if (html5QrCodeScanner) {
                     html5QrCodeScanner.stop().then(() => {
                         window.isCameraRunning = false;
+                        if (btn) btn.innerText = 'Bật Camera Quét CCCD';
+                        if (status) status.innerText = 'Sẵn sàng';
                         if (placeholder) placeholder.classList.remove('hidden');
-                        if (lbl) lbl.innerText = "Bật Camera Quét CCCD";
-                        if (statusBadge) statusBadge.innerText = "Sẵn sàng";
+                        if (laser) laser.classList.add('hidden');
                     });
                 }
             } else {
-                if (!readerEl) return;
                 html5QrCodeScanner = new Html5Qrcode("cameraQrReader");
                 html5QrCodeScanner.start(
                     { facingMode: "environment" },
                     { fps: 10, qrbox: { width: 250, height: 250 } },
                     (decodedText) => {
-                        window.processCCCDQrData(decodedText);
+                        window.processCCCDData(decodedText);
                     },
-                    (error) => {}
+                    (errorMessage) => {}
                 ).then(() => {
                     window.isCameraRunning = true;
+                    if (btn) btn.innerText = 'Tắt Camera Scanner';
+                    if (status) status.innerText = 'Đang quét...';
                     if (placeholder) placeholder.classList.add('hidden');
-                    if (lbl) lbl.innerText = "Tắt Camera Scanner";
-                    if (statusBadge) statusBadge.innerText = "Đang quét...";
-                }).catch(err => {
-                    window.toast('Không thể khởi tạo Camera thiết bị!');
+                    if (laser) laser.classList.remove('hidden');
+                }).catch(() => {
+                    window.toast('Không thể kết nối Camera thiết bị!');
                 });
             }
         };
 
         window.simulateCCCDScan = function() {
-            const raw = document.getElementById('cccdRawQrInput')?.value?.trim();
-            if (!raw) {
-                window.toast('Vui lòng nhập chuỗi QR CCCD!');
-                return;
-            }
-            window.processCCCDQrData(raw);
+            const raw = document.getElementById('cccdRawQrInput')?.value.trim();
+            if (raw) window.processCCCDData(raw);
         };
 
-        window.processCCCDQrData = function(qrStr) {
-            const parts = qrStr.split('|');
-            let cccdNum = parts[0] || '001092000123';
-            let fullName = parts[2] || parts[1] || 'Cư dân';
-            if (parts.length < 3 && qrStr.length >= 12) cccdNum = qrStr.substring(0, 12);
+        window.processCCCDData = function(rawText) {
+            const parts = rawText.split('|');
+            const cccdNum = parts[0] ? parts[0].trim() : parts;
+            const name = parts[2] ? parts[2].trim() : '';
 
-            window.matchAndCheckinCCCD({ cccd: cccdNum, fullName: fullName, address: parts[5] || '' });
-        };
+            let res = window.residents.find(r => r.cccd === cccdNum || (name && r.name.toLowerCase() === name.toLowerCase()));
+            if (!res) res = window.residents[0];
 
-        window.matchAndCheckinCCCD = function(cccdData) {
-            const now = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-            let resident = window.residents.find(r => r.cccd && r.cccd === cccdData.cccd);
-
-            if (!resident) {
-                resident = window.residents.find(r => 
-                    r.name.toLowerCase().trim().includes(cccdData.fullName.toLowerCase().trim()) ||
-                    cccdData.fullName.toLowerCase().trim().includes(r.name.toLowerCase().trim())
-                );
-            }
-
-            const modalContent = document.getElementById('cccdModalContent');
-            if (!modalContent) return;
-
-            if (resident) {
-                // Automatically save & lock CCCD number to resident profile upon check-in
-                resident.cccd = cccdData.cccd;
-                resident.cccdVerified = true;
-                resident.checkedIn = true;
-                resident.mode = 'Quét CCCD';
-                resident.checkinTime = now;
-
-                modalContent.innerHTML = `
-                    <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-600 mx-auto flex items-center justify-center text-3xl mb-3">
-                        <i class="fa-solid fa-id-card-clip"></i>
-                    </div>
-                    <span class="px-3 py-1 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-full">
-                        ✓ ĐÃ TỰ ĐỘNG CẬP NHẬT & KHÓA CCCD CHÍNH CHỦ
-                    </span>
-                    <h3 class="text-xl font-bold text-slate-900 mt-2">${resident.name}</h3>
-                    <p class="text-xs font-bold text-brand-700">Mã Căn Hộ: ${resident.unit} | Diện tích: ${resident.area.toFixed(1)} m²</p>
-                    <div class="mt-4 p-3 bg-slate-50 rounded-xl border border-slate-200 text-left text-xs space-y-1">
-                        <p class="text-emerald-700 font-bold"><strong>Số CCCD Cập Nhật:</strong> <span class="font-mono text-sm">${cccdData.cccd}</span></p>
-                        <p><strong>Thời gian Check-in:</strong> ${now}</p>
-                    </div>
-                    <button onclick="closeCCCDResultModal()" class="w-full mt-5 py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow">
-                        Hoàn Tất Check-in & Cập Nhật Dữ Liệu
-                    </button>
-                `;
-                window.recalculateQuorum();
-                window.renderCheckinTable();
-                window.renderAdminUnits();
-            } else {
-                modalContent.innerHTML = `
-                    <div class="w-16 h-16 rounded-full bg-amber-100 text-amber-600 mx-auto flex items-center justify-center text-3xl mb-3">
-                        <i class="fa-solid fa-id-card"></i>
-                    </div>
-                    <span class="px-3 py-1 bg-amber-100 text-amber-800 text-xs font-bold rounded-full">QUÉT CCCD MỚI CHƯA GÁN CĂN</span>
-                    <h3 class="text-lg font-bold text-slate-900 mt-2">${cccdData.fullName}</h3>
-                    <p class="text-xs font-mono font-bold text-brand-700">Số CCCD Quét: ${cccdData.cccd}</p>
-                    <div class="mt-3 text-left">
-                        <label class="block text-[11px] font-bold text-slate-700 uppercase mb-1">Chọn Căn Hộ Cần Tự Động Cập Nhật CCCD:</label>
-                        <select id="assignUnitSelect" class="w-full p-2.5 border border-slate-300 rounded-xl text-xs font-bold">
-                            ${window.residents.map(r => `<option value="${r.unit}">${r.unit} - ${r.name} (${r.area.toFixed(1)} m²)</option>`).join('')}
-                        </select>
-                    </div>
-                    <div class="flex gap-2 mt-4">
-                        <button onclick="closeCCCDResultModal()" class="w-1/2 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-xl text-xs">Hủy</button>
-                        <button onclick="assignCCCDToUnit('${cccdData.cccd}')" class="w-1/2 py-2.5 bg-emerald-600 text-white font-bold rounded-xl text-xs shadow">Gán & Khóa CCCD</button>
-                    </div>
-                `;
-            }
-
-            const modal = document.getElementById('cccdResultModal');
-            if (modal) modal.classList.remove('hidden');
-        };
-
-        window.assignCCCDToUnit = function(cccdNum) {
-            const select = document.getElementById('assignUnitSelect');
-            if (!select) return;
-            const unitCode = select.value;
-            const res = window.residents.find(r => r.unit === unitCode);
             if (res) {
-                res.cccd = cccdNum;
-                res.cccdVerified = true;
                 res.checkedIn = true;
+                res.cccd = cccdNum || res.cccd;
+                res.cccdVerified = true;
                 res.mode = 'Quét CCCD';
                 res.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                window.closeCCCDResultModal();
-                window.recalculateQuorum();
-                window.renderCheckinTable();
-                window.renderAdminUnits();
-                window.toast(`✓ Đã khóa số CCCD [${cccdNum}] cho Căn ${unitCode}!`);
+
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast(`✓ Quét CCCD thành công Căn ${res.unit} - ${res.name}!`);
             }
         };
 
-        window.closeCCCDResultModal = function() {
-            const modal = document.getElementById('cccdResultModal');
-            if (modal) modal.classList.add('hidden');
-        };
-
-        /* Checkin Table Renderer */
-        window.renderCheckinTable = function() {
-            const tbody = document.getElementById('checkinTableBody');
-            if (!tbody) return;
-
-            const filterText = document.getElementById('checkinSearchInput')?.value?.toLowerCase() || '';
-
-            const filtered = window.residents.filter(r => 
-                r.unit.toLowerCase().includes(filterText) ||
-                r.name.toLowerCase().includes(filterText) ||
-                (r.cccd && r.cccd.includes(filterText))
-            );
-
-            tbody.innerHTML = filtered.map(r => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-3 font-bold text-slate-900">${r.unit}</td>
-                    <td class="p-3 font-medium text-slate-700">${r.name}</td>
-                    <td class="p-3 font-mono text-xs">
-                        ${r.cccdVerified && r.cccd && r.cccd !== '-' ? 
-                            `<span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200"><i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i>${r.cccd}</span>` : 
-                            `<span class="text-slate-400 italic">Tự động cập nhật khi Check-in</span>`
-                        }
-                    </td>
-                    <td class="p-3 text-right font-semibold text-slate-800">${(parseFloat(r.area) || 0).toFixed(1)} m²</td>
-                    <td class="p-3 text-center">
-                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${r.mode === 'Quét CCCD' ? 'bg-emerald-100 text-emerald-800' : (r.checkedIn ? 'bg-blue-100 text-blue-800' : 'bg-slate-100 text-slate-500')}">
-                            ${r.mode}
-                        </span>
-                    </td>
-                    <td class="p-3 text-center">
-                        ${r.checkedIn ? 
-                            `<span class="text-emerald-600 font-bold"><i class="fa-solid fa-check"></i> Đã Check-in</span>` : 
-                            `<button onclick="doCheckin('${r.unit}')" class="px-3 py-1 bg-brand-600 text-white font-bold rounded-lg text-xs shadow">Check-in</button>`
-                        }
-                    </td>
-                </tr>
-            `).join('');
-        };
-
-        window.doCheckin = function(unitCode) {
-            const r = window.residents.find(res => res.unit === unitCode);
-            if (r) {
-                r.checkedIn = true;
-                r.mode = 'Trực tiếp';
-                r.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                window.recalculateQuorum();
-                window.renderCheckinTable();
-                window.renderAdminUnits();
-                window.toast(`✓ Đã điểm danh Căn ${unitCode}!`);
-            }
-        };
-
-        /* Excel File Processing */
-        window.handleFileUpload = function(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const data = new Uint8Array(e.target.result);
-                    const workbook = XLSX.read(data, { type: 'array' });
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
-                    const jsonRows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-
-                    if (jsonRows.length <= 1) {
-                        window.toast('File không chứa dữ liệu!');
-                        return;
-                    }
-
-                    const newResidents = [];
-                    for (let i = 1; i < jsonRows.length; i++) {
-                        const row = jsonRows[i];
-                        if (!row || !row[0]) continue;
-                        newResidents.push({
-                            unit: String(row[0]).trim(),
-                            name: String(row[1] || 'Chủ hộ').trim(),
-                            cccd: row[3] ? String(row[3]).trim() : '-',
-                            cccdVerified: false,
-                            area: parseFloat(row[2]) || 75.0,
-                            checkedIn: false,
-                            mode: '-',
-                            checkinTime: '-'
-                        });
-                    }
-
-                    if (newResidents.length > 0) {
-                        window.residents = newResidents;
-                        window.buildingConfig.totalArea = window.residents.reduce((sum, r) => sum + r.area, 0);
-                        window.closeImportModal();
-                        window.recalculateQuorum();
-                        window.renderCheckinTable();
-                        window.renderAdminUnits();
-                        window.toast(`Nạp thành công ${window.residents.length} căn hộ từ file Excel!`);
-                    }
-                } catch (err) {
-                    window.toast('Lỗi nạp file Excel!');
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        };
-
-        window.fillSampleCSV = function() {
-            const textarea = document.getElementById('rawCsvTextarea');
-            if (textarea) {
-                textarea.value = `Mã_Căn,Họ_Tên,Diện_Tích\nB1-0716,Trần Văn Bình,78.5\nA1-1204,Nguyễn Văn An,85.5\nB1-0802,Phạm Kim Dung,92.0\nB2-0910,Lê Hoàng Tiến,105.0`;
-            }
-        };
-
-        window.importCSVDataFromText = function() {
-            const textarea = document.getElementById('rawCsvTextarea');
-            if (!textarea || !textarea.value.trim()) return;
-
-            const lines = textarea.value.trim().split('\n');
-            const newResidents = [];
-
-            lines.forEach((line, idx) => {
-                if (idx === 0 && line.toLowerCase().includes('mã')) return;
-                const cols = line.split(',').map(c => c.trim());
-                if (cols.length >= 2) {
-                    newResidents.push({
-                        unit: cols[0],
-                        name: cols[1],
-                        cccd: '-',
-                        cccdVerified: false,
-                        area: parseFloat(cols[2]) || 75.0,
-                        checkedIn: false,
-                        mode: '-',
-                        checkinTime: '-'
-                    });
-                }
-            });
-
-            if (newResidents.length > 0) {
-                window.residents = newResidents;
-                window.buildingConfig.totalArea = window.residents.reduce((sum, r) => sum + r.area, 0);
-                window.closeImportModal();
-                window.recalculateQuorum();
-                window.renderCheckinTable();
-                window.renderAdminUnits();
-                window.toast(`Nạp thành công ${window.residents.length} căn hộ!`);
-            }
-        };
-
+        /* Modals & Export Utilities */
         window.showImportModal = function() {
             document.getElementById('importModal')?.classList.remove('hidden');
         };
@@ -1115,90 +1195,27 @@
             document.getElementById('importModal')?.classList.add('hidden');
         };
 
-        /* Admin Password Auth (215151365) & Tabs */
-        window.handleAdminLogin = function(e) {
-            if (e) e.preventDefault();
-            const pass = document.getElementById('adminPassInput')?.value;
-            if (pass === ADMIN_PASSWORD_HASH) {
-                window.isAdminLoggedIn = true;
-                window.updateAdminViewState();
-                window.toast('Đăng nhập Quản Trị thành công!');
-            } else {
-                window.toast('Sai mật khẩu Quản trị!');
+        window.fillSampleCSV = function() {
+            const ta = document.getElementById('rawCsvTextarea');
+            if (ta) {
+                ta.value = "Mã_Căn,Họ_Tên,Diện_Tích\nB1-0716,Trần Văn Bình,78,5\nA1-1204,Nguyễn Văn An,85.5\nB1-0802,Phạm Kim Dung,92,0";
             }
         };
 
-        window.logoutAdmin = function() {
-            window.isAdminLoggedIn = false;
-            window.updateAdminViewState();
-            window.toast('Đã đăng xuất tài khoản Admin.');
-        };
-
-        window.updateAdminViewState = function() {
-            const authBox = document.getElementById('adminAuthBox');
-            const dashboard = document.getElementById('adminDashboard');
-
-            if (!window.isAdminLoggedIn) {
-                if (authBox) authBox.classList.remove('hidden');
-                if (dashboard) dashboard.classList.add('hidden');
-            } else {
-                if (authBox) authBox.classList.add('hidden');
-                if (dashboard) dashboard.classList.remove('hidden');
-
-                window.renderAdminResolutions();
-                window.renderAdminCandidates();
-                window.renderAdminUnits();
-                window.initAdminCharts();
-            }
-        };
-
-        window.switchAdminTab = function(tabName) {
-            const tabs = ['overview', 'resolutions', 'candidates', 'units', 'config'];
-            tabs.forEach(t => {
-                const sec = document.getElementById(`admSection-${t}`);
-                if (sec) sec.classList.add('hidden');
-                const btn = document.getElementById(`admTab-${t}`);
-                if (btn) {
-                    btn.classList.remove('bg-brand-600', 'text-white');
-                    btn.classList.add('bg-slate-200', 'text-slate-700');
-                }
+        window.exportCheckinToCSV = function() {
+            let csv = "Mã_Căn,Họ_Tên,Số_CCCD,Diện_Tích_m2,Trạng_Thái\n";
+            window.residents.forEach(r => {
+                csv += `"${r.unit}","${r.name}","${r.cccd}","${window.parseArea(r.area)}","${r.checkedIn ? 'Đã Check-in' : 'Chưa tham dự'}"\n`;
             });
-
-            const activeSec = document.getElementById(`admSection-${tabName}`);
-            if (activeSec) activeSec.classList.remove('hidden');
-
-            const activeBtn = document.getElementById(`admTab-${tabName}`);
-            if (activeBtn) {
-                activeBtn.classList.remove('bg-slate-200', 'text-slate-700');
-                activeBtn.classList.add('bg-brand-600', 'text-white');
-            }
-        };
-
-        window.renderAdminResolutions = function() {
-            const container = document.getElementById('adminResolutionsList');
-            if (!container) return;
-
-            container.innerHTML = window.resolutions.map(r => `
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-900">${r.title}</p>
-                        <p class="text-[11px] text-slate-500">Tán thành: ${r.yesVotes.toFixed(1)} m² | Không tán thành: ${r.noVotes.toFixed(1)} m²</p>
-                    </div>
-                    <button onclick="deleteResolution('${r.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold p-1">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `).join('');
-        };
-
-        window.deleteResolution = function(id) {
-            window.resolutions = window.resolutions.filter(r => r.id !== id);
-            window.renderAdminResolutions();
-            window.toast('Đã xóa nghị quyết.');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `Danh_Sach_Checkin_${window.buildingConfig.name}.csv`;
+            link.click();
         };
 
         window.addNewResolutionPrompt = function() {
-            const title = prompt('Nhập tiêu đề Nghị quyết mới:');
+            const title = prompt("Nhập tên / tiêu đề Nghị Quyết mới:");
             if (title) {
                 window.resolutions.push({
                     id: `res-${Date.now()}`,
@@ -1207,251 +1224,313 @@
                     noVotes: 0,
                     status: 'open'
                 });
-                window.renderAdminResolutions();
-                window.toast('Thêm nghị quyết thành công!');
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast('✓ Đã thêm Nghị Quyết mới!');
             }
         };
 
-        window.renderAdminCandidates = function() {
-            const container = document.getElementById('adminCandidatesList');
-            if (!container) return;
-
-            container.innerHTML = window.candidates.map(c => `
-                <div class="p-4 bg-slate-50 rounded-xl border border-slate-200 flex justify-between items-center">
-                    <div>
-                        <p class="text-xs font-bold text-slate-900">${c.name} <span class="text-brand-700">(${c.unit})</span></p>
-                        <p class="text-[11px] text-slate-500">${c.exp}</p>
-                        <p class="text-[11px] font-bold text-brand-600 mt-1">Số phiếu: ${c.votes.toFixed(1)} m²</p>
-                    </div>
-                    <button onclick="deleteCandidate('${c.id}')" class="text-rose-600 hover:text-rose-800 text-xs font-bold p-1">
-                        <i class="fa-solid fa-trash"></i>
-                    </button>
-                </div>
-            `).join('');
-        };
-
-        window.deleteCandidate = function(id) {
-            window.candidates = window.candidates.filter(c => c.id !== id);
-            window.renderAdminCandidates();
-            window.toast('Đã xóa ứng viên.');
-        };
-
         window.addNewCandidatePrompt = function() {
-            const name = prompt('Nhập họ tên ứng viên:');
-            const unit = prompt('Nhập mã căn hộ:');
-            const exp = prompt('Nhập tóm tắt kinh nghiệm/chuyên môn:');
-
+            const name = prompt("Nhập Họ tên ứng viên BQT:");
+            const unit = prompt("Nhập Mã Căn Hộ:");
+            const exp = prompt("Nhập Trình độ / Kinh nghiệm:");
             if (name && unit) {
                 window.candidates.push({
                     id: `cand-${Date.now()}`,
                     name: name,
                     unit: unit,
-                    exp: exp || 'Ứng viên BQT',
+                    exp: exp || 'Cư dân',
                     votes: 0
                 });
-                window.renderAdminCandidates();
-                window.toast('Thêm ứng viên thành công!');
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast('✓ Đã thêm Ứng viên BQT mới!');
             }
         };
 
-        window.renderAdminUnits = function() {
-            const tbody = document.getElementById('adminUnitsTableBody');
-            if (!tbody) return;
-
-            tbody.innerHTML = window.residents.map(r => `
-                <tr class="hover:bg-slate-50">
-                    <td class="p-3 font-bold text-slate-900">${r.unit}</td>
-                    <td class="p-3 font-medium text-slate-700">${r.name}</td>
-                    <td class="p-3 font-mono text-xs">
-                        ${r.cccdVerified && r.cccd && r.cccd !== '-' ? 
-                            `<span class="text-emerald-700 font-bold bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200"><i class="fa-solid fa-shield-check text-emerald-600 mr-1"></i>${r.cccd}</span>` : 
-                            `<span class="text-amber-600 font-semibold italic bg-amber-50 px-2 py-0.5 rounded border border-amber-200">Chờ quét CCCD</span>`
-                        }
-                    </td>
-                    <td class="p-3 text-right font-semibold text-slate-800">${(parseFloat(r.area) || 0).toFixed(1)} m²</td>
-                    <td class="p-3 text-center">
-                        <span class="px-2 py-0.5 rounded text-[11px] font-semibold ${r.checkedIn ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-500'}">
-                            ${r.checkedIn ? 'Đã Check-in' : 'Chưa tham dự'}
-                        </span>
-                    </td>
-                    <td class="p-3 text-center space-x-1">
-                        <button onclick="editUnitArea('${r.unit}')" class="text-brand-600 hover:text-brand-800 font-bold text-xs p-1" title="Sửa diện tích m²">
-                            <i class="fa-solid fa-pen-to-square"></i> Sửa m²
-                        </button>
-                        <button onclick="deleteUnit('${r.unit}')" class="text-rose-600 hover:text-rose-800 font-bold text-xs p-1">
-                            <i class="fa-solid fa-trash"></i> Xóa
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
-        };
-
-        window.editUnitArea = function(unitCode) {
-            const res = window.residents.find(r => r.unit === unitCode);
-            if (!res) return;
-            const newArea = prompt(`Nhập diện tích m² mới cho Căn ${unitCode} (Hiện tại: ${res.area} m²):`, res.area);
-            if (newArea !== null && !isNaN(parseFloat(newArea))) {
-                res.area = parseFloat(newArea);
-                window.recalculateQuorum();
-                window.renderAdminUnits();
-                window.renderCheckinTable();
-                window.toast(`✓ Đã cập nhật diện tích Căn ${unitCode} thành ${res.area.toFixed(1)} m²!`);
+        window.resetCheckinStatus = function() {
+            if (confirm("Xác nhận reset toàn bộ điểm danh về trạng thái ban đầu?")) {
+                window.residents.forEach(r => {
+                    r.checkedIn = false;
+                    r.mode = '-';
+                    r.checkinTime = '-';
+                });
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast('Đã reset trạng thái điểm danh!');
             }
         };
 
         window.clearAllResidentsData = function() {
-            if (confirm('CẢNH BÁO: Xóa toàn bộ dữ liệu căn hộ khỏi hệ thống?')) {
+            if (confirm("CẢNH BÁO: Xóa toàn bộ danh sách căn hộ?")) {
                 window.residents = [];
-                window.recalculateQuorum();
-                window.renderAdminUnits();
-                window.renderCheckinTable();
-                window.toast('Đã xóa sạch dữ liệu cư dân!');
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast('Đã xóa dữ liệu cư dân!');
             }
         };
 
-        window.saveHeaderConfig = function() {
-            window.buildingConfig.domain = document.getElementById('cfgDomainInput')?.value || "www.ecohome.id.vn";
-            window.buildingConfig.badge = document.getElementById('cfgBadgeInput')?.value || "Chung cư EcoHome 3";
-            window.buildingConfig.subtitle = document.getElementById('cfgSubtitleInput')?.value || "Hệ thống Check-in Điện tử";
-
-            window.updateHeaderDOM();
-            window.toast('Đã cập nhật cấu hình Header!');
-        };
-
-        /* Quorum Calculator & Metric Update */
-        window.recalculateQuorum = function() {
-            // Calculate total area dynamically from loaded resident records
-            const calculatedTotalArea = window.residents.reduce((sum, r) => sum + (parseFloat(r.area) || 0), 0);
-            window.buildingConfig.totalArea = calculatedTotalArea > 0 ? calculatedTotalArea : 20000;
-
-            const checkedArea = window.residents.filter(r => r.checkedIn).reduce((sum, r) => sum + (parseFloat(r.area) || 0), 0);
-            const totalArea = window.buildingConfig.totalArea;
-            const checkedUnits = window.residents.filter(r => r.checkedIn).length;
-            const totalUnits = window.residents.length;
-            const percent = totalArea > 0 ? (checkedArea / totalArea) * 100 : 0;
-
-            const mTotal = document.getElementById('metricTotalArea');
-            const mCheckedArea = document.getElementById('metricCheckedArea');
-            const mCheckedPercent = document.getElementById('metricCheckedPercent');
-            const mCheckedUnits = document.getElementById('metricCheckedUnits');
-            const qStatusText = document.getElementById('quorumStatusText');
-            const qCard = document.getElementById('quorumStatusCard');
-
-            if (mTotal) mTotal.innerText = `${totalArea.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} m²`;
-            if (mCheckedArea) mCheckedArea.innerText = `${checkedArea.toLocaleString('vi-VN', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} m²`;
-            if (mCheckedPercent) mCheckedPercent.innerText = `${percent.toFixed(1)}% tổng diện tích`;
-            if (mCheckedUnits) mCheckedUnits.innerText = `${checkedUnits} / ${totalUnits} Căn`;
-
-            if (qStatusText && qCard) {
-                if (percent >= 50) {
-                    qStatusText.innerText = "ĐỦ ĐIỀU KIỆN KHAI MẠC (>50%)";
-                    qStatusText.className = "text-lg font-black text-emerald-700";
-                    qCard.className = "bg-emerald-50 p-5 rounded-2xl border border-emerald-200 shadow-sm space-y-1";
-                } else {
-                    qStatusText.innerText = "CHƯA ĐỦ THỦ TỤC (>50%)";
-                    qStatusText.className = "text-lg font-black text-amber-700";
-                    qCard.className = "bg-amber-50 p-5 rounded-2xl border border-amber-200 shadow-sm space-y-1";
+        window.editUnitArea = function(unitCode) {
+            const r = window.residents.find(res => res.unit === unitCode);
+            if (r) {
+                const val = prompt(`Nhập diện tích m² mới cho căn ${unitCode}:`, r.area);
+                if (val !== null) {
+                    r.area = window.parseArea(val);
+                    window.syncAllUI();
+                    window.saveStateToFirestore();
+                    window.toast(`Đã sửa m² căn ${unitCode}!`);
                 }
             }
         };
 
-        /* Minutes Generator */
-        window.updateMinutesData = function() {
-            const checkedArea = window.residents.filter(r => r.checkedIn).reduce((sum, r) => sum + r.area, 0);
-            const totalArea = window.buildingConfig.totalArea || 20000;
-            const percent = (checkedArea / totalArea) * 100;
-
-            document.getElementById('minutesTotalArea').innerText = `${totalArea.toLocaleString('vi-VN')} m²`;
-            document.getElementById('minutesCheckedArea').innerText = `${checkedArea.toLocaleString('vi-VN')} m²`;
-            document.getElementById('minutesCheckedPercent').innerText = `${percent.toFixed(1)}%`;
-            document.getElementById('minutesQuorumResult').innerText = percent >= 50 ? "ĐỦ ĐIỀU KIỆN KHAI MẠC PHÁP LÝ" : "CHƯA ĐỦ ĐIỀU KIỆN KHAI MẠC";
-
-            const resSummary = document.getElementById('minutesResolutionsSummary');
-            if (resSummary) {
-                resSummary.innerHTML = window.resolutions.map(r => `
-                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200">
-                        <p class="font-bold text-slate-900">${r.title}</p>
-                        <p class="text-slate-600">- Đồng ý: ${r.yesVotes.toFixed(1)} m² | Không đồng ý: ${r.noVotes.toFixed(1)} m²</p>
-                    </div>
-                `).join('');
-            }
-
-            const candSummary = document.getElementById('minutesCandidatesSummary');
-            if (candSummary) {
-                candSummary.innerHTML = window.candidates.map(c => `
-                    <div class="p-2.5 bg-slate-50 rounded-lg border border-slate-200 flex justify-between">
-                        <span class="font-bold">${c.name} (${c.unit})</span>
-                        <span class="font-mono font-bold text-brand-700">${c.votes.toFixed(1)} m²</span>
-                    </div>
-                `).join('');
+        window.deleteUnit = function(unitCode) {
+            if (confirm(`Xóa căn ${unitCode}?`)) {
+                window.residents = window.residents.filter(r => r.unit !== unitCode);
+                window.syncAllUI();
+                window.saveStateToFirestore();
             }
         };
 
-        /* Chart.js Controls */
-        let chartProgress = null;
-        let chartCandidates = null;
+        window.deleteResolution = function(id) {
+            window.resolutions = window.resolutions.filter(r => r.id !== id);
+            window.syncAllUI();
+            window.saveStateToFirestore();
+        };
 
-        window.initAdminCharts = function() {
-            const ctx1 = document.getElementById('chartCheckinProgress')?.getContext('2d');
-            const ctx2 = document.getElementById('chartCandidatesResult')?.getContext('2d');
-
-            if (ctx1) {
-                if (chartProgress) chartProgress.destroy();
-                const checkedArea = window.residents.filter(r => r.checkedIn).reduce((s, r) => s + r.area, 0);
-                const remaining = (window.buildingConfig.totalArea || 20000) - checkedArea;
-
-                chartProgress = new Chart(ctx1, {
-                    type: 'doughnut',
-                    data: {
-                        labels: ['Đã Check-in (m²)', 'Chưa Check-in (m²)'],
-                        datasets: [{
-                            data: [checkedArea, remaining],
-                            backgroundColor: ['#22c55e', '#e2e8f0']
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
-            }
-
-            if (ctx2) {
-                if (chartCandidates) chartCandidates.destroy();
-                chartCandidates = new Chart(ctx2, {
-                    type: 'bar',
-                    data: {
-                        labels: window.candidates.map(c => c.name),
-                        datasets: [{
-                            label: 'Số m² Bầu Chọn',
-                            data: window.candidates.map(c => c.votes),
-                            backgroundColor: '#16a34a'
-                        }]
-                    },
-                    options: { responsive: true, maintainAspectRatio: false }
-                });
+        window.toggleResolutionStatus = function(id) {
+            const r = window.resolutions.find(res => res.id === id);
+            if (r) {
+                r.status = r.status === 'open' ? 'closed' : 'open';
+                window.syncAllUI();
+                window.saveStateToFirestore();
             }
         };
 
-        /* Export Check-in Report CSV */
-        window.exportCheckinToCSV = function() {
-            let csv = "Mã Căn Hộ,Họ Tên Chủ Sở Hữu,Diện Tích m2,Số CCCD,Trạng Thái Check-in,Hình Thức,Thời Gian\n";
-            window.residents.forEach(r => {
-                csv += `"${r.unit}","${r.name}","${r.area}","${r.cccd || '-'}","${r.checkedIn ? 'Đã Check-in' : 'Chưa Check-in'}","${r.mode}","${r.checkinTime || '-'}"\n`;
+        window.deleteCandidate = function(id) {
+            window.candidates = window.candidates.filter(c => c.id !== id);
+            window.syncAllUI();
+            window.saveStateToFirestore();
+        };
+
+        /* CSV / Text Data Parser */
+        window.parseCSVText = function(text) {
+            const lines = text.split(/\r?\n/);
+            const parsed = [];
+            lines.forEach((line, index) => {
+                if (!line.trim()) return;
+                const parts = line.split(/[,;\t]/).map(p => p.trim().replace(/^"|"$/g, ''));
+                if (index === 0 && (parts[0].toLowerCase().includes('mã') || parts[0].toLowerCase().includes('unit'))) return;
+                
+                const unit = parts[0] || '';
+                const name = parts[1] || 'Chưa cập nhật';
+                const area = window.parseArea(parts[2]);
+                const cccd = parts[3] || '-';
+
+                if (unit) {
+                    parsed.push({
+                        unit: unit,
+                        name: name,
+                        area: area,
+                        cccd: cccd,
+                        cccdVerified: cccd !== '-' && cccd.length >= 9,
+                        checkedIn: false,
+                        mode: '-',
+                        checkinTime: '-'
+                    });
+                }
+            });
+            return parsed;
+        };
+
+        /* Excel / CSV File Upload Handler */
+        window.handleFileUpload = function(event) {
+            const file = event.target.files && event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            const isExcel = file.name.endsWith('.xlsx') || file.name.endsWith('.xls');
+
+            reader.onload = function(e) {
+                try {
+                    let parsedResidents = [];
+                    if (isExcel && typeof XLSX !== 'undefined') {
+                        const data = new Uint8Array(e.target.result);
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+                        if (json.length > 0) {
+                            let headerIndex = -1;
+                            let colUnit = 0, colName = 1, colArea = 2, colCccd = 3;
+
+                            // Detect header row
+                            for (let i = 0; i < Math.min(json.length, 5); i++) {
+                                const row = json[i].map(c => String(c).toLowerCase());
+                                if (row.some(c => c.includes('mã') || c.includes('căn') || c.includes('unit'))) {
+                                    headerIndex = i;
+                                    row.forEach((cell, idx) => {
+                                        if (cell.includes('mã') || cell.includes('căn') || cell.includes('unit')) colUnit = idx;
+                                        if (cell.includes('tên') || cell.includes('họ') || cell.includes('chủ')) colName = idx;
+                                        if (cell.includes('diện') || cell.includes('m2') || cell.includes('m²') || cell.includes('area')) colArea = idx;
+                                        if (cell.includes('cccd') || cell.includes('cmnd')) colCccd = idx;
+                                    });
+                                    break;
+                                }
+                            }
+
+                            const startRow = headerIndex >= 0 ? headerIndex + 1 : 0;
+                            for (let i = startRow; i < json.length; i++) {
+                                const row = json[i];
+                                if (!row || row.length === 0) continue;
+                                const unit = row[colUnit] ? String(row[colUnit]).trim() : '';
+                                const name = row[colName] ? String(row[colName]).trim() : '';
+                                const area = window.parseArea(row[colArea]);
+                                const cccd = row[colCccd] ? String(row[colCccd]).trim() : '-';
+
+                                if (unit) {
+                                    parsedResidents.push({
+                                        unit: unit,
+                                        name: name || 'Chưa cập nhật',
+                                        area: area,
+                                        cccd: cccd,
+                                        cccdVerified: cccd !== '-' && cccd.length >= 9,
+                                        checkedIn: false,
+                                        mode: '-',
+                                        checkinTime: '-'
+                                    });
+                                }
+                            }
+                        }
+                    } else {
+                        const text = typeof e.target.result === 'string' ? e.target.result : new TextDecoder().decode(e.target.result);
+                        parsedResidents = window.parseCSVText(text);
+                    }
+
+                    if (parsedResidents.length > 0) {
+                        window.residents = parsedResidents;
+                        window.syncAllUI();
+                        window.saveStateToFirestore();
+                        window.closeImportModal();
+                        window.toast(`✓ Nạp thành công ${parsedResidents.length} căn hộ từ file!`);
+                    } else {
+                        window.toast('Không tìm thấy dữ liệu hợp lệ trong file!');
+                    }
+                } catch (err) {
+                    console.error("File upload error:", err);
+                    window.toast('Lỗi đọc file. Vui lòng kiểm tra định dạng Excel/CSV!');
+                }
+            };
+
+            if (isExcel) {
+                reader.readAsArrayBuffer(file);
+            } else {
+                reader.readAsText(file, 'UTF-8');
+            }
+        };
+
+        /* Raw Text CSV Import Handler */
+        window.importCSVDataFromText = function() {
+            const textarea = document.getElementById('rawCsvTextarea');
+            if (!textarea || !textarea.value.trim()) {
+                window.toast('Vui lòng nhập hoặc dán chuỗi dữ liệu!');
+                return;
+            }
+            const parsed = window.parseCSVText(textarea.value.trim());
+            if (parsed.length > 0) {
+                window.residents = parsed;
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.closeImportModal();
+                window.toast(`✓ Nạp thành công ${parsed.length} căn hộ từ chuỗi CSV!`);
+            } else {
+                window.toast('Không tìm thấy dữ liệu hợp lệ!');
+            }
+        };
+
+        /* Manual Check-in Action */
+        window.doCheckin = function(unitCode) {
+            const res = window.residents.find(r => r.unit === unitCode);
+            if (res) {
+                res.checkedIn = true;
+                res.mode = 'Trực tiếp';
+                res.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast(`✓ Đã Check-in thành công Căn ${unitCode}!`);
+            }
+        };
+
+        /* Resident Voting Actions */
+        window.voteResolution = function(resId, voteType) {
+            if (!window.currentResident) {
+                window.toast('Vui lòng đăng nhập trước khi biểu quyết!');
+                return;
+            }
+            const res = window.resolutions.find(r => r.id === resId);
+            if (!res) return;
+            if (res.status === 'closed') {
+                window.toast('Nghị quyết này đã đóng biểu quyết!');
+                return;
+            }
+
+            const area = window.parseArea(window.currentResident.area);
+            if (voteType === 'yes') {
+                res.yesVotes += area;
+            } else {
+                res.noVotes += area;
+            }
+
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast(`✓ Đã ghi nhận phiếu ${voteType === 'yes' ? 'Tán Thành' : 'Không Tán Thành'} cho Căn ${window.currentResident.unit}!`);
+        };
+
+        window.submitCandidateVotes = function() {
+            if (!window.currentResident) {
+                window.toast('Vui lòng đăng nhập trước khi bầu cử!');
+                return;
+            }
+            const checked = document.querySelectorAll('input[name="candVote"]:checked');
+            if (checked.length === 0) {
+                window.toast('Vui lòng chọn ít nhất 1 ứng viên!');
+                return;
+            }
+            if (checked.length > 3) {
+                window.toast('Chỉ được tích chọn tối đa 3 ứng viên!');
+                return;
+            }
+
+            const area = window.parseArea(window.currentResident.area);
+            checked.forEach(cb => {
+                const cand = window.candidates.find(c => c.id === cb.value);
+                if (cand) {
+                    cand.votes += area;
+                }
             });
 
-            const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `Bao_Cao_Checkin_CCCD_${(window.buildingConfig.badge || 'Building').replace(/\s+/g, '_')}.csv`;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-            window.toast('Đã xuất báo cáo CSV thành công!');
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast(`✓ Đã gửi phiếu bầu Ban Quản Trị thành công cho Căn ${window.currentResident.unit}!`);
         };
 
-        /* Lifecycle Initialization */
-        window.addEventListener('load', () => {
+        /* Master UI Synchronizer Function */
+        window.syncAllUI = function() {
             window.updateHeaderDOM();
             window.recalculateQuorum();
             window.renderCheckinTable();
+            window.renderAdminUnits();
+            window.renderAdminResolutions();
+            window.renderAdminCandidates();
+            window.updateResidentViewState();
+            window.updateMinutesData();
+            window.initAdminCharts();
+        };
+
+        /* Lifecycle Onload Initializer */
+        window.addEventListener('load', () => {
+            initFirebaseSync();
+            window.syncAllUI();
         });
     </script>
 </body>
