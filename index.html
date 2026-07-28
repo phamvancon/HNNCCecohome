@@ -74,9 +74,6 @@
                     <button id="nav-admin" onclick="switchView('admin')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:text-white hover:bg-slate-800/50">
                         <i class="fa-solid fa-sliders mr-1.5 text-purple-400"></i>Quản Lý & File
                     </button>
-                    <button id="nav-minutes" onclick="switchView('minutes')" class="px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:text-white hover:bg-slate-800/50">
-                        <i class="fa-solid fa-file-contract mr-1.5 text-amber-400"></i>Biên Bản HỘI NGHỊ
-                    </button>
                 </nav>
 
                 <div class="flex items-center gap-2">
@@ -94,7 +91,6 @@
             <button onclick="switchView('checkin'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-qrcode mr-2 text-teal-400"></i>Quét AI / NFC CCCD</button>
             <button onclick="switchView('resident'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-check-to-slot mr-2 text-blue-400"></i>Biểu Quyết Resident</button>
             <button onclick="switchView('admin'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-sliders mr-2 text-purple-400"></i>Quản Lý & Cấu Hình</button>
-            <button onclick="switchView('minutes'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-sm font-medium text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-file-contract mr-2 text-amber-400"></i>Biên Bản Hội Nghị</button>
         </div>
     </header>
 
@@ -288,7 +284,7 @@
                 <div class="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-400 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-lock"></i></div>
                 <h3 class="text-lg font-bold text-white">Xác Thực Quyền Ban Quản Trị</h3>
                 <p class="text-xs text-slate-400">Nhập mật khẩu quản trị viên để mở khóa bảng điều khiển</p>
-                <input id="adminPasswordInput" type="password" placeholder="Nhập mật khẩu (Mặc định: admin123)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
+                <input id="adminPasswordInput" type="password" placeholder="Nhập mật khẩu (Mặc định: 215151365)..." class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-purple-500">
                 <button onclick="unlockAdminPanel()" class="w-full py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-sm transition">Xác Nhận Quản Trị</button>
             </div>
 
@@ -337,66 +333,6 @@
                             <!-- Populated dynamically -->
                         </tbody>
                     </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 5: PRINTABLE MEETING MINUTES -->
-        <section id="view-minutes" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 no-print flex justify-between items-center">
-                <div>
-                    <h3 class="text-lg font-bold text-white">Biên Bản Hội Nghị Nhà Chung Cư</h3>
-                    <p class="text-xs text-slate-400">Biên bản tự động tổng hợp kết quả điểm danh và biểu quyết theo quy định</p>
-                </div>
-                <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition flex items-center gap-2">
-                    <i class="fa-solid fa-print"></i> In / Xuất File PDF
-                </button>
-            </div>
-
-            <div class="bg-white text-slate-900 p-8 sm:p-12 rounded-2xl shadow-xl space-y-6 max-w-4xl mx-auto border border-slate-200">
-                <!-- Minutes Header -->
-                <div class="text-center space-y-1">
-                    <p class="font-bold uppercase text-xs tracking-wider">CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</p>
-                    <p class="font-bold text-xs underline">Độc lập - Tự do - Hạnh phúc</p>
-                    <h2 class="text-xl sm:text-2xl font-extrabold uppercase pt-4 text-slate-900">BIÊN BẢN HỘI NGHỊ NHÀ CHUNG CƯ</h2>
-                    <p id="minutesBuildingTitle" class="text-sm font-semibold text-slate-700">Chung cư EcoHome 3</p>
-                </div>
-
-                <div class="text-xs text-slate-600 space-y-2 pt-4">
-                    <p>Thời gian lập biên bản: <span id="minutesTimestamp" class="font-semibold"></span></p>
-                    <p>Địa điểm: Hội trường Chung cư EcoHome 3</p>
-                </div>
-
-                <!-- Section 1: Attendance Quorum -->
-                <div class="space-y-2 pt-2">
-                    <h4 class="font-bold text-sm text-slate-900 border-b pb-1">I. THÀNH PHẦN THAM DỰ VÀ TỶ LỆ ĐỦ ĐIỀU KIỆN (QUORUM)</h4>
-                    <ul class="text-xs space-y-1 list-disc pl-5 text-slate-700">
-                        <li>Tổng số căn hộ toàn chung cư: <strong id="minutesTotalUnits">0</strong> căn hộ.</li>
-                        <li>Tổng diện tích căn hộ: <strong id="minutesTotalArea">0</strong> m².</li>
-                        <li>Số căn hộ tham dự check-in: <strong id="minutesCheckedUnits">0</strong> căn hộ.</li>
-                        <li>Tổng diện tích căn hộ tham dự: <strong id="minutesCheckedArea">0</strong> m² (Chiếm <strong id="minutesQuorumPercent">0%</strong> diện tích toàn chung cư).</li>
-                        <li>Căn cứ Thông tư 06/2019/TT-BXD: <strong id="minutesQuorumStatus" class="text-emerald-700">ĐỦ ĐIỀU KIỆN TIẾN HÀNH HỘI NGHỊ</strong>.</li>
-                    </ul>
-                </div>
-
-                <!-- Section 2: Voting Results -->
-                <div class="space-y-2 pt-2">
-                    <h4 class="font-bold text-sm text-slate-900 border-b pb-1">II. KẾT QUẢ BIỂU QUYẾT NGHỊ QUYẾT</h4>
-                    <div id="minutesResolutionsContainer" class="space-y-3 text-xs text-slate-800">
-                        <!-- Populated dynamically -->
-                    </div>
-                </div>
-
-                <!-- Signatures -->
-                <div class="grid grid-cols-2 gap-8 text-center text-xs pt-12">
-                    <div>
-                        <p class="font-bold uppercase">ĐẠI DIỆN BAN QUẢN TRỊ</p>
-                        <p class="italic text-slate-500 mt-12">(Ký và ghi rõ họ tên)</p>
-                    </div>
-                    <div>
-                        <p class="font-bold uppercase">THƯ KÝ HỘI NGHỊ</p>
-                        <p class="italic text-slate-500 mt-12">(Ký và ghi rõ họ tên)</p>
-                    </div>
                 </div>
             </div>
         </section>
@@ -463,7 +399,7 @@
         </div>
     </div>
 
-    <!-- MAIN JAVASCRIPT MODULE - ALL COMMENTS USE JS FORMAT (NO HTML COMMENTS) -->
+    <!-- MAIN JAVASCRIPT MODULE - STRICT JS COMMENTS ONLY (NO HTML COMMENTS INSIDE SCRIPT) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -521,6 +457,7 @@
         window.cameraStream = null;
         window.selectedResidentUnit = "A1-101";
 
+        /* Utility Functions */
         window.parseArea = function(val) {
             if (typeof val === 'number') return isNaN(val) ? 0 : val;
             if (!val) return 0;
@@ -564,7 +501,7 @@
         };
 
         window.switchView = function(viewName) {
-            const views = ['landing', 'resident', 'checkin', 'admin', 'minutes'];
+            const views = ['landing', 'resident', 'checkin', 'admin'];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
                 if (el) el.classList.add('hidden');
@@ -589,6 +526,7 @@
             if (menu) menu.classList.toggle('hidden');
         };
 
+        /* Firebase Realtime Sync */
         window.initFirebaseSync = function() {
             if (!window.db) return;
             try {
@@ -726,43 +664,26 @@
                     </tr>
                 `).join('');
             }
-
-            /* Printable Minutes Sync */
-            document.getElementById('minutesTimestamp').innerText = new Date().toLocaleString('vi-VN');
-            document.getElementById('minutesTotalUnits').innerText = totalUnits;
-            document.getElementById('minutesTotalArea').innerText = totalArea.toFixed(1);
-            document.getElementById('minutesCheckedUnits').innerText = checkedInUnits;
-            document.getElementById('minutesCheckedArea').innerText = checkedArea.toFixed(1);
-            document.getElementById('minutesQuorumPercent').innerText = `${quorumPercent}%`;
-            
-            const minutesStatus = document.getElementById('minutesQuorumStatus');
-            if (isQuorumMet) {
-                minutesStatus.innerText = "ĐỦ ĐIỀU KIỆN TIẾN HÀNH HỘI NGHỊ (Thỏa mãn TT06/2019/TT-BXD)";
-                minutesStatus.className = "text-emerald-700 font-bold";
-            } else {
-                minutesStatus.innerText = "CHƯA ĐỦ ĐIỀU KIỆN TIẾN HÀNH HỘI NGHỊ";
-                minutesStatus.className = "text-rose-700 font-bold";
-            }
-
-            const minutesResBox = document.getElementById('minutesResolutionsContainer');
-            if (minutesResBox) {
-                minutesResBox.innerHTML = window.resolutions.map((r, idx) => `
-                    <div class="p-2 border-b border-slate-200">
-                        <strong class="text-slate-900">${idx + 1}. ${r.title}</strong>
-                        <div class="flex gap-4 mt-1 text-slate-700">
-                            <span>Tán thành: ${r.yesVotes} phiếu</span>
-                            <span>Không tán thành: ${r.noVotes} phiếu</span>
-                            <span>Trạng thái: ${r.status === 'open' ? 'Đang mở' : 'Đã chốt'}</span>
-                        </div>
-                    </div>
-                `).join('');
-            }
         };
 
         window.callViettelAiNfcFull = async function(payloadData) {
-            const url = "https://viettelai.vn/";
+            /* Try serverless proxy first, then direct fallback */
+            const proxyUrl = "/api/ekyc";
+            const directUrl = "https://viettelai.vn/";
+
             try {
-                const response = await fetch(url, {
+                const resProxy = await fetch(proxyUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadData || {})
+                });
+                if (resProxy.ok) return await resProxy.json();
+            } catch (e) {
+                console.warn("Proxy unavailable, attempting direct call:", e);
+            }
+
+            try {
+                const resDirect = await fetch(directUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -771,13 +692,12 @@
                     },
                     body: JSON.stringify(payloadData || {})
                 });
-                if (response.ok) {
-                    return await response.json();
-                }
+                if (resDirect.ok) return await resDirect.json();
             } catch (e) {
-                console.warn("Viettel AI endpoint fallback due to CORS/offline mode:", e);
+                console.warn("Direct Viettel AI call fallback due to CORS/offline mode:", e);
             }
-            return null; // Graceful fallback
+
+            return null; // Graceful fallback simulation
         };
 
         window.startCameraScanner = function() {
@@ -840,7 +760,6 @@
                     window.processCheckinResult(mockCccd, "Cư dân Viettel OCR", "Viettel AI OCR", aiRes);
                 });
             } else {
-                /* Simulate capture if video is not live */
                 const mockCccd = "001092" + Math.floor(100000 + Math.random() * 900000);
                 window.processCheckinResult(mockCccd, "Cư dân Viettel AI OCR", "Viettel AI OCR", null);
             }
@@ -861,7 +780,6 @@
                     console.warn("NFC error:", error);
                 }
             }
-            /* Fallback NFC Simulation */
             const target = window.residents.find(r => !r.checkedIn) || window.residents[0];
             if (target) {
                 window.processCheckinResult(target.cccd, target.name, "NFC Chip Tap", null);
@@ -1017,13 +935,13 @@
 
         window.unlockAdminPanel = function() {
             const pwd = document.getElementById('adminPasswordInput').value;
-            if (pwd === "admin123" || pwd === "admin") {
+            if (pwd === "215151365") {
                 window.isAdminUnlocked = true;
                 document.getElementById('adminAuthBox').classList.add('hidden');
                 document.getElementById('adminContentPanel').classList.remove('hidden');
                 window.toast("Đã xác thực admin thành công!");
             } else {
-                window.toast("Mật khẩu sai! Mặc định là: admin123");
+                window.toast("Mật khẩu sai! Mặc định là: 215151365");
             }
         };
 
@@ -1188,6 +1106,7 @@
             }
         };
 
+        /* Initialization */
         window.addEventListener('load', () => {
             window.initFirebaseSync();
             window.syncAllUI();
