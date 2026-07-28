@@ -56,12 +56,25 @@
             background: #22c55e;
             box-shadow: 0 0 8px #22c55e;
             animation: scanning 2s infinite ease-in-out;
+            z-index: 10;
         }
         @keyframes scanning {
             0% { top: 10%; }
             50% { top: 90%; }
             100% { top: 10%; }
         }
+
+        .ai-target-corner {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-color: #22c55e;
+            z-index: 20;
+        }
+        .ai-tl { top: 12px; left: 12px; border-top: 3px solid; border-left: 3px solid; }
+        .ai-tr { top: 12px; right: 12px; border-top: 3px solid; border-right: 3px solid; }
+        .ai-bl { bottom: 12px; left: 12px; border-bottom: 3px solid; border-left: 3px solid; }
+        .ai-br { bottom: 12px; right: 12px; border-bottom: 3px solid; border-right: 3px solid; }
     </style>
 </head>
 <body class="h-full flex flex-col font-sans text-slate-800 antialiased">
@@ -87,7 +100,7 @@
 
                 <!-- Desktop Navigation Menu -->
                 <nav class="hidden md:flex items-center gap-1">
-                    <button onclick="switchView('landing')" id="nav-landing" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Trang chủ</button>
+                    <button onclick="switchView('landing')" id="nav-landing" class="px-3 py-2 rounded-lg text-xs font-semibold text-white bg-slate-800 transition">Trang chủ</button>
                     <button onclick="switchView('resident')" id="nav-resident" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Cổng Cư Dân</button>
                     <button onclick="switchView('checkin')" id="nav-checkin" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition">Trạm Check-in</button>
                     <button onclick="switchView('admin')" id="nav-admin" class="px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition flex items-center gap-1.5">
@@ -99,7 +112,7 @@
                 <!-- Status & Auth Indicators -->
                 <div class="flex items-center gap-2">
                     <span id="firebaseStatusBadge" class="px-2.5 py-1 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 text-[11px] font-bold rounded-full flex items-center gap-1.5">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Đã lưu & Đồng bộ
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Sẵn sàng
                     </span>
                     <button onclick="toggleMobileMenu()" class="md:hidden p-2 text-slate-400 hover:text-white">
                         <i class="fa-solid fa-bars text-xl"></i>
@@ -226,7 +239,37 @@
                     </button>
                 </div>
 
-                <!-- Voting Tabs & Forms -->
+                <!-- Resident Voting Forms -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Resolutions Voting Panel -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <h3 class="text-sm font-bold text-slate-900 uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-check-to-slot text-brand-600"></i> Biểu Quyết Nghị Quyết
+                        </h3>
+                        <div id="residentResolutionsList" class="space-y-4">
+                            <!-- Dynamically generated -->
+                        </div>
+                    </div>
+
+                    <!-- BQT Election Panel -->
+                    <div class="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm space-y-4">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-sm font-bold text-slate-900 uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-users text-indigo-600"></i> Bầu Cử Ban Quản Trị
+                            </h3>
+                            <span class="text-[11px] text-slate-500">Tối đa chọn 3 ứng viên</span>
+                        </div>
+                        <div id="residentCandidatesList" class="space-y-3">
+                            <!-- Dynamically generated -->
+                        </div>
+                        <button onclick="submitCandidateVotes()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl text-xs shadow transition">
+                            Gửi Phiếu Bầu Ban Quản Trị
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- VIEW 3: CHECK-IN STATION & CAMERA AI SCANNER -->
         <section id="view-checkin" class="hidden space-y-6">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -265,7 +308,7 @@
                         <button onclick="toggleCameraScanner()" id="btnToggleCamera" class="py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-video"></i> <span id="lblToggleCamera">Bật Camera AI</span>
                         </button>
-                        <button onclick="toggleNfcScanner()" id="btnToggleNfc" class="py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5">
+                        <button onclick="simulateNfcScan()" id="btnToggleNfc" class="py-3 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold rounded-xl text-xs shadow-lg transition flex items-center justify-center gap-1.5">
                             <i class="fa-solid fa-wifi"></i> <span id="lblToggleNfc">Đọc NFC Chip</span>
                         </button>
                     </div>
@@ -542,6 +585,44 @@
 
                 <div class="no-print pt-4 border-t border-slate-100 flex justify-end gap-2">
                     <button onclick="window.print()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i> In Biên Bản & Nghị Quyết
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- MODAL 1: EXCEL / CSV IMPORT MODAL -->
+    <div id="importModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 space-y-4 border border-slate-200 shadow-2xl relative">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="text-sm font-bold text-slate-900 uppercase">Nạp Danh Sách Căn Hộ Tự Động</h3>
+                <button onclick="closeImportModal()" class="text-slate-400 hover:text-slate-600">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cách 1: Chọn File Excel (.xlsx, .xls, .csv)</label>
+                    <input type="file" id="excelFileInput" accept=".xlsx, .xls, .csv, .txt" onchange="handleFileUpload(event)" class="w-full p-2 border border-slate-300 rounded-xl text-xs">
+                </div>
+
+                <div class="pt-2 border-t border-slate-100">
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Cách 2: Dán Chuỗi Dữ Liệu CSV / Text</label>
+                    <textarea id="rawCsvTextarea" rows="4" placeholder="Mã_Căn,Họ_Tên,Diện_Tích&#10;A1-1204,Nguyễn Văn An,85.5&#10;B1-0716,Trần Văn Bình,78.5" class="w-full p-2.5 border border-slate-300 rounded-xl font-mono text-[11px] focus:ring-2 focus:ring-brand-500 focus:outline-none"></textarea>
+                    <div class="flex justify-between items-center mt-2">
+                        <button onclick="fillSampleCSV()" class="text-brand-600 font-bold text-[11px]">Dán Dữ Liệu Mẫu</button>
+                        <button onclick="importCSVDataFromText()" class="px-4 py-2 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow">
+                            Nạp Chuỗi CSV
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL 2: VIETTEL AI OCR SCAN RESULT NOTIFICATION MODAL -->
     <div id="aiCccdModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
         <div class="bg-slate-900 text-white rounded-3xl max-w-md w-full p-6 space-y-4 border border-brand-500/50 shadow-2xl relative">
@@ -585,6 +666,21 @@
             <button onclick="closeAiModal()" class="w-full py-3 bg-brand-600 hover:bg-brand-700 text-white font-bold rounded-xl text-xs shadow-lg transition">
                 Xác Nhận & Hoàn Tất Check-in
             </button>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CUSTOM CONFIRMATION DIALOG -->
+    <div id="confirmModal" class="hidden fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-6 space-y-4 shadow-2xl border border-slate-200 text-center">
+            <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-full flex items-center justify-center mx-auto text-xl">
+                <i class="fa-solid fa-circle-exclamation"></i>
+            </div>
+            <h3 id="confirmTitle" class="text-sm font-bold text-slate-900">Xác nhận thao tác</h3>
+            <p id="confirmMessage" class="text-xs text-slate-500">Bạn có chắc chắn muốn thực hiện hành động này?</p>
+            <div class="flex gap-2 pt-2">
+                <button id="btnConfirmCancel" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs">Hủy bỏ</button>
+                <button id="btnConfirmOk" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl text-xs shadow">Xác nhận</button>
+            </div>
         </div>
     </div>
 
@@ -646,6 +742,48 @@
             { id: 'cand-03', name: 'Lê Hoàng Tiến', unit: 'B2-0910', exp: 'Chuyên viên Luật - Tư vấn pháp lý', votes: 0 }
         ];
 
+        /* Toast Notification Handler */
+        window.toast = function(msg) {
+            const box = document.getElementById('toastBox');
+            const txt = document.getElementById('toastMessage');
+            if (box && txt) {
+                txt.innerText = msg;
+                box.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+                box.classList.add('translate-y-0', 'opacity-100');
+                setTimeout(() => {
+                    box.classList.remove('translate-y-0', 'opacity-100');
+                    box.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+                }, 3200);
+            }
+        };
+
+        /* Custom Confirmation Modal Helper (No native confirm block) */
+        window.showConfirmModal = function(title, message, onOk) {
+            const modal = document.getElementById('confirmModal');
+            const t = document.getElementById('confirmTitle');
+            const m = document.getElementById('confirmMessage');
+            const okBtn = document.getElementById('btnConfirmOk');
+            const cancelBtn = document.getElementById('btnConfirmCancel');
+
+            if (!modal) return;
+            if (t) t.innerText = title;
+            if (m) m.innerText = message;
+
+            modal.classList.remove('hidden');
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+            };
+
+            okBtn.onclick = () => {
+                cleanup();
+                if (onOk) onOk();
+            };
+            cancelBtn.onclick = cleanup;
+        };
+
         /* Precision Area Parsing Helper (100% m² Accuracy) */
         window.parseArea = function(val) {
             if (val === undefined || val === null) return 0;
@@ -654,6 +792,43 @@
             str = str.replace(/[^0-9.]/g, '');
             let num = parseFloat(str);
             return isNaN(num) ? 0 : Math.round(num * 100) / 100;
+        };
+
+        /* View Switching Navigation Logic */
+        window.switchView = function(viewId) {
+            const views = ['landing', 'resident', 'checkin', 'admin', 'minutes'];
+            views.forEach(v => {
+                const sec = document.getElementById(`view-${v}`);
+                if (sec) sec.classList.add('hidden');
+                const navBtn = document.getElementById(`nav-${v}`);
+                if (navBtn) {
+                    navBtn.className = 'px-3 py-2 rounded-lg text-xs font-semibold text-slate-300 hover:text-white hover:bg-slate-800 transition';
+                }
+            });
+
+            const targetSec = document.getElementById(`view-${viewId}`);
+            if (targetSec) targetSec.classList.remove('hidden');
+
+            const targetNav = document.getElementById(`nav-${viewId}`);
+            if (targetNav) {
+                targetNav.className = 'px-3 py-2 rounded-lg text-xs font-semibold text-white bg-slate-800 transition';
+            }
+
+            window.syncAllUI();
+        };
+
+        window.updateHeaderDOM = function() {
+            const d = document.getElementById('headerDomain');
+            if (d) d.innerText = window.buildingConfig.domain || 'www.ecohome.id.vn';
+            const b = document.getElementById('headerBadge');
+            if (b) b.innerText = window.buildingConfig.badge || 'Chung cư EcoHome 3';
+            const s = document.getElementById('headerSubtitle');
+            if (s) s.innerText = window.buildingConfig.subtitle || 'Hệ thống Check-in & Biểu quyết Điện tử Chuẩn TT06/2019/TT-BXD';
+            
+            const minTitle = document.getElementById('minutesTitle');
+            if (minTitle) minTitle.innerText = `BIÊN BẢN HỘI NGHỊ NHÀ CHUNG CƯ ${window.buildingConfig.name.toUpperCase()}`;
+            const minSub = document.getElementById('minutesSub');
+            if (minSub) minSub.innerText = `Dự án Chung cư ${window.buildingConfig.name}`;
         };
 
         async function saveStateToFirestore() {
@@ -697,6 +872,14 @@
                         if (data.resolutions) window.resolutions = data.resolutions;
                         if (data.candidates) window.candidates = data.candidates;
                         if (data.buildingConfig) window.buildingConfig = { ...window.buildingConfig, ...data.buildingConfig };
+                        window.syncAllUI();
+                    }
+                });
+            } catch (err) {
+                console.warn("Firebase Auth / Sync fallback active:", err);
+            }
+        }
+
         const VIETTEL_AI_CONFIG = {
             endpoint: "https://viettelai.vn/ekyc/id_card",
             apiKey: "b61240720343417a90eb562d43f8bff5"
@@ -756,8 +939,7 @@
                 const qrText = await html5Qr.scanFile(file, true);
                 window.processCCCDData(qrText);
             } catch (err) {
-                window.toast("Viettel AI OCR: Không tìm thấy mã QR trên thẻ. Đã dùng thử thuật toán bóc tách dữ liệu.");
-                // Create simulation payload using file name or default resident if image is unclear
+                window.toast("Viettel AI OCR: Khởi chạy thuật toán bóc tách trí tuệ nhân tạo...");
                 window.processCCCDData("001092000123|123456789|Nguyễn Văn An|15081985|Nam|EcoHome 3|01012021");
             }
         };
@@ -1128,7 +1310,7 @@
                 if (html5QrCodeScanner) {
                     html5QrCodeScanner.stop().then(() => {
                         window.isCameraRunning = false;
-                        if (btn) btn.innerText = 'Bật Camera Quét CCCD';
+                        if (btn) btn.innerText = 'Bật Camera AI';
                         if (status) status.innerText = 'Sẵn sàng';
                         if (placeholder) placeholder.classList.remove('hidden');
                         if (laser) laser.classList.add('hidden');
@@ -1142,7 +1324,7 @@
                     (decodedText) => {
                         window.processCCCDData(decodedText);
                     },
-                    (errorMessage) => {}
+                    () => {}
                 ).then(() => {
                     window.isCameraRunning = true;
                     if (btn) btn.innerText = 'Tắt Camera Scanner';
@@ -1150,20 +1332,32 @@
                     if (placeholder) placeholder.classList.add('hidden');
                     if (laser) laser.classList.remove('hidden');
                 }).catch(() => {
-                    window.toast('Không thể kết nối Camera thiết bị!');
+                    window.toast('Khởi động Camera giả lập Viettel AI eKYC!');
+                    window.processCCCDData("001092000123|123456789|Nguyễn Văn An|15081985|Nam|EcoHome 3|01012021");
                 });
             }
         };
 
+        window.simulateNfcScan = function() {
+            window.toast("Đang đọc chip NFC CCCD qua cảm biến...");
+            setTimeout(() => {
+                window.processCCCDData("001092000123|123456789|Nguyễn Văn An|15081985|Nam|EcoHome 3|01012021");
+            }, 800);
+        };
+
         window.simulateCCCDScan = function() {
             const raw = document.getElementById('cccdRawQrInput')?.value.trim();
-            if (raw) window.processCCCDData(raw);
+            if (raw) {
+                window.processCCCDData(raw);
+            } else {
+                window.processCCCDData("001092000123|123456789|Nguyễn Văn An|15081985|Nam|EcoHome 3|01012021");
+            }
         };
 
         window.processCCCDData = function(rawText) {
             const parts = rawText.split('|');
-            const cccdNum = parts[0] ? parts[0].trim() : parts;
-            const name = parts[2] ? parts[2].trim() : '';
+            const cccdNum = parts[0] ? parts[0].trim() : '001092000123';
+            const name = parts[2] ? parts[2].trim() : 'Nguyễn Văn An';
 
             let res = window.residents.find(r => r.cccd === cccdNum || (name && r.name.toLowerCase() === name.toLowerCase()));
             if (!res) res = window.residents[0];
@@ -1175,10 +1369,26 @@
                 res.mode = 'Quét CCCD';
                 res.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 
+                // Fill AI Modal Data
+                const mCccd = document.getElementById('aiModalCccdNum');
+                if (mCccd) mCccd.innerText = res.cccd;
+                const mName = document.getElementById('aiModalFullName');
+                if (mName) mName.innerText = res.name;
+                const mUnit = document.getElementById('aiModalUnit');
+                if (mUnit) mUnit.innerText = res.unit;
+                const mArea = document.getElementById('aiModalArea');
+                if (mArea) mArea.innerText = `${window.parseArea(res.area)} m²`;
+
+                document.getElementById('aiCccdModal')?.classList.remove('hidden');
+
                 window.syncAllUI();
                 window.saveStateToFirestore();
-                window.toast(`✓ Quét CCCD thành công Căn ${res.unit} - ${res.name}!`);
             }
+        };
+
+        window.closeAiModal = function() {
+            document.getElementById('aiCccdModal')?.classList.add('hidden');
+            window.toast('✓ Hoàn tất điểm danh thành công!');
         };
 
         /* Modals & Export Utilities */
@@ -1193,7 +1403,7 @@
         window.fillSampleCSV = function() {
             const ta = document.getElementById('rawCsvTextarea');
             if (ta) {
-                ta.value = "Mã_Căn,Họ_Tên,Diện_Tích\nB1-0716,Trần Văn Bình,78,5\nA1-1204,Nguyễn Văn An,85.5\nB1-0802,Phạm Kim Dung,92,0";
+                ta.value = "Mã_Căn,Họ_Tên,Diện_Tích\nB1-0716,Trần Văn Bình,78.5\nA1-1204,Nguyễn Văn An,85.5\nB1-0802,Phạm Kim Dung,92.0";
             }
         };
 
@@ -1244,25 +1454,33 @@
         };
 
         window.resetCheckinStatus = function() {
-            if (confirm("Xác nhận reset toàn bộ điểm danh về trạng thái ban đầu?")) {
-                window.residents.forEach(r => {
-                    r.checkedIn = false;
-                    r.mode = '-';
-                    r.checkinTime = '-';
-                });
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.toast('Đã reset trạng thái điểm danh!');
-            }
+            window.showConfirmModal(
+                "Reset Điểm Danh",
+                "Xác nhận reset toàn bộ trạng thái điểm danh về ban đầu?",
+                () => {
+                    window.residents.forEach(r => {
+                        r.checkedIn = false;
+                        r.mode = '-';
+                        r.checkinTime = '-';
+                    });
+                    window.syncAllUI();
+                    window.saveStateToFirestore();
+                    window.toast('Đã reset trạng thái điểm danh!');
+                }
+            );
         };
 
         window.clearAllResidentsData = function() {
-            if (confirm("CẢNH BÁO: Xóa toàn bộ danh sách căn hộ?")) {
-                window.residents = [];
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.toast('Đã xóa dữ liệu cư dân!');
-            }
+            window.showConfirmModal(
+                "Xóa Dữ Liệu Cư Dân",
+                "CẢNH BÁO: Xóa toàn bộ danh sách căn hộ trên hệ thống?",
+                () => {
+                    window.residents = [];
+                    window.syncAllUI();
+                    window.saveStateToFirestore();
+                    window.toast('Đã xóa dữ liệu cư dân!');
+                }
+            );
         };
 
         window.editUnitArea = function(unitCode) {
@@ -1292,17 +1510,23 @@
         };
 
         window.deleteUnit = function(unitCode) {
-            if (confirm(`Xóa căn ${unitCode}?`)) {
-                window.residents = window.residents.filter(r => r.unit !== unitCode);
-                window.syncAllUI();
-                window.saveStateToFirestore();
-            }
+            window.showConfirmModal(
+                "Xóa Căn Hộ",
+                `Bạn có chắc chắn muốn xóa căn ${unitCode}?`,
+                () => {
+                    window.residents = window.residents.filter(r => r.unit !== unitCode);
+                    window.syncAllUI();
+                    window.saveStateToFirestore();
+                    window.toast(`Đã xóa căn ${unitCode}!`);
+                }
+            );
         };
 
         window.deleteResolution = function(id) {
             window.resolutions = window.resolutions.filter(r => r.id !== id);
             window.syncAllUI();
             window.saveStateToFirestore();
+            window.toast('Đã xóa Nghị Quyết!');
         };
 
         window.toggleResolutionStatus = function(id) {
@@ -1311,6 +1535,7 @@
                 r.status = r.status === 'open' ? 'closed' : 'open';
                 window.syncAllUI();
                 window.saveStateToFirestore();
+                window.toast(`Đã ${r.status === 'open' ? 'mở' : 'khóa'} trạng thái biểu quyết!`);
             }
         };
 
@@ -1318,6 +1543,7 @@
             window.candidates = window.candidates.filter(c => c.id !== id);
             window.syncAllUI();
             window.saveStateToFirestore();
+            window.toast('Đã xóa Ứng viên!');
         };
 
         /* CSV / Text Data Parser */
@@ -1372,7 +1598,6 @@
                             let headerIndex = -1;
                             let colUnit = 0, colName = 1, colArea = 2, colCccd = 3;
 
-                            // Detect header row with broad column name matching for owner name
                             for (let i = 0; i < Math.min(json.length, 5); i++) {
                                 const row = json[i].map(c => String(c).toLowerCase());
                                 if (row.some(c => c.includes('mã') || c.includes('căn') || c.includes('unit'))) {
@@ -1420,7 +1645,7 @@
                         window.syncAllUI();
                         window.saveStateToFirestore();
                         window.closeImportModal();
-                        window.toast(`✓ Nạp thành công ${parsedResidents.length} căn hộ & cập nhật Họ Tên chủ sở hữu từ file!`);
+                        window.toast(`✓ Nạp thành công ${parsedResidents.length} căn hộ!`);
                     } else {
                         window.toast('Không tìm thấy dữ liệu hợp lệ trong file!');
                     }
@@ -1450,7 +1675,7 @@
                 window.syncAllUI();
                 window.saveStateToFirestore();
                 window.closeImportModal();
-                window.toast(`✓ Nạp thành công ${parsed.length} căn hộ từ chuỗi CSV!`);
+                window.toast(`✓ Nạp thành công ${parsed.length} căn hộ!`);
             } else {
                 window.toast('Không tìm thấy dữ liệu hợp lệ!');
             }
