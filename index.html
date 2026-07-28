@@ -13,6 +13,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <!-- Tesseract.js for Offline Vietnamese OCR -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <!-- Chart.js for Smart Visual Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- jsQR for Exact CCCD QR Code Decoding -->
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
     
     <style>
         .glass-panel {
@@ -113,7 +117,7 @@
                                 </h3>
                                 <p class="text-xs text-slate-400">Mở camera chụp ảnh CCCD để hệ thống tự động trích xuất & đối soát dữ liệu</p>
                             </div>
-                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">OCR Tesseract AI</span>
+                            <span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">OCR & jsQR Engine</span>
                         </div>
 
                         <!-- Image Preview Box -->
@@ -123,7 +127,6 @@
 
                         <!-- Scanning Controls -->
                         <div class="space-y-3">
-                            <!-- Hidden input with capture='environment' to directly open rear camera on mobile devices -->
                             <input type="file" accept="image/*" capture="environment" id="imageInput" class="hidden" onchange="handleImageSelected(event)">
 
                             <button onclick="triggerCamera()" class="w-full py-3.5 px-4 bg-teal-600 hover:bg-teal-500 text-white rounded-xl text-sm font-bold transition flex items-center justify-center gap-2 shadow-lg shadow-teal-600/20">
@@ -163,9 +166,9 @@
                             </div>
                         </div>
 
-                        <!-- Verification Status Banner for EcoHome Nhơn Bình -->
+                        <!-- Verification Status Banner -->
                         <div id="ecoHomeVerificationBanner" class="hidden p-4 rounded-xl border transition-all duration-300">
-                            <!-- Populated dynamically when name/CCCD matches loaded data -->
+                            <!-- Populated dynamically -->
                         </div>
 
                         <!-- Execute Check-in Action Button -->
@@ -250,6 +253,39 @@
                     </div>
                     <div id="statQuorumPercent" class="text-2xl font-bold text-amber-400 mt-2">0.0%</div>
                     <p id="statQuorumStatus" class="text-xs text-slate-400 mt-1">Cần ≥ 50% m² đủ điều kiện</p>
+                </div>
+            </div>
+
+            <!-- Smart Interactive Visual Charts -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Quorum Area Doughnut Chart -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-pie-chart text-emerald-400"></i> Tỷ Lệ Tham Dự Quorum m²
+                        </h4>
+                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">TT06/2019/TT-BXD</span>
+                    </div>
+                    <div class="relative w-full h-52 flex items-center justify-center">
+                        <canvas id="quorumChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-slate-400 text-center mt-2">Đạt ≥ 50% tổng m² diện tích toàn chung cư để hội nghị hợp lệ.</p>
+                </div>
+
+                <!-- Resolutions Approval Bar Chart -->
+                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between lg:col-span-2">
+                    <div class="flex items-center justify-between mb-2">
+                        <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-chart-column text-blue-400"></i> Phân Tích Kết Quả Biểu Quyết
+                        </h4>
+                        <button onclick="exportVotingToExcel()" class="text-xs px-2.5 py-1 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-lg transition flex items-center gap-1">
+                            <i class="fa-solid fa-file-excel"></i> Xuất Excel Biểu Quyết
+                        </button>
+                    </div>
+                    <div class="relative w-full h-52">
+                        <canvas id="resolutionsChart"></canvas>
+                    </div>
+                    <p class="text-[11px] text-slate-400 text-center mt-2">Tổng hợp ý kiến Tán thành / Không tán thành từ các căn hộ đã điểm danh.</p>
                 </div>
             </div>
 
@@ -375,7 +411,11 @@
                             </button>
 
                             <button onclick="exportResidentsToExcel()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700 flex items-center justify-center gap-2">
-                                <i class="fa-solid fa-file-export text-blue-400"></i> Xuất Báo Cáo
+                                <i class="fa-solid fa-file-export text-emerald-400"></i> Xuất Excel Check-in
+                            </button>
+
+                            <button onclick="exportVotingToExcel()" class="py-2.5 px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700 flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-invoice text-blue-400"></i> Xuất Excel Biểu Quyết
                             </button>
 
                             <button onclick="addNewResolutionPrompt()" class="py-2.5 px-3 bg-blue-900/60 hover:bg-blue-800 text-blue-200 text-xs font-bold rounded-xl transition border border-blue-700/50 flex items-center justify-center gap-1.5">
@@ -384,10 +424,6 @@
 
                             <button onclick="resetCheckinStatus()" class="py-2.5 px-3 bg-amber-900/60 hover:bg-amber-800 text-amber-200 text-xs font-bold rounded-xl transition border border-amber-700/50 flex items-center justify-center gap-1.5">
                                 <i class="fa-solid fa-rotate-right text-amber-400"></i> Reset Điểm Danh
-                            </button>
-
-                            <button onclick="clearAllResidentsData()" class="py-2.5 px-3 bg-rose-900/60 hover:bg-rose-800 text-rose-200 text-xs font-bold rounded-xl transition border border-rose-700/50 flex items-center justify-center gap-1.5">
-                                <i class="fa-solid fa-trash text-rose-400"></i> Xóa Hết Dữ Liệu
                             </button>
                         </div>
                     </div>
@@ -480,7 +516,7 @@
                             <select id="mapColArea" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2 focus:border-emerald-500"></select>
                         </div>
                         <div>
-                            <label class="block text-slate-400 mb-1">Cột Số CCCD / CMND (Không bắt buộc)</label>
+                            <label class="block text-slate-400 mb-1">Cột Số CCCD CMND CMND (Không bắt buộc)</label>
                             <select id="mapColCccd" class="w-full bg-slate-900 border border-slate-700 text-white rounded-lg p-2 focus:border-emerald-500"></select>
                         </div>
                     </div>
@@ -633,21 +669,21 @@
         };
 
         window.residents = [
-            { unit: "A1-101", name: "NGUYỄN VĂN A", cccd: "001092001111", cccdVerified: true, area: 75.5, checkedIn: true, mode: "Camera AI OCR", checkinTime: "08:15" },
-            { unit: "A1-102", name: "TRẦN THỊ BÌNH", cccd: "001092002222", cccdVerified: true, area: 68.0, checkedIn: false, mode: "-", checkinTime: "-" },
-            { unit: "A1-103", name: "LÊ HOÀNG CƯỜNG", cccd: "001092003333", cccdVerified: false, area: 82.3, checkedIn: false, mode: "-", checkinTime: "-" },
-            { unit: "A2-201", name: "PHẠM MINH ĐỨC", cccd: "001092004444", cccdVerified: true, area: 71.0, checkedIn: false, mode: "-", checkinTime: "-" },
-            { unit: "A2-202", name: "HOÀNG THỊ EM", cccd: "001092005555", cccdVerified: false, area: 65.5, checkedIn: false, mode: "-", checkinTime: "-" }
+            { unit: "A1-101", name: "NGUYỄN VĂN A", cccd: "001092001111", cccdVerified: true, area: 75.5, checkedIn: true, mode: "Camera AI OCR", checkinTime: "08:15", votes: { resolutions: { "res-1": "yes", "res-2": "yes" }, candidates: "cand-1" } },
+            { unit: "A1-102", name: "TRẦN THỊ BÌNH", cccd: "001092002222", cccdVerified: true, area: 68.0, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
+            { unit: "A1-103", name: "LÊ HOÀNG CƯỜNG", cccd: "001092003333", cccdVerified: false, area: 82.3, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
+            { unit: "A2-201", name: "PHẠM MINH ĐỨC", cccd: "001092004444", cccdVerified: true, area: 71.0, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
+            { unit: "A2-202", name: "HOÀNG THỊ EM", cccd: "001092005555", cccdVerified: false, area: 65.5, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } }
         ];
 
         window.resolutions = [
-            { id: "res-1", title: "Thông qua Báo cáo hoạt động tài chính BQT năm 2025", yesVotes: 1, noVotes: 0, status: "open" },
-            { id: "res-2", title: "Lựa chọn Đơn vị Vận hành Quản lý chung cư EcoHome Nhơn Bình năm 2026", yesVotes: 1, noVotes: 0, status: "open" }
+            { id: "res-1", title: "Thông qua Báo cáo hoạt động tài chính BQT năm 2025", status: "open" },
+            { id: "res-2", title: "Lựa chọn Đơn vị Vận hành Quản lý chung cư EcoHome Nhơn Bình năm 2026", status: "open" }
         ];
 
         window.candidates = [
-            { id: "cand-1", name: "Ông Nguyễn Văn A", unit: "A1-101", exp: "Kỹ sư Xây dựng - 10 năm KN", votes: 1 },
-            { id: "cand-2", name: "Bà Trần Thị Bình", unit: "A1-102", exp: "Luật sư - Chuyên môn Pháp lý", votes: 0 }
+            { id: "cand-1", name: "Ông Nguyễn Văn A", unit: "A1-101", exp: "Kỹ sư Xây dựng - 10 năm KN" },
+            { id: "cand-2", name: "Bà Trần Thị Bình", unit: "A1-102", exp: "Luật sư - Chuyên môn Pháp lý" }
         ];
 
         window.isAdminUnlocked = false;
@@ -655,100 +691,13 @@
         window.selectedResidentUnit = "A1-101";
         window.lastCheckedInUnit = "A1-101";
 
+        /* Chart Instances */
+        window.quorumChartInstance = null;
+        window.resolutionsChartInstance = null;
+
         /* Import Wizard Temporary Cache State */
         window.wizardRawMatrix = [];
         window.wizardHeaders = [];
-
-        /* Camera Capture Triggers */
-        window.triggerCamera = function() {
-            const inp = document.getElementById('imageInput');
-            if (inp) inp.click();
-        };
-
-        window.handleImageSelected = function(e) {
-            if (e.target.files && e.target.files[0]) {
-                window.imageFile = e.target.files[0];
-                const preview = document.getElementById('previewImage');
-                if (preview) {
-                    preview.src = URL.createObjectURL(window.imageFile);
-                    preview.style.display = "block";
-                }
-                /* Trigger OCR immediately after taking/selecting photo */
-                window.scanOCR();
-            }
-        };
-
-        window.parseArea = function(val) {
-            if (typeof val === 'number') return isNaN(val) ? 0 : val;
-            if (!val) return 0;
-            const str = String(val).replace(',', '.').replace(/[^0-9.]/g, '');
-            const num = parseFloat(str);
-            return isNaN(num) ? 0 : num;
-        };
-
-        window.toast = function(msg) {
-            const box = document.getElementById('toastBox');
-            const txt = document.getElementById('toastMessage');
-            if (!box || !txt) return;
-            txt.innerText = msg;
-            box.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
-            setTimeout(() => {
-                box.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
-            }, 3000);
-        };
-
-        window.showCustomConfirm = function(title, message, onOk) {
-            const modal = document.getElementById('confirmModal');
-            document.getElementById('confirmModalTitle').innerText = title;
-            document.getElementById('confirmModalMessage').innerText = message;
-            
-            const cancelBtn = document.getElementById('confirmModalCancelBtn');
-            const okBtn = document.getElementById('confirmModalOkBtn');
-
-            const cleanup = () => {
-                modal.classList.add('hidden');
-                okBtn.onclick = null;
-                cancelBtn.onclick = null;
-            };
-
-            cancelBtn.onclick = cleanup;
-            okBtn.onclick = () => {
-                cleanup();
-                if (onOk) onOk();
-            };
-
-            modal.classList.remove('hidden');
-        };
-
-        window.switchView = function(viewName) {
-            const views = ['checkin', 'landing', 'resident', 'admin'];
-            views.forEach(v => {
-                const el = document.getElementById(`view-${v}`);
-                if (el) el.classList.add('hidden');
-                const nav = document.getElementById(`nav-${v}`);
-                if (nav) {
-                    nav.classList.remove('bg-emerald-600', 'bg-slate-800', 'text-white');
-                    nav.classList.add('text-slate-300');
-                }
-            });
-            const activeView = document.getElementById(`view-${viewName}`);
-            if (activeView) activeView.classList.remove('hidden');
-            const activeNav = document.getElementById(`nav-${viewName}`);
-            if (activeNav) {
-                if (viewName === 'checkin') {
-                    activeNav.classList.add('bg-emerald-600', 'text-white');
-                } else {
-                    activeNav.classList.add('bg-slate-800', 'text-white');
-                }
-                activeNav.classList.remove('text-slate-300');
-            }
-            window.syncAllUI();
-        };
-
-        window.toggleMobileMenu = function() {
-            const menu = document.getElementById('mobileMenu');
-            if (menu) menu.classList.toggle('hidden');
-        };
 
         window.initFirebaseSync = function() {
             if (!window.db) return;
@@ -789,13 +738,411 @@
             }
         };
 
+        window.switchView = function(viewName) {
+            const views = ['checkin', 'landing', 'resident', 'admin'];
+            views.forEach(v => {
+                const el = document.getElementById(`view-${v}`);
+                if (el) el.classList.add('hidden');
+                
+                const nav = document.getElementById(`nav-${v}`);
+                if (nav) {
+                    nav.className = "px-3.5 py-1.5 rounded-lg text-sm font-medium transition-all text-slate-300 hover:text-white hover:bg-slate-800/50";
+                }
+            });
+
+            const activeView = document.getElementById(`view-${viewName}`);
+            if (activeView) activeView.classList.remove('hidden');
+
+            const activeNav = document.getElementById(`nav-${viewName}`);
+            if (activeNav) {
+                if (viewName === 'checkin') {
+                    activeNav.className = "px-4 py-1.5 rounded-lg text-sm font-bold transition-all bg-emerald-600 text-white shadow-md shadow-emerald-600/20";
+                } else {
+                    activeNav.className = "px-3.5 py-1.5 rounded-lg text-sm font-bold transition-all bg-slate-800 text-white shadow-sm";
+                }
+            }
+
+            window.syncAllUI();
+        };
+
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) menu.classList.toggle('hidden');
+        };
+
+        window.toast = function(msg) {
+            const box = document.getElementById('toastBox');
+            const txt = document.getElementById('toastMessage');
+            if (!box || !txt) return;
+            txt.innerText = msg;
+            box.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
+            setTimeout(() => {
+                box.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
+            }, 3000);
+        };
+
+        window.showCustomConfirm = function(title, message, onOk) {
+            const modal = document.getElementById('confirmModal');
+            document.getElementById('confirmModalTitle').innerText = title;
+            document.getElementById('confirmModalMessage').innerText = message;
+            
+            const cancelBtn = document.getElementById('confirmModalCancelBtn');
+            const okBtn = document.getElementById('confirmModalOkBtn');
+
+            const cleanup = () => {
+                modal.classList.add('hidden');
+                okBtn.onclick = null;
+                cancelBtn.onclick = null;
+            };
+
+            cancelBtn.onclick = cleanup;
+            okBtn.onclick = () => {
+                cleanup();
+                if (onOk) onOk();
+            };
+
+            modal.classList.remove('hidden');
+        };
+
+        window.parseArea = function(val) {
+            if (typeof val === 'number') return isNaN(val) ? 0 : val;
+            if (!val) return 0;
+            const str = String(val).replace(',', '.').replace(/[^0-9.]/g, '');
+            const num = parseFloat(str);
+            return isNaN(num) ? 0 : num;
+        };
+
+        window.triggerCamera = function() {
+            const input = document.getElementById('imageInput');
+            if (input) input.click();
+        };
+
+        window.handleImageSelected = function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            window.imageFile = file;
+            const preview = document.getElementById('previewImage');
+            if (preview) {
+                preview.src = URL.createObjectURL(file);
+                preview.style.display = "block";
+            }
+            window.scanOCR();
+        };
+
+        window.scanOCR = async function() {
+            if (!window.imageFile) {
+                window.toast("Vui lòng mở camera hoặc chọn ảnh CCCD!");
+                return;
+            }
+
+            const loading = document.getElementById('ocrLoading');
+            if (loading) loading.style.display = "block";
+
+            /* Try jsQR First for 100% Exact Decoding */
+            const qrParsed = await window.tryDecodeQrCodeFromImage(window.imageFile);
+            if (qrParsed) {
+                if (loading) loading.style.display = "none";
+                if (document.getElementById('cccd')) document.getElementById('cccd').value = qrParsed.cccd;
+                if (document.getElementById('name')) document.getElementById('name').value = qrParsed.name;
+                if (document.getElementById('dob')) document.getElementById('dob').value = qrParsed.dob;
+                if (document.getElementById('gender')) document.getElementById('gender').value = qrParsed.gender;
+                if (document.getElementById('address')) document.getElementById('address').value = qrParsed.address;
+
+                window.checkAndMatchResidentData();
+                window.toast("✓ Đã quét mã QR CCCD chính xác 100%!");
+                return;
+            }
+
+            /* Fallback to Tesseract.js OCR */
+            try {
+                const result = await Tesseract.recognize(window.imageFile, "vie+eng");
+                if (loading) loading.style.display = "none";
+                const text = result?.data?.text || "";
+                window.parseOcrText(text);
+                window.checkAndMatchResidentData();
+                window.toast("Đã hoàn tất trích xuất OCR Tesseract!");
+            } catch (err) {
+                if (loading) loading.style.display = "none";
+                console.error("OCR Error:", err);
+                window.toast("Lỗi nhận diện OCR Tesseract!");
+            }
+        };
+
+        window.tryDecodeQrCodeFromImage = function(file) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0, img.width, img.height);
+                    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                    
+                    if (window.jsQR) {
+                        const code = jsQR(imageData.data, imageData.width, imageData.height);
+                        if (code && code.data) {
+                            /* Format: CCCD|CMND|Name|DOB|Gender|Address|Date */
+                            const parts = code.data.split('|');
+                            if (parts.length >= 6) {
+                                const rawDob = parts[3] || "";
+                                const formattedDob = rawDob.length === 8 ? `${rawDob.slice(0,2)}/${rawDob.slice(2,4)}/${rawDob.slice(4)}` : rawDob;
+                                resolve({
+                                    cccd: parts[0] || "",
+                                    cmnd: parts[1] || "",
+                                    name: (parts[2] || "").toUpperCase(),
+                                    dob: formattedDob,
+                                    gender: parts[4] || "",
+                                    address: parts[5] || ""
+                                });
+                                return;
+                            }
+                        }
+                    }
+                    resolve(null);
+                };
+                img.onerror = () => resolve(null);
+                img.src = URL.createObjectURL(file);
+            });
+        };
+
+        window.parseOcrText = function(text) {
+            const lines = text.split("\n");
+
+            const idMatch = text.match(/\b\d{12}\b/);
+            if (idMatch && document.getElementById('cccd')) {
+                document.getElementById('cccd').value = idMatch[0];
+            }
+
+            const dobMatch = text.match(/\d{2}\/\d{2}\/\d{4}/);
+            if (dobMatch && document.getElementById('dob')) {
+                document.getElementById('dob').value = dobMatch[0];
+            }
+
+            if (document.getElementById('gender')) {
+                if (text.includes("Nam")) document.getElementById('gender').value = "Nam";
+                else if (text.includes("Nữ")) document.getElementById('gender').value = "Nữ";
+            }
+
+            let fullname = "";
+            for (let l of lines) {
+                l = l.trim();
+                if (l.length > 5 && /^[A-ZÀ-Ỹ\s]+$/.test(l)) {
+                    fullname = l;
+                    break;
+                }
+            }
+            if (fullname && document.getElementById('name')) {
+                document.getElementById('name').value = fullname;
+            }
+
+            let diachi = "";
+            let start = false;
+            for (let l of lines) {
+                if (l.includes("Nơi thường trú")) start = true;
+                if (start) diachi += l + " ";
+            }
+            if (diachi && document.getElementById('address')) {
+                document.getElementById('address').value = diachi.trim();
+            }
+        };
+
+        window.checkAndMatchResidentData = function() {
+            const nameVal = (document.getElementById('name')?.value || '').trim().toUpperCase();
+            const cccdVal = (document.getElementById('cccd')?.value || '').trim();
+            const banner = document.getElementById('ecoHomeVerificationBanner');
+
+            if (!banner) return;
+
+            if (!nameVal && !cccdVal) {
+                banner.className = "hidden";
+                return;
+            }
+
+            const matched = window.residents.find(r => 
+                (cccdVal && r.cccd === cccdVal) || 
+                (nameVal && r.name.toUpperCase() === nameVal)
+            );
+
+            if (matched) {
+                banner.className = "p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 text-xs space-y-1 block";
+                banner.innerHTML = `
+                    <div class="font-bold text-emerald-400 text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-check text-base"></i> ✓ Xác thực thành công cư dân EcoHome Nhơn Bình
+                    </div>
+                    <div class="text-slate-200">
+                        Căn hộ: <strong class="text-white">${matched.unit}</strong> | 
+                        Chủ hộ: <strong class="text-white">${matched.name}</strong> | 
+                        Diện tích: <strong class="text-white">${matched.area} m²</strong>
+                    </div>
+                    <div class="text-[11px] text-emerald-400/80">Trạng thái: Sẵn sàng xác nhận check-in</div>
+                `;
+            } else {
+                banner.className = "p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 text-xs space-y-1 block";
+                banner.innerHTML = `
+                    <div class="font-bold text-amber-400 text-sm flex items-center gap-1.5">
+                        <i class="fa-solid fa-circle-question text-base"></i> Chưa tìm thấy thông tin trùng khớp trong danh sách cư dân
+                    </div>
+                    <div class="text-slate-300 text-[11px]">Vui lòng kiểm tra lại Họ tên hoặc Số CCCD, hoặc dùng tìm kiếm thủ công.</div>
+                `;
+            }
+        };
+
+        window.confirmCheckinFromForm = function() {
+            const nameVal = (document.getElementById('name')?.value || '').trim().toUpperCase();
+            const cccdVal = (document.getElementById('cccd')?.value || '').trim();
+
+            if (!nameVal && !cccdVal) {
+                window.toast("Vui lòng quét CCCD hoặc nhập Họ tên / Số CCCD!");
+                return;
+            }
+
+            let matched = window.residents.find(r => 
+                (cccdVal && r.cccd === cccdVal) || 
+                (nameVal && r.name.toUpperCase() === nameVal)
+            );
+
+            if (!matched) {
+                matched = window.residents.find(r => !r.checkedIn);
+            }
+
+            if (matched) {
+                matched.checkedIn = true;
+                matched.mode = "Camera AI OCR";
+                matched.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+                if (cccdVal) matched.cccd = cccdVal;
+                if (nameVal) matched.name = nameVal;
+                matched.cccdVerified = true;
+
+                window.lastCheckedInUnit = matched.unit;
+                window.selectedResidentUnit = matched.unit;
+
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.toast(`Thành công! Check-in Căn ${matched.unit} - ${matched.name}`);
+
+                const modalBody = document.getElementById('aiCccdModalBody');
+                if (modalBody) {
+                    modalBody.innerHTML = `
+                        <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400 font-bold flex items-center gap-2">
+                            <i class="fa-solid fa-circle-check text-base"></i> ✓ Cư dân EcoHome Nhơn Bình xác thực thành công!
+                        </div>
+                        <div class="space-y-1.5 pt-2 text-slate-200">
+                            <p><strong>Căn hộ:</strong> <span class="text-emerald-400 font-bold">${matched.unit}</span></p>
+                            <p><strong>Họ và tên:</strong> ${matched.name}</p>
+                            <p><strong>Số CCCD:</strong> ${matched.cccd}</p>
+                            <p><strong>Ngày sinh:</strong> ${document.getElementById('dob')?.value || '---'}</p>
+                            <p><strong>Giới tính:</strong> ${document.getElementById('gender')?.value || '---'}</p>
+                            <p><strong>Diện tích m²:</strong> ${matched.area} m²</p>
+                            <p><strong>Thời gian check-in:</strong> ${matched.checkinTime}</p>
+                        </div>
+                    `;
+                    document.getElementById('aiCccdModal').classList.remove('hidden');
+                }
+            } else {
+                window.toast("Không tìm thấy căn hộ phù hợp để điểm danh!");
+            }
+        };
+
+        window.handleManualCheckinSearch = function() {
+            const q = (document.getElementById('quickSearchInput')?.value || '').trim().toLowerCase();
+            if (!q) return;
+            const res = window.residents.find(r => r.unit.toLowerCase().includes(q) || r.name.toLowerCase().includes(q) || r.cccd.includes(q));
+            if (res) {
+                if (document.getElementById('name')) document.getElementById('name').value = res.name;
+                if (document.getElementById('cccd')) document.getElementById('cccd').value = res.cccd !== '-' ? res.cccd : '';
+                window.checkAndMatchResidentData();
+                window.toast(`Đã hiển thị thông tin căn hộ ${res.unit}`);
+            } else {
+                window.toast("Không tìm thấy căn hộ tương ứng!");
+            }
+        };
+
+        window.closeAiModal = function() {
+            const modal = document.getElementById('aiCccdModal');
+            if (modal) modal.classList.add('hidden');
+        };
+
+        window.goToVotingPortalAfterCheckin = function() {
+            window.closeAiModal();
+            window.selectedResidentUnit = window.lastCheckedInUnit;
+            window.switchView('resident');
+            window.toast(`Đã chuyển sang Cổng Biểu Quyết cho căn ${window.selectedResidentUnit}`);
+        };
+
+        window.updateCharts = function() {
+            const totalArea = window.residents.reduce((sum, r) => sum + (r.area || 0), 0);
+            const checkedArea = window.residents.filter(r => r.checkedIn).reduce((sum, r) => sum + (r.area || 0), 0);
+            const remainingArea = Math.max(0, totalArea - checkedArea);
+
+            /* 1. Quorum Chart */
+            const quorumCtx = document.getElementById('quorumChart')?.getContext('2d');
+            if (quorumCtx) {
+                if (window.quorumChartInstance) window.quorumChartInstance.destroy();
+
+                window.quorumChartInstance = new Chart(quorumCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Diện tích Đã Check-in (m²)', 'Diện tích Chưa Check-in (m²)'],
+                        datasets: [{
+                            data: [checkedArea.toFixed(1), remainingArea.toFixed(1)],
+                            backgroundColor: ['#10b981', '#334155'],
+                            borderColor: ['#059669', '#1e293b'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: '#94a3b8', font: { size: 10 } } }
+                        }
+                    }
+                });
+            }
+
+            /* 2. Resolutions Chart */
+            const resCtx = document.getElementById('resolutionsChart')?.getContext('2d');
+            if (resCtx) {
+                if (window.resolutionsChartInstance) window.resolutionsChartInstance.destroy();
+
+                const labels = window.resolutions.map((r, idx) => `Nghị quyết ${idx + 1}`);
+                const yesData = window.resolutions.map(r => {
+                    return window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'yes').length;
+                });
+                const noData = window.resolutions.map(r => {
+                    return window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'no').length;
+                });
+
+                window.resolutionsChartInstance = new Chart(resCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Tán thành', data: yesData, backgroundColor: '#10b981' },
+                            { label: 'Không tán thành', data: noData, backgroundColor: '#f43f5e' }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            x: { ticks: { color: '#94a3b8' }, grid: { color: '#1e293b' } },
+                            y: { ticks: { color: '#94a3b8', stepSize: 1 }, grid: { color: '#1e293b' } }
+                        },
+                        plugins: {
+                            legend: { position: 'top', labels: { color: '#94a3b8', font: { size: 10 } } }
+                        }
+                    }
+                });
+            }
+        };
+
         window.syncAllUI = function() {
-            /* Update Header DOM */
             if (document.getElementById('headerBadge')) document.getElementById('headerBadge').innerText = window.buildingConfig.badge;
             if (document.getElementById('headerSubtitle')) document.getElementById('headerSubtitle').innerText = window.buildingConfig.subtitle;
             if (document.getElementById('headerDomain')) document.getElementById('headerDomain').innerText = window.buildingConfig.domain;
 
-            /* Calculations */
             const totalUnits = window.residents.length;
             const checkedInUnits = window.residents.filter(r => r.checkedIn).length;
             const totalArea = window.residents.reduce((sum, r) => sum + (r.area || 0), 0);
@@ -803,56 +1150,61 @@
             const quorumPercent = totalArea > 0 ? ((checkedArea / totalArea) * 100).toFixed(1) : "0.0";
             const checkedInUnitPercent = totalUnits > 0 ? ((checkedInUnits / totalUnits) * 100).toFixed(1) : "0.0";
 
-            /* Landing View Updates */
-            document.getElementById('statTotalUnits').innerText = totalUnits;
-            document.getElementById('statCheckedInUnits').innerText = checkedInUnits;
-            document.getElementById('statCheckedInPercent').innerText = `${checkedInUnitPercent}% tổng số căn`;
-            document.getElementById('statTotalArea').innerText = `${totalArea.toFixed(1)} m²`;
-            document.getElementById('statCheckedInArea').innerText = `Check-in: ${checkedArea.toFixed(1)} m²`;
-            document.getElementById('statQuorumPercent').innerText = `${quorumPercent}%`;
+            if (document.getElementById('statTotalUnits')) document.getElementById('statTotalUnits').innerText = totalUnits;
+            if (document.getElementById('statCheckedInUnits')) document.getElementById('statCheckedInUnits').innerText = checkedInUnits;
+            if (document.getElementById('statCheckedInPercent')) document.getElementById('statCheckedInPercent').innerText = `${checkedInUnitPercent}% tổng số căn`;
+            if (document.getElementById('statTotalArea')) document.getElementById('statTotalArea').innerText = `${totalArea.toFixed(1)} m²`;
+            if (document.getElementById('statCheckedInArea')) document.getElementById('statCheckedInArea').innerText = `Check-in: ${checkedArea.toFixed(1)} m²`;
+            if (document.getElementById('statQuorumPercent')) document.getElementById('statQuorumPercent').innerText = `${quorumPercent}%`;
 
             const isQuorumMet = parseFloat(quorumPercent) >= 50.0;
             const quorumStatusEl = document.getElementById('statQuorumStatus');
-            if (isQuorumMet) {
-                quorumStatusEl.innerText = "✓ ĐỦ ĐIỀU KIỆN TIẾN HÀNH (≥ 50% m²)";
-                quorumStatusEl.className = "text-xs text-emerald-400 font-bold mt-1";
-            } else {
-                quorumStatusEl.innerText = "Chưa đủ quorum (Cần ≥ 50% m²)";
-                quorumStatusEl.className = "text-xs text-amber-400 font-medium mt-1";
+            if (quorumStatusEl) {
+                if (isQuorumMet) {
+                    quorumStatusEl.innerText = "✓ ĐỦ ĐIỀU KIỆN TIẾN HÀNH (≥ 50% m²)";
+                    quorumStatusEl.className = "text-xs text-emerald-400 font-bold mt-1";
+                } else {
+                    quorumStatusEl.innerText = "Chưa đủ quorum (Cần ≥ 50% m²)";
+                    quorumStatusEl.className = "text-xs text-amber-400 font-medium mt-1";
+                }
             }
 
-            /* Landing Resolutions Container */
             const resContainer = document.getElementById('landingResolutionsContainer');
             if (resContainer) {
-                resContainer.innerHTML = window.resolutions.map(r => `
-                    <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
-                        <div class="flex justify-between items-start gap-2">
-                            <h4 class="font-bold text-sm text-slate-100">${r.title}</h4>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${r.status === 'open' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-700 text-slate-400'}">${r.status === 'open' ? 'Đang mở' : 'Đã đóng'}</span>
+                resContainer.innerHTML = window.resolutions.map(r => {
+                    const yesVotes = window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'yes').length;
+                    const noVotes = window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'no').length;
+
+                    return `
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-bold text-sm text-slate-100">${r.title}</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase ${r.status === 'open' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-700 text-slate-400'}">${r.status === 'open' ? 'Đang mở' : 'Đã đóng'}</span>
+                            </div>
+                            <div class="flex gap-4 text-xs text-slate-300">
+                                <span><i class="fa-solid fa-thumbs-up text-emerald-400 mr-1"></i> Tán thành: <strong>${yesVotes}</strong> căn</span>
+                                <span><i class="fa-solid fa-thumbs-down text-rose-400 mr-1"></i> Không tán thành: <strong>${noVotes}</strong> căn</span>
+                            </div>
                         </div>
-                        <div class="flex gap-4 text-xs text-slate-300">
-                            <span><i class="fa-solid fa-thumbs-up text-emerald-400 mr-1"></i> Tán thành: <strong>${r.yesVotes}</strong></span>
-                            <span><i class="fa-solid fa-thumbs-down text-rose-400 mr-1"></i> Không tán thành: <strong>${r.noVotes}</strong></span>
-                        </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
-            /* Resident Unit Selector Sync */
             const resSelect = document.getElementById('residentUnitSelect');
             if (resSelect) {
                 resSelect.innerHTML = window.residents.map(r => `
                     <option value="${r.unit}" ${r.unit === window.selectedResidentUnit ? 'selected' : ''}>
-                        ${r.unit} - ${r.name} (${r.area}m²)
+                        ${r.unit} - ${r.name} (${r.area}m²) ${r.checkedIn ? '[Đã Check-in]' : '[Chưa Check-in]'}
                     </option>
                 `).join('');
                 window.updateResidentPortalUI();
             }
 
-            /* Live Check-in Feed Sync */
             const feed = document.getElementById('liveCheckinFeed');
             const checkedList = window.residents.filter(r => r.checkedIn);
-            document.getElementById('checkinCountBadge').innerText = `${checkedList.length} đã checkin`;
+            if (document.getElementById('checkinCountBadge')) {
+                document.getElementById('checkinCountBadge').innerText = `${checkedList.length} đã checkin`;
+            }
             if (feed) {
                 if (checkedList.length === 0) {
                     feed.innerHTML = `<div class="text-xs text-slate-500 text-center py-8">Chưa có lượt điểm danh nào</div>`;
@@ -872,231 +1224,8 @@
                 }
             }
 
-            /* Render Admin Resident Table */
-            window.renderAdminResidentTable();
-        };
-
-        const imageInput = document.getElementById('imageInput');
-        if (imageInput) {
-            imageInput.onchange = (e) => {
-                window.imageFile = e.target.files[0];
-                const preview = document.getElementById('previewImage');
-                if (preview && window.imageFile) {
-                    preview.src = URL.createObjectURL(window.imageFile);
-                    preview.style.display = "block";
-                }
-                /* Trigger OCR immediately when image is selected */
-                if (window.imageFile) {
-                    window.scanOCR();
-                }
-            };
-        }
-
-        window.scanOCR = async function() {
-            if (!window.imageFile) {
-                window.toast("Vui lòng chọn hoặc chụp ảnh CCCD trước!");
-                return;
-            }
-
-            const loading = document.getElementById('ocrLoading');
-            if (loading) loading.style.display = "block";
-
-            try {
-                const result = await Tesseract.recognize(window.imageFile, "vie+eng");
-                if (loading) loading.style.display = "none";
-                const text = result?.data?.text || "";
-                window.parseCCCD(text);
-                window.toast("Đã nhận diện dữ liệu CCCD từ ảnh!");
-            } catch (err) {
-                if (loading) loading.style.display = "none";
-                console.error("OCR Error:", err);
-                window.toast("Lỗi nhận diện OCR Tesseract!");
-            }
-        };
-
-        window.parseCCCD = function(text) {
-            const lines = text.split("\n");
-
-            /* Extract 12-digit CCCD ID */
-            const idMatch = text.match(/\b\d{12}\b/);
-            if (idMatch && document.getElementById('cccd')) {
-                document.getElementById('cccd').value = idMatch[0];
-            }
-
-            /* Extract Date of Birth */
-            const dobMatch = text.match(/\d{2}\/\d{2}\/\d{4}/);
-            if (dobMatch && document.getElementById('dob')) {
-                document.getElementById('dob').value = dobMatch[0];
-            }
-
-            /* Extract Gender */
-            if (document.getElementById('gender')) {
-                if (text.includes("Nam")) document.getElementById('gender').value = "Nam";
-                else if (text.includes("Nữ")) document.getElementById('gender').value = "Nữ";
-            }
-
-            /* Extract Full Name */
-            let fullname = "";
-            for (let l of lines) {
-                l = l.trim();
-                if (l.length > 5 && /^[A-ZÀ-Ỹ\s]+$/.test(l)) {
-                    fullname = l;
-                    break;
-                }
-            }
-            if (fullname && document.getElementById('name')) {
-                document.getElementById('name').value = fullname;
-            }
-
-            /* Extract Address */
-            let diachi = "";
-            let start = false;
-            for (let l of lines) {
-                if (l.includes("Nơi thường trú")) start = true;
-                if (start) diachi += l + " ";
-            }
-            if (diachi && document.getElementById('address')) {
-                document.getElementById('address').value = diachi.trim();
-            }
-
-            /* Match against Loaded EcoHome Nhơn Bình Database */
-            window.checkAndMatchResidentData();
-        };
-
-        window.checkAndMatchResidentData = function() {
-            const nameVal = document.getElementById('name')?.value.trim();
-            const cccdVal = document.getElementById('cccd')?.value.trim();
-            const banner = document.getElementById('ecoHomeVerificationBanner');
-
-            if (!banner) return null;
-
-            if (!nameVal && !cccdVal) {
-                banner.classList.add('hidden');
-                return null;
-            }
-
-            let matched = window.residents.find(r => 
-                (cccdVal && r.cccd === cccdVal) || 
-                (nameVal && r.name.toLowerCase() === nameVal.toLowerCase())
-            );
-
-            if (!matched && nameVal) {
-                /* Fuzzy match for name */
-                matched = window.residents.find(r => r.name.toLowerCase().includes(nameVal.toLowerCase()) || nameVal.toLowerCase().includes(r.name.toLowerCase()));
-            }
-
-            if (matched) {
-                banner.className = "p-4 rounded-xl border border-emerald-500/40 bg-emerald-500/10 text-emerald-300 block space-y-1 shadow-lg";
-                banner.innerHTML = `
-                    <div class="flex items-center gap-2 font-extrabold text-sm text-emerald-400">
-                        <i class="fa-solid fa-circle-check text-base"></i>
-                        XÁC THỰC THÀNH CÔNG CƯ DÂN ECOHOME NHƠN BÌNH
-                    </div>
-                    <div class="text-xs text-slate-200 pt-1">
-                        <p>• <strong>Căn hộ:</strong> <span class="font-bold text-white">${matched.unit}</span> (${matched.area} m²)</p>
-                        <p>• <strong>Chủ hộ đăng ký:</strong> <span class="font-bold text-white">${matched.name}</span></p>
-                        <p>• <strong>Trạng thái điểm danh:</strong> ${matched.checkedIn ? '<span class="text-amber-400 font-bold">Đã điểm danh trước đó</span>' : '<span class="text-emerald-400 font-bold">Sẵn sàng Check-in ngay</span>'}</p>
-                    </div>
-                `;
-                return matched;
-            } else {
-                banner.className = "p-4 rounded-xl border border-amber-500/40 bg-amber-500/10 text-amber-300 block space-y-1";
-                banner.innerHTML = `
-                    <div class="flex items-center gap-2 font-bold text-xs text-amber-400">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                        Chưa tìm thấy căn hộ trùng khớp hoàn toàn trong danh sách EcoHome Nhơn Bình
-                    </div>
-                    <p class="text-[11px] text-slate-400">Vui lòng kiểm tra lại họ tên hoặc nhập mã căn hộ ở mục Tìm kiếm thủ công bên dưới.</p>
-                `;
-                return null;
-            }
-        };
-
-        window.confirmCheckinFromForm = function() {
-            const nameVal = document.getElementById('name')?.value.trim();
-            const cccdVal = document.getElementById('cccd')?.value.trim();
-
-            if (!nameVal && !cccdVal) {
-                window.toast("Vui lòng chụp/quét CCCD hoặc điền họ tên!");
-                return;
-            }
-
-            const matched = window.checkAndMatchResidentData();
-            window.processCheckinResult(cccdVal, nameVal, "AI Quét CCCD / OCR", {
-                fullName: nameVal,
-                idNumber: cccdVal,
-                dateOfBirth: document.getElementById('dob')?.value || "15/08/1988",
-                sex: document.getElementById('gender')?.value || "Nam",
-                address: document.getElementById('address')?.value || ""
-            }, matched);
-        };
-
-        window.handleManualCheckinSearch = function() {
-            const q = document.getElementById('quickSearchInput').value.trim().toLowerCase();
-            if (!q) return;
-            const res = window.residents.find(r => r.unit.toLowerCase().includes(q) || r.name.toLowerCase().includes(q) || r.cccd.includes(q));
-            if (res) {
-                document.getElementById('name').value = res.name;
-                document.getElementById('cccd').value = res.cccd !== '-' ? res.cccd : '';
-                window.checkAndMatchResidentData();
-                window.toast(`Đã chọn căn hộ ${res.unit} - ${res.name}`);
-            } else {
-                window.toast("Không tìm thấy căn hộ hoặc cư dân tương ứng!");
-            }
-        };
-
-        window.processCheckinResult = function(cccd, name, mode, payloadInfo, predefinedMatched) {
-            let matched = predefinedMatched || window.residents.find(r => (cccd && r.cccd === cccd) || (name && r.name.toLowerCase() === name.toLowerCase()));
-            if (!matched) {
-                matched = window.residents.find(r => !r.checkedIn);
-            }
-
-            if (matched) {
-                matched.checkedIn = true;
-                matched.mode = mode;
-                matched.checkinTime = new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
-                if (cccd && cccd !== '-') matched.cccd = cccd;
-                matched.cccdVerified = true;
-
-                window.lastCheckedInUnit = matched.unit;
-                window.selectedResidentUnit = matched.unit;
-
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.toast(`Thành công! Điểm danh Căn ${matched.unit} - ${matched.name}`);
-
-                /* Render Result Modal */
-                const modalBody = document.getElementById('aiCccdModalBody');
-                if (modalBody) {
-                    modalBody.innerHTML = `
-                        <div class="p-3 bg-emerald-500/10 border border-emerald-500/30 rounded-xl text-emerald-400">
-                            <strong>✓ XÁC THỰC THÀNH CÔNG CƯ DÂN ECOHOME NHƠN BÌNH!</strong>
-                        </div>
-                        <div class="space-y-1 pt-2 text-slate-200">
-                            <p><strong>Căn hộ:</strong> <span class="text-emerald-400 font-bold">${matched.unit}</span></p>
-                            <p><strong>Họ tên chủ hộ:</strong> ${payloadInfo?.fullName || matched.name}</p>
-                            <p><strong>Số CCCD:</strong> ${payloadInfo?.idNumber || matched.cccd}</p>
-                            <p><strong>Diện tích m²:</strong> ${matched.area} m²</p>
-                            <p><strong>Thời gian check-in:</strong> ${matched.checkinTime}</p>
-                            <p><strong>Hình thức:</strong> ${mode}</p>
-                        </div>
-                    `;
-                    document.getElementById('aiCccdModal').classList.remove('hidden');
-                }
-            } else {
-                window.toast("Không tìm thấy thông tin căn hộ trong hệ thống EcoHome Nhơn Bình!");
-            }
-        };
-
-        window.goToVotingPortalAfterCheckin = function() {
-            window.closeAiModal();
-            window.selectedResidentUnit = window.lastCheckedInUnit;
-            window.switchView('resident');
-            window.toast(`Bắt đầu biểu quyết cho căn ${window.selectedResidentUnit}`);
-        };
-
-        window.closeAiModal = function() {
-            document.getElementById('aiCccdModal').classList.add('hidden');
+            window.updateCharts();
+            if (window.isAdminUnlocked) window.renderAdminResidentTable();
         };
 
         window.onResidentUnitSelected = function() {
@@ -1117,92 +1246,109 @@
                         <span class="ml-2 text-xs text-slate-400">(${current.area} m²)</span>
                     </div>
                     <div>
-                        ${current.checkedIn ? '<span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Đã Check-in</span>' : '<span class="text-xs text-amber-400 font-bold"><i class="fa-solid fa-clock"></i> Chưa Check-in</span>'}
+                        ${current.checkedIn ? '<span class="text-xs text-emerald-400 font-bold"><i class="fa-solid fa-circle-check"></i> Đã Check-in (Hợp lệ biểu quyết)</span>' : '<span class="text-xs text-amber-400 font-bold"><i class="fa-solid fa-clock"></i> Chưa Check-in (Vui lòng check-in trước)</span>'}
                     </div>
                 `;
             }
 
-            /* Render Resident Resolutions List */
+            if (!current) return;
+            if (!current.votes) current.votes = { resolutions: {}, candidates: null };
+
             const resBox = document.getElementById('residentResolutionsList');
             if (resBox) {
-                resBox.innerHTML = window.resolutions.map(r => `
-                    <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
-                        <h4 class="font-bold text-sm text-white">${r.title}</h4>
-                        <div class="flex items-center gap-2">
-                            <button onclick="voteResolution('${r.id}', 'yes')" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition">
-                                <i class="fa-solid fa-thumbs-up mr-1"></i> Tán Thành (${r.yesVotes})
-                            </button>
-                            <button onclick="voteResolution('${r.id}', 'no')" class="flex-1 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition">
-                                <i class="fa-solid fa-thumbs-down mr-1"></i> Không Tán Thành (${r.noVotes})
-                            </button>
+                resBox.innerHTML = window.resolutions.map(r => {
+                    const currentVote = current.votes.resolutions[r.id];
+                    return `
+                        <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 space-y-3">
+                            <h4 class="font-bold text-sm text-white">${r.title}</h4>
+                            <div class="flex items-center gap-2">
+                                <button onclick="voteResolution('${r.id}', 'yes')" class="flex-1 py-2 ${currentVote === 'yes' ? 'bg-emerald-600 ring-2 ring-emerald-400' : 'bg-slate-800 hover:bg-slate-700'} text-white font-bold rounded-xl text-xs transition">
+                                    <i class="fa-solid fa-thumbs-up mr-1 text-emerald-400"></i> Tán Thành ${currentVote === 'yes' ? '(Đã chọn)' : ''}
+                                </button>
+                                <button onclick="voteResolution('${r.id}', 'no')" class="flex-1 py-2 ${currentVote === 'no' ? 'bg-rose-600 ring-2 ring-rose-400' : 'bg-slate-800 hover:bg-slate-700'} text-white font-bold rounded-xl text-xs transition">
+                                    <i class="fa-solid fa-thumbs-down mr-1 text-rose-400"></i> Không Tán Thành ${currentVote === 'no' ? '(Đã chọn)' : ''}
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
 
-            /* Render Candidates List */
             const candBox = document.getElementById('residentCandidatesList');
             if (candBox) {
-                candBox.innerHTML = window.candidates.map(c => `
-                    <div class="p-4 rounded-xl bg-slate-900/90 border border-slate-800 flex items-center justify-between">
-                        <div>
-                            <h4 class="font-bold text-sm text-white">${c.name}</h4>
-                            <p class="text-xs text-slate-400">Căn: ${c.unit} | ${c.exp}</p>
+                candBox.innerHTML = window.candidates.map(c => {
+                    const isSelected = current.votes.candidates === c.id;
+                    return `
+                        <div class="p-4 rounded-xl bg-slate-900/90 border ${isSelected ? 'border-purple-500 bg-purple-500/10' : 'border-slate-800'} flex items-center justify-between">
+                            <div>
+                                <h4 class="font-bold text-sm text-white">${c.name}</h4>
+                                <p class="text-xs text-slate-400">Căn: ${c.unit} | ${c.exp}</p>
+                            </div>
+                            <button onclick="voteCandidate('${c.id}')" class="px-4 py-2 ${isSelected ? 'bg-purple-600 font-bold' : 'bg-slate-800 hover:bg-slate-700'} text-white text-xs rounded-xl transition">
+                                ${isSelected ? '✓ Đã Bầu Chọn' : 'Bầu Chọn'}
+                            </button>
                         </div>
-                        <button onclick="voteCandidate('${c.id}')" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition">
-                            <i class="fa-solid fa-check mr-1"></i> Bầu Chọn (${c.votes})
-                        </button>
-                    </div>
-                `).join('');
+                    `;
+                }).join('');
             }
         };
 
-        window.voteResolution = function(id, type) {
-            const r = window.resolutions.find(item => item.id === id);
-            if (r) {
-                if (type === 'yes') r.yesVotes += 1;
-                else r.noVotes += 1;
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.toast("Đã ghi nhận biểu quyết!");
+        window.voteResolution = function(id, option) {
+            const current = window.residents.find(r => r.unit === window.selectedResidentUnit);
+            if (!current) return;
+            if (!current.checkedIn) {
+                window.toast("Căn hộ cần thực hiện Check-In trước khi biểu quyết!");
+                return;
             }
+            if (!current.votes) current.votes = { resolutions: {}, candidates: null };
+            current.votes.resolutions[id] = option;
+
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast(`Căn ${current.unit} đã biểu quyết thành công!`);
         };
 
         window.voteCandidate = function(id) {
-            const c = window.candidates.find(item => item.id === id);
-            if (c) {
-                c.votes += 1;
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.toast(`Đã bầu chọn cho ${c.name}!`);
+            const current = window.residents.find(r => r.unit === window.selectedResidentUnit);
+            if (!current) return;
+            if (!current.checkedIn) {
+                window.toast("Căn hộ cần thực hiện Check-In trước khi bầu cử!");
+                return;
             }
+            if (!current.votes) current.votes = { resolutions: {}, candidates: null };
+            current.votes.candidates = id;
+
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast(`Căn ${current.unit} đã bầu chọn BQT thành công!`);
         };
 
         window.unlockAdminPanel = function() {
-            const pwd = document.getElementById('adminPasswordInput').value;
+            const pwd = document.getElementById('adminPasswordInput')?.value || '';
             const validPwd = window.buildingConfig.adminPwd || "215151365";
             if (pwd === validPwd) {
                 window.isAdminUnlocked = true;
-                document.getElementById('adminAuthBox').classList.add('hidden');
-                document.getElementById('adminContentPanel').classList.remove('hidden');
-                
+                document.getElementById('adminAuthBox')?.classList.add('hidden');
+                document.getElementById('adminContentPanel')?.classList.remove('hidden');
+
                 if (document.getElementById('cfgBadge')) document.getElementById('cfgBadge').value = window.buildingConfig.badge;
                 if (document.getElementById('cfgSubtitle')) document.getElementById('cfgSubtitle').value = window.buildingConfig.subtitle;
                 if (document.getElementById('cfgDomain')) document.getElementById('cfgDomain').value = window.buildingConfig.domain;
-                if (document.getElementById('cfgAdminPwd')) document.getElementById('cfgAdminPwd').value = validPwd;
 
                 window.renderAdminResidentTable();
-                window.toast("Đã xác thực Admin thành công!");
+                window.toast("Xác thực quyền Quản trị viên thành công!");
             } else {
                 window.toast("Mật khẩu không chính xác! Vui lòng thử lại.");
             }
         };
 
         window.saveBuildingSettings = function() {
-            window.buildingConfig.badge = document.getElementById('cfgBadge').value.trim() || window.buildingConfig.badge;
-            window.buildingConfig.subtitle = document.getElementById('cfgSubtitle').value.trim() || window.buildingConfig.subtitle;
-            window.buildingConfig.domain = document.getElementById('cfgDomain').value.trim() || window.buildingConfig.domain;
-            window.buildingConfig.adminPwd = document.getElementById('cfgAdminPwd').value.trim() || window.buildingConfig.adminPwd;
+            window.buildingConfig.badge = document.getElementById('cfgBadge')?.value.trim() || window.buildingConfig.badge;
+            window.buildingConfig.subtitle = document.getElementById('cfgSubtitle')?.value.trim() || window.buildingConfig.subtitle;
+            window.buildingConfig.domain = document.getElementById('cfgDomain')?.value.trim() || window.buildingConfig.domain;
+            if (document.getElementById('cfgAdminPwd')?.value.trim()) {
+                window.buildingConfig.adminPwd = document.getElementById('cfgAdminPwd').value.trim();
+            }
 
             window.syncAllUI();
             window.saveStateToFirestore();
@@ -1214,7 +1360,7 @@
             if (!body) return;
 
             const filterStatus = document.getElementById('adminFilterStatus')?.value || 'all';
-            const query = document.getElementById('adminSearchInput')?.value.trim().toLowerCase() || '';
+            const query = (document.getElementById('adminSearchInput')?.value || '').trim().toLowerCase();
 
             let list = window.residents.filter(r => {
                 if (filterStatus === 'checked' && !r.checkedIn) return false;
@@ -1228,7 +1374,8 @@
                 return true;
             });
 
-            document.getElementById('adminTableCountBadge').innerText = `${list.length}/${window.residents.length}`;
+            const badge = document.getElementById('adminTableCountBadge');
+            if (badge) badge.innerText = `${list.length}/${window.residents.length}`;
 
             if (list.length === 0) {
                 body.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500 text-xs">Không tìm thấy căn hộ thỏa mãn điều kiện</td></tr>`;
@@ -1286,7 +1433,8 @@
                 area: area,
                 checkedIn: false,
                 mode: "-",
-                checkinTime: "-"
+                checkinTime: "-",
+                votes: { resolutions: {}, candidates: null }
             });
 
             window.syncAllUI();
@@ -1341,29 +1489,19 @@
             );
         };
 
-        window.clearAllResidentsData = function() {
-            window.showCustomConfirm(
-                "Xóa Toàn Bộ Dữ Liệu",
-                "Hành động này sẽ xóa toàn bộ danh sách căn hộ. Bạn có chắc chắn không?",
-                () => {
-                    window.residents = [];
-                    window.syncAllUI();
-                    window.saveStateToFirestore();
-                    window.toast("Đã xóa sạch dữ liệu!");
-                }
-            );
-        };
-
         window.openImportWizardModal = function() {
-            document.getElementById('importModal').classList.remove('hidden');
+            const modal = document.getElementById('importModal');
+            if (modal) modal.classList.remove('hidden');
         };
 
         window.closeImportWizardModal = function() {
-            document.getElementById('importModal').classList.add('hidden');
+            const modal = document.getElementById('importModal');
+            if (modal) modal.classList.add('hidden');
             window.wizardRawMatrix = [];
             window.wizardHeaders = [];
-            document.getElementById('columnMappingSection').classList.add('hidden');
-            document.getElementById('btnExecuteWizardImport').disabled = true;
+            document.getElementById('columnMappingSection')?.classList.add('hidden');
+            const btn = document.getElementById('btnExecuteWizardImport');
+            if (btn) btn.disabled = true;
         };
 
         window.handleWizardFileSelected = function(event) {
@@ -1395,12 +1533,14 @@
                     window.wizardHeaders = matrix[headerIndex].map((h, idx) => h.toString().trim() || `Cột ${idx + 1}`);
                     window.wizardRawMatrix = matrix.slice(headerIndex + 1).filter(row => row.some(c => c.toString().trim() !== ""));
 
-                    document.getElementById('detectedSheetName').innerText = `Sheet: ${sheetName}`;
+                    const sheetBadge = document.getElementById('detectedSheetName');
+                    if (sheetBadge) sheetBadge.innerText = `Sheet: ${sheetName}`;
                     window.populateColumnSelects();
                     window.updateWizardPreview();
 
-                    document.getElementById('columnMappingSection').classList.remove('hidden');
-                    document.getElementById('btnExecuteWizardImport').disabled = false;
+                    document.getElementById('columnMappingSection')?.classList.remove('hidden');
+                    const btn = document.getElementById('btnExecuteWizardImport');
+                    if (btn) btn.disabled = false;
                 } catch (err) {
                     console.error(err);
                     window.toast("Lỗi đọc file: " + err.message);
@@ -1417,33 +1557,36 @@
             const selArea = document.getElementById('mapColArea');
             const selCccd = document.getElementById('mapColCccd');
 
-            selUnit.innerHTML = options;
-            selName.innerHTML = options;
-            selArea.innerHTML = options;
-            selCccd.innerHTML = `<option value="-1">-- Không chọn --</option>` + options;
+            if (selUnit) selUnit.innerHTML = options;
+            if (selName) selName.innerHTML = options;
+            if (selArea) selArea.innerHTML = options;
+            if (selCccd) selCccd.innerHTML = `<option value="-1">-- Không chọn --</option>` + options;
 
             window.wizardHeaders.forEach((h, idx) => {
                 const lower = h.toLowerCase();
-                if (lower.includes('căn') || lower.includes('unit') || lower.includes('mã')) selUnit.value = idx;
-                if (lower.includes('tên') || lower.includes('name') || lower.includes('chủ')) selName.value = idx;
-                if (lower.includes('diện tích') || lower.includes('m2') || lower.includes('area')) selArea.value = idx;
-                if (lower.includes('cccd') || lower.includes('cmnd') || lower.includes('định danh')) selCccd.value = idx;
+                if ((lower.includes('căn') || lower.includes('unit') || lower.includes('mã')) && selUnit) selUnit.value = idx;
+                if ((lower.includes('tên') || lower.includes('name') || lower.includes('chủ')) && selName) selName.value = idx;
+                if ((lower.includes('diện tích') || lower.includes('m2') || lower.includes('area')) && selArea) selArea.value = idx;
+                if ((lower.includes('cccd') || lower.includes('cmnd') || lower.includes('định danh')) && selCccd) selCccd.value = idx;
             });
 
-            selUnit.onchange = window.updateWizardPreview;
-            selName.onchange = window.updateWizardPreview;
-            selArea.onchange = window.updateWizardPreview;
-            selCccd.onchange = window.updateWizardPreview;
+            if (selUnit) selUnit.onchange = window.updateWizardPreview;
+            if (selName) selName.onchange = window.updateWizardPreview;
+            if (selArea) selArea.onchange = window.updateWizardPreview;
+            if (selCccd) selCccd.onchange = window.updateWizardPreview;
         };
 
         window.updateWizardPreview = function() {
-            const colUnit = parseInt(document.getElementById('mapColUnit').value);
-            const colName = parseInt(document.getElementById('mapColName').value);
-            const colArea = parseInt(document.getElementById('mapColArea').value);
-            const colCccd = parseInt(document.getElementById('mapColCccd').value);
+            const colUnit = parseInt(document.getElementById('mapColUnit')?.value || 0);
+            const colName = parseInt(document.getElementById('mapColName')?.value || 0);
+            const colArea = parseInt(document.getElementById('mapColArea')?.value || 0);
+            const colCccd = parseInt(document.getElementById('mapColCccd')?.value || -1);
 
             const previewBody = document.getElementById('wizardPreviewTableBody');
-            document.getElementById('previewRecordCount').innerText = window.wizardRawMatrix.length;
+            const countEl = document.getElementById('previewRecordCount');
+            if (countEl) countEl.innerText = window.wizardRawMatrix.length;
+
+            if (!previewBody) return;
 
             const sampleRows = window.wizardRawMatrix.slice(0, 5);
             previewBody.innerHTML = sampleRows.map(row => {
@@ -1466,10 +1609,10 @@
         window.executeWizardImport = function() {
             if (!window.wizardRawMatrix || window.wizardRawMatrix.length === 0) return;
 
-            const colUnit = parseInt(document.getElementById('mapColUnit').value);
-            const colName = parseInt(document.getElementById('mapColName').value);
-            const colArea = parseInt(document.getElementById('mapColArea').value);
-            const colCccd = parseInt(document.getElementById('mapColCccd').value);
+            const colUnit = parseInt(document.getElementById('mapColUnit')?.value || 0);
+            const colName = parseInt(document.getElementById('mapColName')?.value || 0);
+            const colArea = parseInt(document.getElementById('mapColArea')?.value || 0);
+            const colCccd = parseInt(document.getElementById('mapColCccd')?.value || -1);
 
             const syncMode = document.querySelector('input[name="importSyncMode"]:checked')?.value || 'upsert';
 
@@ -1489,7 +1632,8 @@
                         area: a,
                         checkedIn: false,
                         mode: "-",
-                        checkinTime: "-"
+                        checkinTime: "-",
+                        votes: { resolutions: {}, candidates: null }
                     });
                 }
             });
@@ -1533,12 +1677,13 @@
                     newResidents.push({
                         unit: parts[0],
                         name: parts[1].toUpperCase(),
-                        cccd: '-',
+                        cccd: parts[3] || '-',
                         cccdVerified: false,
                         area: window.parseArea(parts[2]),
                         checkedIn: false,
                         mode: '-',
-                        checkinTime: '-'
+                        checkinTime: '-',
+                        votes: { resolutions: {}, candidates: null }
                     });
                 }
             });
@@ -1547,7 +1692,7 @@
                 window.syncAllUI();
                 window.saveStateToFirestore();
                 window.closeImportWizardModal();
-                window.toast(`Đã dán & nạp ${newResidents.length} căn hộ!`);
+                window.toast(`Đã nạp ${newResidents.length} căn hộ từ CSV!`);
             } else {
                 window.toast("Không đọc được chuỗi CSV!");
             }
@@ -1564,7 +1709,7 @@
             const ws = XLSX.utils.aoa_to_sheet(sampleData);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "DanhSachCanHo");
-            XLSX.writeFile(wb, "Template_DanhSach_CanHo_EcoHomeNhonBinh.xlsx");
+            XLSX.writeFile(wb, "Template_DanhSach_CanHo_EcoHome_NhonBinh.xlsx");
             window.toast("Đã tải file mẫu Excel!");
         };
 
@@ -1587,15 +1732,45 @@
             const ws = XLSX.utils.json_to_sheet(exportRows);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "BaoCaoDiemDanh");
-            XLSX.writeFile(wb, `BaoCao_Checkin_EcoHomeNhonBinh_${new Date().toISOString().slice(0,10)}.xlsx`);
-            window.toast("Đã xuất báo cáo Excel thành công!");
+            XLSX.writeFile(wb, `BaoCao_Checkin_EcoHome_NhonBinh_${new Date().toISOString().slice(0,10)}.xlsx`);
+            window.toast("Đã xuất báo cáo Excel Check-in!");
+        };
+
+        window.exportVotingToExcel = function() {
+            if (!window.residents || window.residents.length === 0) {
+                window.toast("Không có dữ liệu biểu quyết!");
+                return;
+            }
+
+            const data = window.residents.map(r => {
+                const resVotes = r.votes && r.votes.resolutions ? r.votes.resolutions : {};
+                const res1 = resVotes['res-1'] === 'yes' ? 'Tán thành' : (resVotes['res-1'] === 'no' ? 'Không tán thành' : 'Chưa biểu quyết');
+                const res2 = resVotes['res-2'] === 'yes' ? 'Tán thành' : (resVotes['res-2'] === 'no' ? 'Không tán thành' : 'Chưa biểu quyết');
+                const candidate = r.votes && r.votes.candidates ? (window.candidates.find(c => c.id === r.votes.candidates)?.name || r.votes.candidates) : 'Chưa bầu';
+
+                return {
+                    "Mã Căn Hộ": r.unit,
+                    "Chủ Hộ": r.name,
+                    "Diện Tích (m²)": r.area,
+                    "Trạng Thái Check-In": r.checkedIn ? "Đã Check-In" : "Chưa Check-In",
+                    "Nghị Quyết 1": res1,
+                    "Nghị Quyết 2": res2,
+                    "Bầu Cử BQT": candidate
+                };
+            });
+
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "KetQuaBieuQuyet");
+            XLSX.writeFile(wb, `KetQua_BieuQuyet_EcoHome_NhonBinh_${new Date().toISOString().slice(0,10)}.xlsx`);
+            window.toast("Đã xuất Excel kết quả biểu quyết!");
         };
 
         window.addNewResolutionPrompt = function() {
             const title = prompt("Nhập tên / nội dung Nghị Quyết mới:");
             if (title && title.trim()) {
                 const id = 'res-' + Date.now();
-                window.resolutions.push({ id, title: title.trim(), yesVotes: 0, noVotes: 0, status: 'open' });
+                window.resolutions.push({ id, title: title.trim(), status: 'open' });
                 window.syncAllUI();
                 window.saveStateToFirestore();
                 window.toast("Đã thêm Nghị Quyết mới!");
@@ -1605,8 +1780,6 @@
         window.addEventListener('load', () => {
             window.initFirebaseSync();
             window.syncAllUI();
-            /* Open Check-in by default */
-            window.switchView('checkin');
         });
     </script>
 </body>
