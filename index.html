@@ -739,6 +739,26 @@
         let isSigning = false;
         let sigCtx = null;
 
+        // Smart Helper: Normalize Vietnamese strings to remove tones/accents for robust name matching
+        window.removeVietnameseTones = function(str) {
+            if (!str) return '';
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
+            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
+            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
+            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
+            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
+            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
+            str = str.replace(/Đ/g, "D");
+            return str.trim().toUpperCase();
+        };
+
         window.addAuditLog = function(action, details) {
             const entry = {
                 timestamp: new Date().toLocaleString('vi-VN'),
@@ -1065,44 +1085,77 @@
                         const text = result?.data?.text || "";
                         const idMatch = text.match(/\b\d{12}\b/);
                         if (idMatch) extractedCccd = idMatch[0];
+
+                        const lines = text.split("\n");
+                        for (let l of lines) {
+                            l = l.trim();
+                            if (l.length > 5 && /^[A-ZÀ-Ỹ\s]+$/.test(l)) {
+                                extractedName = l.toUpperCase();
+                                break;
+                            }
+                        }
                     }
                 } catch (e) {
                     console.warn("OCR Error:", e);
                 }
             }
 
-            let matched = window.residents.find(r => 
-                (extractedCccd && r.cccd === extractedCccd) || 
-                (extractedName && r.name.toUpperCase().includes(extractedName))
-            );
+            // Enhanced Smart Name & CCCD Matching Algorithm
+            const normExtractedName = window.removeVietnameseTones(extractedName);
+            
+            let matched = window.residents.find(r => {
+                const normResidentName = window.removeVietnameseTones(r.name);
+                const matchCccd = extractedCccd && r.cccd && r.cccd === extractedCccd;
+                const matchNameExact = normExtractedName && normResidentName === normExtractedName;
+                const matchNameContains = normExtractedName && normResidentName.length > 3 && (normResidentName.includes(normExtractedName) || normExtractedName.includes(normResidentName));
+                
+                return matchCccd || matchNameExact || matchNameContains;
+            });
 
             if (matched) {
+                // Auto-fill 12-digit CCCD and update Resident Data in list
+                if (extractedCccd && extractedCccd.length === 12) {
+                    matched.cccd = extractedCccd;
+                    matched.cccdVerified = true;
+                }
+
                 window.selectedResidentUnit = matched.unit;
+                
+                // Auto-select Unit in Dropdown
                 const loginResSel = document.getElementById('loginResidentUnitSelect');
                 if (loginResSel) {
                     loginResSel.value = matched.unit;
                 }
+                
+                // Auto-fill CCCD Field
                 const cccdInp = document.getElementById('loginResidentCccdInput');
-                if (cccdInp && extractedCccd) cccdInp.value = extractedCccd;
+                if (cccdInp) {
+                    cccdInp.value = matched.cccd !== "Chưa cập nhật" ? matched.cccd : extractedCccd;
+                }
+
+                // Sync data across all views and Firestore
+                window.syncAllUI();
+                window.saveStateToFirestore();
 
                 if (banner) {
                     banner.className = "text-xs p-3 rounded-xl bg-emerald-950/90 border border-emerald-500 text-emerald-200 space-y-1 glow-emerald";
                     banner.innerHTML = `
-                        <div class="font-bold text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> ĐÃ XÁC THỰC TƯ CÁCH CƯ DÂN CHÍNH CHỦ</div>
-                        <div>Căn hộ: <strong class="text-white font-mono">${matched.unit}</strong> - <strong class="text-white">${matched.name}</strong> (${matched.area} m²)</div>
-                        <div class="text-[11px] text-emerald-300">Trạng thái: ${matched.checkedIn ? '✓ Đã Check-in trước đó' : 'Chưa check-in. Bấm nút dưới để hoàn tất.'}</div>
+                        <div class="font-bold text-emerald-400 flex items-center gap-1.5"><i class="fa-solid fa-circle-check"></i> ĐÃ NHẬN DIỆN CHỦ SỞ HỮU: ${matched.name}</div>
+                        <div>Căn hộ: <strong class="text-white font-mono">${matched.unit}</strong> | Diện tích: <strong class="text-purple-300 font-bold">${matched.area} m²</strong></div>
+                        <div>Số CCCD (12 số) tự động cập nhật: <strong class="text-emerald-300 font-mono">${matched.cccd}</strong></div>
+                        <div class="text-[11px] text-emerald-300 font-semibold pt-1">✓ Bấm "Xác Nhận Check-In & Vào Cổng Biểu Quyết" bên dưới để hoàn tất.</div>
                     `;
                 }
-                window.toast(`✓ Đã xác thực tư cách cư dân căn ${matched.unit}`);
+                window.toast(`✓ Đã nhận diện chủ hộ ${matched.name} (Căn ${matched.unit})`);
             } else {
                 if (banner) {
                     banner.className = "text-xs p-3 rounded-xl bg-amber-950/80 border border-amber-500 text-amber-200 space-y-1";
                     banner.innerHTML = `
                         <div class="font-bold text-amber-400 flex items-center gap-1.5"><i class="fa-solid fa-triangle-exclamation"></i> CHƯA KHỚP SỔ BỘ CƯ DÂN</div>
-                        <div class="text-[11px]">Thông tin trích xuất: CCCD ${extractedCccd || 'N/A'} - ${extractedName || 'N/A'}. Vui lòng kiểm tra lại hoặc liên hệ BQT.</div>
+                        <div class="text-[11px]">Thông tin trích xuất: CCCD ${extractedCccd || 'N/A'} - Họ tên: ${extractedName || 'N/A'}. Vui lòng chọn mã căn hộ thủ công hoặc liên hệ BQT.</div>
                     `;
                 }
-                window.toast("⚠️ Chưa tìm thấy thông tin trùng khớp trong sổ bộ chung cư");
+                window.toast("⚠️ Chưa tìm thấy tên chủ sở hữu trùng khớp trong sổ bộ");
             }
         };
 
