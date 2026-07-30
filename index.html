@@ -1761,6 +1761,11 @@
         };
 
         window.exportOfficialPdfReport = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền xuất Biên Bản PDF!");
+                return;
+            }
+
             const totalUnits = window.residents.length;
             const checkedUnits = window.residents.filter(r => r.checkedIn).length;
             const totalArea = window.residents.reduce((sum, r) => sum + (r.area || 0), 0);
@@ -1807,6 +1812,11 @@
         };
 
         window.downloadSampleExcelTemplate = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền tải File Mẫu Excel!");
+                return;
+            }
+
             const sampleData = [
                 ["Mã Căn Hộ", "Họ Và Tên Chủ Hộ", "Diện Tích m2", "Số CCCD", "Số Điện Thoại"],
                 ["B1-0716", "NGUYỄN VĂN AN", 75.5, "052092001111", "0912345678"],
@@ -1819,6 +1829,11 @@
         };
 
         window.exportResidentsToExcel = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền xuất Excel Sổ Bộ!");
+                return;
+            }
+
             const data = window.residents.map(r => ({
                 "Mã Căn": r.unit, "Chủ Hộ": r.name, "Số CCCD": r.cccd, "SĐT": r.phone, "Diện Tích m2": r.area, "Trạng Thái": r.checkedIn ? "Đã Check-In" : "Chưa", "Thời Gian": r.checkinTime
             }));
@@ -1829,6 +1844,11 @@
         };
 
         window.exportVotingToExcel = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền xuất Excel Biểu Quyết!");
+                return;
+            }
+
             const data = window.residents.map(r => ({
                 "Mã Căn": r.unit, "Chủ Hộ": r.name, "Diện Tích m2": r.area, "Check-In": r.checkedIn ? "Đã Check-In" : "Chưa"
             }));
@@ -1839,6 +1859,11 @@
         };
 
         window.exportAuditLogToExcel = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền xuất Audit Log Excel!");
+                return;
+            }
+
             const ws = XLSX.utils.json_to_sheet(window.auditLogs);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "AuditLog");
