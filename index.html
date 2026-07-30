@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#0f172a">
-    <meta name="description" content="Hệ Thống Số Quản Lý, Điểm Danh & Biểu Quyết Hội Nghị Nhà Chung Cư EcoHome Nhơn Bình">
+    <meta name="description" content="Hệ Thống AI Quét CCCD & Biểu Quyết Số - EcoHome Nhơn Bình">
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>">
-    <title>EcoHome Nhơn Bình - Quản Lý & Biểu Quyết Hội Nghị Số</title>
-    
-    <!-- PWA App Manifest -->
+    <title>AI Quét CCCD & Biểu Quyết Số - EcoHome Nhơn Bình</title>
+
+    <!-- PWA Web App Manifest -->
     <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22EcoHome%20HQ%22%2C%22short_name%22%3A%22EcoHomeHQ%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%2310b981%22%7D">
 
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -25,7 +26,7 @@
         }
     </script>
 
-    <!-- FontAwesome & External JS Libraries -->
+    <!-- FontAwesome & JS Libraries -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
@@ -66,34 +67,63 @@
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
         ::-webkit-scrollbar-thumb { background: rgba(51, 65, 85, 0.8); border-radius: 4px; }
+        
+        @media print {
+            .no-print { display: none !important; }
+            .print-only { display: block !important; }
+            body { background: white !important; color: black !important; }
+        }
     </style>
 
-    <!-- Synchronous Global Helper Scripts -->
     <script>
         window.switchLoginTab = function(tab) {
-            const resTab = document.getElementById('loginTabResident');
-            const adminTab = document.getElementById('loginTabAdmin');
-            const resForm = document.getElementById('formResidentLogin');
-            const adminForm = document.getElementById('formAdminLogin');
-
-            if (!resTab || !adminTab || !resForm || !adminForm) return;
+            const btnRes = document.getElementById('tabBtnResident');
+            const btnAdmin = document.getElementById('tabBtnAdmin');
+            const formRes = document.getElementById('formResidentLogin');
+            const formAdmin = document.getElementById('formAdminLogin');
 
             if (tab === 'resident') {
-                resTab.className = "flex-1 py-3 px-4 text-center font-bold text-xs rounded-xl bg-emerald-600 text-white shadow-md transition-all flex items-center justify-center gap-2";
-                adminTab.className = "flex-1 py-3 px-4 text-center font-bold text-xs rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-all flex items-center justify-center gap-2";
-                resForm.classList.remove('hidden');
-                adminForm.classList.add('hidden');
+                btnRes?.classList.add('border-emerald-500', 'text-emerald-400', 'bg-emerald-500/10');
+                btnRes?.classList.remove('border-transparent', 'text-slate-400');
+                btnAdmin?.classList.add('border-transparent', 'text-slate-400');
+                btnAdmin?.classList.remove('border-emerald-500', 'text-emerald-400', 'bg-emerald-500/10');
+
+                formRes?.classList.remove('hidden');
+                formAdmin?.classList.add('hidden');
             } else {
-                adminTab.className = "flex-1 py-3 px-4 text-center font-bold text-xs rounded-xl bg-teal-600 text-white shadow-md transition-all flex items-center justify-center gap-2";
-                resTab.className = "flex-1 py-3 px-4 text-center font-bold text-xs rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-all flex items-center justify-center gap-2";
-                adminForm.classList.remove('hidden');
-                resForm.classList.add('hidden');
+                btnAdmin?.classList.add('border-emerald-500', 'text-emerald-400', 'bg-emerald-500/10');
+                btnAdmin?.classList.remove('border-transparent', 'text-slate-400');
+                btnRes?.classList.add('border-transparent', 'text-slate-400');
+                btnRes?.classList.remove('border-emerald-500', 'text-emerald-400', 'bg-emerald-500/10');
+
+                formAdmin?.classList.remove('hidden');
+                formRes?.classList.add('hidden');
             }
+        };
+
+        window.toggleTheme = function() {
+            const html = document.documentElement;
+            const icon = document.getElementById('themeIcon');
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                if (icon) icon.className = "fa-solid fa-sun text-sm text-amber-500";
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                if (icon) icon.className = "fa-solid fa-moon text-sm";
+            }
+        };
+
+        window.toggleMobileMenu = function() {
+            const menu = document.getElementById('mobileMenu');
+            if (menu) menu.classList.toggle('hidden');
         };
     </script>
 </head>
 <body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 transition-colors duration-300 light:bg-slate-100 light:text-slate-900">
 
+    <!-- HEADER & MAIN NAVIGATION -->
     <header class="glass-panel sticky top-0 z-40 border-b border-slate-800 light:border-slate-200 bg-slate-900/90 light:bg-white/90">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
@@ -108,18 +138,18 @@
                     </div>
                 </div>
 
-                <!-- Navigation Tabs (Cleaned: Items 3 & 5 removed from navigation) -->
+                <!-- Navigation Tabs -->
                 <nav class="hidden lg:flex items-center gap-1 bg-slate-800/60 light:bg-slate-200/60 p-1.5 rounded-xl border border-slate-700/50 light:border-slate-300 text-xs">
-                    <button id="nav-login" onclick="switchView('login')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-lock mr-1 text-emerald-400"></i>1. Đăng Nhập</button>
-                    <button id="nav-dashboard" onclick="switchView('dashboard')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-chart-pie mr-1 text-teal-400"></i>2. Dashboard BQT</button>
-                    <button id="nav-units" onclick="switchView('units')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-building-circle-check mr-1 text-indigo-400"></i>4. Quản Lý Sổ Bộ & Căn Hộ</button>
-                    <button id="nav-checkin-list" onclick="switchView('checkin-list')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-list-check mr-1 text-emerald-300"></i>6. Danh Sách Check-In</button>
-                    <button id="nav-proxy" onclick="switchView('proxy')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-file-signature mr-1 text-amber-400"></i>8. Ủy Quyền</button>
-                    <button id="nav-voting" onclick="switchView('voting')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-vote-yea mr-1 text-blue-400"></i>9. Biểu Quyết</button>
-                    <button id="nav-audit" onclick="switchView('audit')" class="nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-clock-rotate-left mr-1 text-purple-400"></i>13. Audit Log</button>
+                    <button id="nav-login" onclick="switchView('login')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-right-to-bracket mr-1 text-emerald-400"></i>1. Đăng Nhập</button>
+                    <button id="nav-dashboard" onclick="switchView('dashboard')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-chart-pie mr-1 text-teal-400"></i>2. Dashboard BQT</button>
+                    <button id="nav-units" onclick="switchView('units')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-building-circle-check mr-1 text-indigo-400"></i>3. Sổ Bộ Căn Hộ</button>
+                    <button id="nav-checkin" onclick="switchView('checkin')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-list-check mr-1 text-emerald-300"></i>4. Danh Sách Check-In</button>
+                    <button id="nav-proxy" onclick="switchView('proxy')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-file-signature mr-1 text-amber-400"></i>5. Ủy Quyền & Chữ Ký</button>
+                    <button id="nav-voting" onclick="switchView('voting')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-vote-yea mr-1 text-blue-400"></i>6. Biểu Quyết Số</button>
+                    <button id="nav-audit" onclick="switchView('audit')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-clock-rotate-left mr-1 text-purple-400"></i>7. Audit Log</button>
                 </nav>
 
-                <!-- Theme Toggle & Profile -->
+                <!-- Actions & Profile Badge -->
                 <div class="flex items-center gap-2">
                     <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-800 light:bg-slate-200 text-slate-300 light:text-slate-700 hover:text-white transition" title="Đổi giao diện sáng/tối">
                         <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
@@ -135,30 +165,38 @@
             </div>
         </div>
 
-        <!-- Mobile Menu Drawer (Cleaned: Items 3 & 5 removed) -->
+        <!-- Mobile Drawer Menu -->
         <div id="mobileMenu" class="hidden lg:hidden border-t border-slate-800 bg-slate-900 px-4 pt-2 pb-3 space-y-1 text-xs">
-            <button onclick="switchView('login'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800">1. Trang Đăng Nhập & Phân Quyền</button>
-            <button onclick="switchView('dashboard'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800">2. Dashboard Ban Quản Trị & Thống Kê</button>
-            <button onclick="switchView('units'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800">4. Quản Lý Sổ Bộ & Căn Hộ</button>
-            <button onclick="switchView('checkin-list'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg font-bold bg-emerald-600 text-white">6. Danh Sách Check-In Trực Tiếp</button>
-            <button onclick="switchView('proxy'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800">8. Quản Lý Giấy Ủy Quyền & Chữ Ký</button>
-            <button onclick="switchView('voting'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800">9. Biểu Quyết Điện Tử</button>
-            <button onclick="switchView('audit'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800">13. Nhật Ký Thao Tác (Audit Log)</button>
+            <button onclick="switchView('login'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-right-to-bracket mr-2 text-emerald-400"></i>1. Trang Đăng Nhập (Cư Dân / Admin)</button>
+            <button onclick="switchView('dashboard'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-chart-pie mr-2 text-teal-400"></i>2. Dashboard BQT & Thống Kê Realtime</button>
+            <button onclick="switchView('units'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-building-circle-check mr-2 text-indigo-400"></i>3. Sổ Bộ Căn Hộ & Cư Dân</button>
+            <button onclick="switchView('checkin'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-list-check mr-2 text-emerald-300"></i>4. Danh Sách Check-In Realtime</button>
+            <button onclick="switchView('proxy'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-file-signature mr-2 text-amber-400"></i>5. Quản Lý Giấy Ủy Quyền & Chữ Ký</button>
+            <button onclick="switchView('voting'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-vote-yea mr-2 text-blue-400"></i>6. Biểu Quyết Điện Tử (TT06/2019)</button>
+            <button onclick="switchView('audit'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-purple-400"></i>7. Nhật Ký Thao Tác (Audit Log)</button>
         </div>
     </header>
 
     <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
 
+        <!-- VIEW 1: TRANG ĐĂNG NHẬP (1A: CƯ DÂN / 1B: ADMIN) -->
         <section id="view-login" class="space-y-6">
             <div class="max-w-md mx-auto glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-5 text-center shadow-2xl">
-                
-                <!-- Dual Login Selector Tabs -->
-                <div class="flex items-center justify-between p-1 bg-slate-900/90 rounded-2xl border border-slate-800">
-                    <button id="loginTabResident" onclick="switchLoginTab('resident')" class="flex-1 py-3 px-4 text-center font-bold text-xs rounded-xl bg-emerald-600 text-white shadow-md transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-house-user text-sm"></i> 1A. Cư Dân Tham Dự
+                <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-2xl shadow-lg border border-emerald-500/20">
+                    <i class="fa-solid fa-building-user"></i>
+                </div>
+                <div>
+                    <h2 class="text-xl font-bold text-white">Cổng Đăng Nhập Căn Hộ EcoHome</h2>
+                    <p class="text-xs text-slate-400 mt-1">Lựa chọn cổng truy cập dành cho Cư Dân hoặc Ban Quản Trị</p>
+                </div>
+
+                <!-- Tab Switching Buttons -->
+                <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800 text-xs font-bold">
+                    <button id="tabBtnResident" onclick="switchLoginTab('resident')" class="py-2.5 rounded-lg border border-emerald-500 text-emerald-400 bg-emerald-500/10 transition">
+                        <i class="fa-solid fa-user mr-1.5"></i> 1A. Cư Dân
                     </button>
-                    <button id="loginTabAdmin" onclick="switchLoginTab('admin')" class="flex-1 py-3 px-4 text-center font-bold text-xs rounded-xl bg-slate-800 text-slate-400 hover:text-white transition-all flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-user-shield text-sm"></i> 1B. Ban Quản Trị / BTC
+                    <button id="tabBtnAdmin" onclick="switchLoginTab('admin')" class="py-2.5 rounded-lg border border-transparent text-slate-400 transition hover:text-white">
+                        <i class="fa-solid fa-user-shield mr-1.5"></i> 1B. Admin / BTC
                     </button>
                 </div>
 
@@ -191,13 +229,33 @@
                         <div id="loginAiVerificationBanner" class="hidden text-xs p-3 rounded-xl transition-all"></div>
                     </div>
 
-                    <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Mã Căn Hộ / Chủ Hộ được chọn:</label>
-                        <select id="loginResidentUnitSelect" onchange="onLoginResidentUnitSelectChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 font-bold text-sm focus:border-emerald-500"></select>
+                    <!-- Tách riêng Mã Căn Hộ + Diện Tích m² thành 1 Hàng, và Họ Tên Chủ Sở Hữu thành Mục Riêng -->
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1 text-xs">
+                                <i class="fa-solid fa-building text-emerald-400 mr-1"></i> Mã Căn Hộ:
+                            </label>
+                            <select id="loginResidentUnitSelect" onchange="onLoginResidentUnitSelectChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 font-bold text-sm focus:border-emerald-500"></select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1 text-xs">
+                                <i class="fa-solid fa-chart-area text-purple-400 mr-1"></i> Diện Tích (m²):
+                            </label>
+                            <input id="loginResidentAreaInput" type="text" readonly value="0 m²" class="w-full bg-slate-900/90 border border-slate-800 text-purple-300 rounded-xl p-3 font-mono font-bold text-sm cursor-not-allowed">
+                        </div>
                     </div>
 
                     <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Số CCCD (12 số - Cập nhật tự động sau check-in):</label>
+                        <label class="block text-slate-300 font-bold mb-1 text-xs">
+                            <i class="fa-solid fa-user-check text-teal-400 mr-1"></i> Họ và Tên Chủ Sở Hữu (AI Quét / Đối soát):
+                        </label>
+                        <input id="loginResidentNameInput" type="text" placeholder="Nhập hoặc AI tự động quét điền họ tên..." class="w-full bg-slate-900 border border-slate-700 text-white font-bold rounded-xl p-3 text-sm focus:border-emerald-500 uppercase">
+                    </div>
+
+                    <div>
+                        <label class="block text-slate-300 font-bold mb-1 text-xs">
+                            <i class="fa-solid fa-id-card text-emerald-400 mr-1"></i> Số CCCD (12 số - Cập nhật tự động sau check-in):
+                        </label>
                         <input id="loginResidentCccdInput" type="text" maxlength="12" placeholder="Nhập 12 số CCCD (Ví dụ: 05209200xxxx)" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 rounded-xl p-3 font-mono text-sm focus:border-emerald-500">
                     </div>
 
@@ -208,32 +266,39 @@
 
                 <!-- Form 1B: Cổng Đăng Nhập Admin / Staff -->
                 <div id="formAdminLogin" class="space-y-4 text-left pt-2 hidden">
-                    <div class="p-4 rounded-xl bg-teal-500/10 border border-teal-500/20 text-xs text-teal-300">
-                        <i class="fa-solid fa-user-gear mr-1"></i> Dành cho Ban Quản Trị & Ban Tổ Chức vận hành hệ thống.
+                    <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 flex items-start gap-2">
+                        <i class="fa-solid fa-user-shield text-base text-purple-400 mt-0.5"></i>
+                        <div>
+                            <strong>Khu vực quản trị:</strong> Dành cho thành viên Ban Quản Trị & Lễ Tân Ban Tổ Chức quản lý dữ liệu, kiểm tra danh sách check-in và xuất báo cáo.
+                        </div>
                     </div>
+
                     <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Vai trò quản trị (Role):</label>
-                        <select id="loginRoleSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 font-bold text-sm focus:border-teal-500">
-                            <option value="ADMIN">Ban Quản Trị (Toàn quyền Admin & Xem SĐT)</option>
-                            <option value="STAFF">Ban Tổ Chức (Lễ Tân Check-In)</option>
+                        <label class="block text-slate-300 font-bold mb-1 text-xs">Vai trò quản trị:</label>
+                        <select id="loginAdminRoleSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs font-bold focus:border-purple-500">
+                            <option value="ADMIN">Ban Quản Trị (Full Admin)</option>
+                            <option value="STAFF">Ban Tổ Chức / Lễ Tân Check-In</option>
                         </select>
                     </div>
+
                     <div>
                         <label class="block text-slate-300 font-bold mb-1 text-xs">Tài khoản Email / SĐT:</label>
-                        <input id="loginEmailInput" type="text" value="bqt.ecohome@gmail.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-sm focus:border-teal-500">
+                        <input id="loginAdminEmailInput" type="text" value="bqt.ecohome@gmail.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs focus:border-purple-500">
                     </div>
+
                     <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Mật khẩu quản trị:</label>
-                        <input id="loginPasswordInput" type="password" value="215151365" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 font-mono text-sm focus:border-teal-500">
+                        <label class="block text-slate-300 font-bold mb-1 text-xs">Mật khẩu bảo mật:</label>
+                        <input id="loginAdminPasswordInput" type="password" value="215151365" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs font-mono focus:border-purple-500">
                     </div>
-                    <button onclick="handleLoginSubmit()" class="w-full py-3.5 bg-teal-600 hover:bg-teal-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-teal-600/20 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-key text-sm"></i> Đăng Nhập Trang Quản Trị
+
+                    <button onclick="handleAdminLoginSubmit()" class="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-key text-sm"></i> Đăng Nhập Quản Trị Hệ Thống
                     </button>
                 </div>
-
             </div>
         </section>
 
+        <!-- VIEW 2: DASHBOARD BAN QUẢN TRỊ -->
         <section id="view-dashboard" class="hidden space-y-6">
             <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-6 sm:p-8 border border-slate-700/60 shadow-2xl">
                 <div class="relative z-10 max-w-3xl space-y-3">
@@ -246,16 +311,16 @@
                     </p>
                     <div class="pt-2 flex flex-wrap gap-3">
                         <button onclick="exportOfficialPdfReport()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2">
-                            <i class="fa-solid fa-file-pdf text-sm"></i> 11. Xuất Biên Bản PDF (Chuẩn Pháp Lý)
+                            <i class="fa-solid fa-file-pdf text-sm"></i> Xuất Biên Bản PDF (Chuẩn Pháp Lý)
                         </button>
                         <button onclick="exportVotingToExcel()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/20 flex items-center gap-2">
-                            <i class="fa-solid fa-file-excel text-sm"></i> 12. Xuất Báo Cáo Excel
+                            <i class="fa-solid fa-file-excel text-sm"></i> Xuất Báo Cáo Excel
                         </button>
                     </div>
                 </div>
             </div>
 
-            <!-- KPI Cards Grid -->
+            <!-- KPI Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="glass-panel p-5 rounded-xl border border-slate-800">
                     <div class="flex items-center justify-between">
@@ -294,7 +359,7 @@
                 </div>
             </div>
 
-            <!-- Charts -->
+            <!-- Charts Grid -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
                     <div class="flex items-center justify-between mb-2">
@@ -324,25 +389,29 @@
             </div>
         </section>
 
+        <!-- VIEW 3: SỔ BỘ CĂN HỘ & CƯ DÂN -->
         <section id="view-units" class="hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-building-circle-check text-indigo-400"></i> 4. Quản Lý Sổ Bộ Căn Hộ & Cư Dân</h3>
-                        <p class="text-xs text-slate-400">Nạp file Excel dữ liệu cư dân, Ánh xạ cột tự động, Reset dữ liệu sổ bộ, Xem SĐT bảo mật</p>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-building-circle-check text-indigo-400"></i> Sổ Bộ Căn Hộ & Cư Dân EcoHome Nhơn Bình</h3>
+                        <p class="text-xs text-slate-400">Quản lý căn hộ, diện tích m², cập nhật 12 số CCCD, nạp Excel custom và ẩn/hiện SĐT bảo mật</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="openImportWizardModal()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-file-excel"></i> Nạp File Excel Cư Dân
+                        <button onclick="openImportWizardModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-file-excel"></i> Nạp File Excel
                         </button>
-                        <button onclick="resetResidentDatabase()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md shadow-rose-600/20" title="Xóa toàn bộ sổ bộ hiện tại để nạp file mới">
-                            <i class="fa-solid fa-trash-can"></i> Reset Dữ Liệu Sổ Bộ (Admin)
+                        <button onclick="downloadSampleExcelTemplate()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
+                            <i class="fa-solid fa-download text-teal-400"></i> Mẫu Excel
                         </button>
-                        <button onclick="addNewResidentPrompt()" class="px-3.5 py-2 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-plus"></i> Thêm Căn Mới
-                        </button>
-                        <button onclick="exportResidentsToExcel()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
+                        <button onclick="exportResidentsToExcel()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
                             <i class="fa-solid fa-file-export text-emerald-400"></i> Xuất Excel
+                        </button>
+                        <button id="adminOnlyResetDatasetBtn" onclick="resetEntireResidentRegistry()" class="px-3 py-2 bg-rose-900/80 hover:bg-rose-800 text-rose-200 text-xs font-bold rounded-xl transition border border-rose-700 flex items-center gap-1.5">
+                            <i class="fa-solid fa-trash-arrow-up"></i> Reset Sổ Bộ (Admin)
+                        </button>
+                        <button onclick="togglePhoneVisibility()" class="px-3 py-2 bg-purple-900/80 hover:bg-purple-800 text-purple-200 text-xs font-bold rounded-xl transition border border-purple-700 flex items-center gap-1.5" title="Chỉ Admin mới có thể bật/tắt hiển thị SĐT">
+                            <i id="phoneEyeIcon" class="fa-solid fa-eye-slash"></i> SĐT Admin
                         </button>
                     </div>
                 </div>
@@ -352,11 +421,11 @@
                         <thead class="text-xs uppercase bg-slate-900/90 text-slate-400 border-b border-slate-800">
                             <tr>
                                 <th class="p-3">Mã Căn Hộ</th>
-                                <th class="p-3">Chủ Sở Hữu Sổ Bộ</th>
-                                <th class="p-3">Số Điện Thoại (Chỉ Admin xem)</th>
-                                <th class="p-3">Số CCCD (12 Số)</th>
+                                <th class="p-3">Chủ Sở Hữu</th>
+                                <th class="p-3">Số CCCD (12 số)</th>
+                                <th class="p-3">Số Điện Thoại</th>
                                 <th class="p-3 text-right">Diện Tích (m²)</th>
-                                <th class="p-3 text-center">Trạng Thái Điểm Danh</th>
+                                <th class="p-3 text-center">Trạng Thái Check-In</th>
                                 <th class="p-3 text-right">Thao Tác</th>
                             </tr>
                         </thead>
@@ -366,89 +435,46 @@
             </div>
         </section>
 
-        <section id="view-checkin-list" class="hidden space-y-6">
+        <!-- VIEW 4: DANH SÁCH CHECK-IN REALTIME -->
+        <section id="view-checkin" class="hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2">
-                            <i class="fa-solid fa-list-check text-emerald-400"></i> 6. Danh Sách Điểm Danh & Check-In Trực Tiếp
-                        </h3>
-                        <p class="text-xs text-slate-400">Theo dõi tiến độ check-in thời gian thực, số dư m² đạt Quorum và danh sách chi tiết các căn hộ</p>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-emerald-400"></i> Danh Sách Check-In Thời Gian Thực</h3>
+                        <p class="text-xs text-slate-400">Theo dõi trực tiếp lượt điểm danh cư dân, thời gian chính xác và 12 số CCCD</p>
                     </div>
-                    
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="resetCheckinData()" class="px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-lg shadow-rose-600/20" title="Chỉ Admin mới có quyền reset toàn bộ dữ liệu điểm danh">
-                            <i class="fa-solid fa-rotate-left"></i> 🔄 Reset Dữ Liệu Check-In (Admin)
-                        </button>
-                        <button onclick="exportResidentsToExcel()" class="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700 flex items-center gap-1.5">
-                            <i class="fa-solid fa-file-excel text-emerald-400"></i> Xuất Báo Cáo Excel
+                    <div class="flex items-center gap-2">
+                        <span id="liveCheckinTotalBadge" class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/20 font-bold">0 Căn Đã Check-In</span>
+                        <button id="btnAdminResetCheckin" onclick="resetCheckinData()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-rotate-left"></i> Reset Check-In (Admin)
                         </button>
                     </div>
                 </div>
 
-                <!-- Live Summary KPI Strip -->
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
-                        <div>
-                            <div class="text-slate-400 font-medium">Tổng Căn Hộ Đã Check-In</div>
-                            <div id="checkinListStatCount" class="text-xl font-bold text-emerald-400 mt-1">0 / 0 căn</div>
-                        </div>
-                        <i class="fa-solid fa-user-check text-2xl text-emerald-500/20"></i>
-                    </div>
-                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
-                        <div>
-                            <div class="text-slate-400 font-medium">Tổng Diện Tích m² Check-In</div>
-                            <div id="checkinListStatArea" class="text-xl font-bold text-purple-300 mt-1">0 m²</div>
-                        </div>
-                        <i class="fa-solid fa-chart-area text-2xl text-purple-500/20"></i>
-                    </div>
-                    <div class="p-3.5 bg-slate-900/80 rounded-xl border border-slate-800 flex justify-between items-center">
-                        <div>
-                            <div class="text-slate-400 font-medium">Trạng Thái Tỷ Lệ Quorum</div>
-                            <div id="checkinListStatQuorum" class="text-xl font-bold text-amber-400 mt-1">0.0%</div>
-                        </div>
-                        <i class="fa-solid fa-scale-balanced text-2xl text-amber-500/20"></i>
-                    </div>
-                </div>
-
-                <!-- Search & Status Filter -->
-                <div class="flex flex-col sm:flex-row gap-3 text-xs">
-                    <div class="flex-1">
-                        <input id="checkinSearchInput" type="text" onkeyup="renderCheckinListTable()" placeholder="Lọc theo mã căn (B1-0716), chủ hộ, 12 số CCCD..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-2.5 focus:border-emerald-500 focus:outline-none">
-                    </div>
-                    <select id="checkinFilterSelect" onchange="renderCheckinListTable()" class="bg-slate-900 border border-slate-700 text-white rounded-xl px-3 py-2.5 font-bold focus:border-emerald-500">
-                        <option value="ALL">Tất cả căn hộ</option>
-                        <option value="CHECKED_IN">Chỉ danh sách ĐÃ Check-In</option>
-                        <option value="NOT_CHECKED_IN">Chưa Check-In</option>
-                    </select>
-                </div>
-
-                <!-- Detailed Table -->
                 <div class="overflow-x-auto rounded-xl border border-slate-800">
                     <table class="w-full text-left text-sm text-slate-300">
                         <thead class="text-xs uppercase bg-slate-900/90 text-slate-400 border-b border-slate-800">
                             <tr>
+                                <th class="p-3">Thời Gian Check-In</th>
                                 <th class="p-3">Mã Căn Hộ</th>
-                                <th class="p-3">Họ và Tên Chủ Hộ</th>
+                                <th class="p-3">Chủ Sở Hữu</th>
                                 <th class="p-3">Số CCCD (12 số)</th>
                                 <th class="p-3 text-right">Diện Tích (m²)</th>
-                                <th class="p-3">Hình Thức Check-In</th>
-                                <th class="p-3">Thời Gian Check-In (Realtime)</th>
-                                <th class="p-3 text-center">Trạng Thái</th>
-                                <th class="p-3 text-right">Thao Tác</th>
+                                <th class="p-3 text-center">Hình Thức Check-In</th>
                             </tr>
                         </thead>
-                        <tbody id="checkinListTableBody" class="divide-y divide-slate-800/60 text-xs font-mono"></tbody>
+                        <tbody id="checkinHistoryTableBody" class="divide-y divide-slate-800/60 text-xs font-mono"></tbody>
                     </table>
                 </div>
             </div>
         </section>
 
+        <!-- VIEW 5: QUẢN LÝ GIẤY ỦY QUYỀN VÀ CHỮ KÝ ĐIỆN TỬ -->
         <section id="view-proxy" class="hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
                 <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
                     <div>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-signature text-amber-400"></i> 8. Quản Lý Giấy Ủy Quyền & Chữ Ký Điện Tử</h2>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-signature text-amber-400"></i> Quản Lý Giấy Ủy Quyền & Chữ Ký Điện Tử</h2>
                         <p class="text-xs text-slate-400">Lập giấy ủy quyền tham dự & biểu quyết thay có chữ ký số Touch Canvas</p>
                     </div>
                     <button onclick="openSignatureModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-600/20">
@@ -460,11 +486,12 @@
             </div>
         </section>
 
+        <!-- VIEW 6: BIỂU QUYẾT ĐIỆN TỬ -->
         <section id="view-voting" class="hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border border-slate-800">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
                     <div>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-vote-yea text-blue-400"></i> 9. Cổng Biểu Quyết Điện Tử Cư Dân</h2>
+                        <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-vote-yea text-blue-400"></i> Cổng Biểu Quyết Điện Tử Cư Dân</h2>
                         <p class="text-xs text-slate-400">Mỗi biểu quyết được tính trọng số m² diện tích căn hộ sở hữu hợp lệ</p>
                     </div>
                     <div class="flex items-center gap-3">
@@ -489,11 +516,12 @@
             </div>
         </section>
 
+        <!-- VIEW 7: NHẬT KÝ THAO TÁC HỆ THỐNG -->
         <section id="view-audit" class="hidden space-y-6">
             <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
                 <div class="flex items-center justify-between border-b border-slate-800 pb-3">
                     <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-purple-400"></i> 13. Nhật Ký Thao Tác Hệ Thống (Audit Log)</h3>
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Nhật Ký Thao Tác Hệ Thống (Audit Log)</h3>
                         <p class="text-xs text-slate-400">Ghi lại minh bạch toàn bộ lịch sử điểm danh, biểu quyết, ủy quyền và đăng nhập</p>
                     </div>
                     <button onclick="exportAuditLogToExcel()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
@@ -582,8 +610,8 @@
                     <input id="proxyNameInput" type="text" placeholder="Nguyễn Văn B" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-white">
                 </div>
                 <div>
-                    <label class="block text-slate-400 mb-1">Số CCCD người nhận UQ (12 số)</label>
-                    <input id="proxyCccdInput" type="text" maxlength="12" placeholder="00109200xxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-emerald-400 font-mono">
+                    <label class="block text-slate-400 mb-1">Số CCCD người nhận UQ</label>
+                    <input id="proxyCccdInput" type="text" placeholder="00109200xxxx" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-2 text-emerald-400 font-mono">
                 </div>
                 <div>
                     <label class="block text-slate-400 mb-1">Số điện thoại liên hệ</label>
@@ -612,7 +640,7 @@
         <div class="glass-panel p-6 rounded-2xl max-w-2xl w-full border border-slate-800 space-y-4 max-h-[90vh] flex flex-col">
             <div class="flex items-center justify-between border-b border-slate-800 pb-3 flex-shrink-0">
                 <div>
-                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-400"></i> Import Dữ Liệu Căn Hộ / Cư Dân Custom</h3>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-excel text-emerald-400"></i> Import Dữ Liệu Căn Hộ Custom</h3>
                     <p class="text-xs text-slate-400">Tự động nhận diện cột Excel hoặc tùy chỉnh ánh xạ</p>
                 </div>
                 <button onclick="closeImportWizardModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -636,11 +664,7 @@
                             <select id="mapColArea" class="w-full bg-slate-900 border border-slate-700 text-white rounded p-1.5"></select>
                         </div>
                         <div>
-                            <label class="block text-slate-400 mb-1">Cột Số Điện Thoại</label>
-                            <select id="mapColPhone" class="w-full bg-slate-900 border border-slate-700 text-white rounded p-1.5"></select>
-                        </div>
-                        <div class="col-span-2">
-                            <label class="block text-slate-400 mb-1">Cột Số CCCD (Nếu có)</label>
+                            <label class="block text-slate-400 mb-1">Cột Số CCCD</label>
                             <select id="mapColCccd" class="w-full bg-slate-900 border border-slate-700 text-white rounded p-1.5"></select>
                         </div>
                     </div>
@@ -650,7 +674,7 @@
                         <div class="max-h-32 overflow-y-auto rounded-lg border border-slate-800 bg-slate-900/80">
                             <table class="w-full text-left text-[11px] text-slate-300">
                                 <thead class="bg-slate-900 text-slate-400 sticky top-0 border-b border-slate-800">
-                                    <tr><th class="p-2">Mã Căn</th><th class="p-2">Họ Tên</th><th class="p-2">SĐT</th><th class="p-2">CCCD</th><th class="p-2 text-right">m²</th></tr>
+                                    <tr><th class="p-2">Mã Căn</th><th class="p-2">Họ Tên</th><th class="p-2">CCCD</th><th class="p-2 text-right">m²</th></tr>
                                 </thead>
                                 <tbody id="wizardPreviewTableBody" class="divide-y divide-slate-800/50 font-mono"></tbody>
                             </table>
@@ -674,11 +698,13 @@
         </div>
     </div>
 
+    <!-- MAIN JAVASCRIPT ES MODULE -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        /* Global Application State */
         window.appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-nhonbinh-app';
         window.firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
             apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
@@ -692,7 +718,7 @@
         window.db = null;
         window.auth = null;
         window.userRole = "ADMIN";
-        window.showPhoneMap = {};
+        window.showPhoneNumbers = false; // Security Flag
 
         try {
             const app = initializeApp(window.firebaseConfig);
@@ -708,10 +734,10 @@
         };
 
         window.residents = [
-            { unit: "B1-0716", name: "NGUYỄN VĂN AN", phone: "0912345678", cccd: "052092001111", cccdVerified: true, area: 75.5, checkedIn: true, mode: "Camera AI OCR", checkinTime: "08:15", votes: { resolutions: { "res-1": "yes" }, candidates: "cand-1" } },
-            { unit: "B5-0716", name: "TRẦN THỊ BÌNH", phone: "0987654321", cccd: "Chưa cập nhật", cccdVerified: false, area: 68.0, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
-            { unit: "B1-1208", name: "LÊ HOÀNG CƯỜNG", phone: "0934567890", cccd: "Chưa cập nhật", cccdVerified: false, area: 82.3, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
-            { unit: "B5-0915", name: "PHẠM MINH ĐỨC", phone: "0978123456", cccd: "052092004444", cccdVerified: true, area: 71.0, checkedIn: true, mode: "QR Code", checkinTime: "08:42", votes: { resolutions: {}, candidates: null } }
+            { unit: "B1-0716", name: "NGUYỄN VĂN AN", cccd: "052092001111", phone: "0912345678", area: 75.5, checkedIn: true, mode: "Camera AI OCR", checkinTime: "08:15:30 30/07/2026", votes: { resolutions: { "res-1": "yes" }, candidates: "cand-1" } },
+            { unit: "B5-0716", name: "TRẦN THỊ BÌNH", cccd: "Chưa cập nhật", phone: "0987654321", area: 68.0, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
+            { unit: "B1-1208", name: "LÊ HOÀNG CƯỜNG", cccd: "Chưa cập nhật", phone: "0933112233", area: 82.3, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } },
+            { unit: "B5-0915", name: "PHẠM MINH ĐỨC", cccd: "052092004444", phone: "0909887766", area: 71.0, checkedIn: false, mode: "-", checkinTime: "-", votes: { resolutions: {}, candidates: null } }
         ];
 
         window.proxies = [
@@ -731,34 +757,28 @@
         window.auditLogs = [];
         window.selectedResidentUnit = "B1-0716";
 
+        /* Chart Instances */
         window.quorumChartInstance = null;
         window.resolutionsChartInstance = null;
+
+        /* Import Cache */
         window.wizardRawMatrix = [];
         window.wizardHeaders = [];
 
+        /* Signature State */
         let isSigning = false;
         let sigCtx = null;
 
-        // Smart Helper: Normalize Vietnamese strings to remove tones/accents for robust name matching
+        /* Vietnamese String Normalizer for Smart Name Matching */
         window.removeVietnameseTones = function(str) {
             if (!str) return '';
-            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-            str = str.replace(/đ/g, "d");
-            str = str.replace(/À|Á|Ạ|Ả|Ã|Â|Ầ|Ấ|Ậ|Ẩ|Ẫ|Ă|Ằ|Ắ|Ặ|Ẳ|Ẵ/g, "A");
-            str = str.replace(/È|É|Ẹ|Ẻ|Ẽ|Ê|Ề|Ế|Ệ|Ể|Ễ/g, "E");
-            str = str.replace(/Ì|Í|Ị|Ỉ|Ĩ/g, "I");
-            str = str.replace(/Ò|Ó|Ọ|Ỏ|Õ|Ô|Ồ|Ố|Ộ|Ổ|Ỗ|Ơ|Ờ|Ớ|Ợ|Ở|Ỡ/g, "O");
-            str = str.replace(/Ù|Ú|Ụ|Ủ|Ũ|Ư|Ừ|Ứ|Ự|Ử|Ữ/g, "U");
-            str = str.replace(/Ỳ|Ý|Ỵ|Ỷ|Ỹ/g, "Y");
-            str = str.replace(/Đ/g, "D");
-            return str.trim().toUpperCase();
+            return str
+                .normalize('NFD')
+                .replace(/[\u0300-\u036f]/g, '')
+                .replace(/đ/g, 'd').replace(/Đ/g, 'D');
         };
 
+        /* Audit Log Helper */
         window.addAuditLog = function(action, details) {
             const entry = {
                 timestamp: new Date().toLocaleString('vi-VN'),
@@ -790,7 +810,7 @@
         };
 
         window.switchView = function(viewName) {
-            const views = ['login', 'dashboard', 'units', 'checkin-list', 'proxy', 'voting', 'audit'];
+            const views = ['login', 'dashboard', 'units', 'checkin', 'proxy', 'voting', 'audit'];
             views.forEach(v => {
                 const el = document.getElementById(`view-${v}`);
                 if (el) el.classList.add('hidden');
@@ -800,7 +820,7 @@
             if (activeView) activeView.classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn px-2.5 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white";
+                btn.className = "nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white";
             });
 
             const activeNav = document.getElementById(`nav-${viewName}`);
@@ -811,25 +831,7 @@
             window.syncAllUI();
         };
 
-        window.toggleTheme = function() {
-            const html = document.documentElement;
-            const icon = document.getElementById('themeIcon');
-            if (html.classList.contains('dark')) {
-                html.classList.remove('dark');
-                html.classList.add('light');
-                if (icon) icon.className = "fa-solid fa-sun text-sm text-amber-500";
-            } else {
-                html.classList.remove('light');
-                html.classList.add('dark');
-                if (icon) icon.className = "fa-solid fa-moon text-sm";
-            }
-        };
-
-        window.toggleMobileMenu = function() {
-            const menu = document.getElementById('mobileMenu');
-            if (menu) menu.classList.toggle('hidden');
-        };
-
+        /* Firebase Real-Time Synchronization Listener */
         window.initFirebaseSync = function() {
             if (!window.db) return;
             try {
@@ -845,10 +847,10 @@
                         window.syncAllUI();
                     }
                 }, (error) => {
-                    console.warn("Firestore snapshot notice:", error.message);
+                    console.warn("Firestore access error handled gracefully:", error.message);
                 });
             } catch (e) {
-                console.warn("Firestore init notice:", e);
+                console.warn("Firestore sync fallback notice:", e);
             }
         };
 
@@ -877,16 +879,25 @@
             const quorumPercent = totalArea > 0 ? ((checkedArea / totalArea) * 100).toFixed(1) : "0.0";
             const checkedInUnitPercent = totalUnits > 0 ? ((checkedInUnits / totalUnits) * 100).toFixed(1) : "0.0";
 
+            /* Initialize dropdown and separate fields for login 1A */
+            const loginUnitSel = document.getElementById('loginResidentUnitSelect');
+            if (loginUnitSel && window.residents.length > 0) {
+                if (!loginUnitSel.options.length || loginUnitSel.options.length !== window.residents.length) {
+                    loginUnitSel.innerHTML = window.residents.map(r => `<option value="${r.unit}">${r.unit}</option>`).join('');
+                }
+                if (!window.selectedResidentUnit || !window.residents.some(r => r.unit === window.selectedResidentUnit)) {
+                    window.selectedResidentUnit = window.residents[0].unit;
+                }
+                loginUnitSel.value = window.selectedResidentUnit;
+                window.onLoginResidentUnitSelectChange(window.selectedResidentUnit);
+            }
+
             if (document.getElementById('statTotalUnits')) document.getElementById('statTotalUnits').innerText = totalUnits;
             if (document.getElementById('statCheckedInUnits')) document.getElementById('statCheckedInUnits').innerText = checkedInUnits;
             if (document.getElementById('statCheckedInPercent')) document.getElementById('statCheckedInPercent').innerText = `${checkedInUnitPercent}% tổng số căn`;
             if (document.getElementById('statTotalArea')) document.getElementById('statTotalArea').innerText = `${totalArea.toFixed(1)} m²`;
             if (document.getElementById('statCheckedInArea')) document.getElementById('statCheckedInArea').innerText = `Check-in: ${checkedArea.toFixed(1)} m²`;
             if (document.getElementById('statQuorumPercent')) document.getElementById('statQuorumPercent').innerText = `${quorumPercent}%`;
-
-            if (document.getElementById('checkinListStatCount')) document.getElementById('checkinListStatCount').innerText = `${checkedInUnits} / ${totalUnits} căn`;
-            if (document.getElementById('checkinListStatArea')) document.getElementById('checkinListStatArea').innerText = `${checkedArea.toFixed(1)} / ${totalArea.toFixed(1)} m²`;
-            if (document.getElementById('checkinListStatQuorum')) document.getElementById('checkinListStatQuorum').innerText = `${quorumPercent}%`;
 
             const isQuorumMet = parseFloat(quorumPercent) >= 50.0;
             const quorumStatusEl = document.getElementById('statQuorumStatus');
@@ -900,125 +911,42 @@
                 }
             }
 
+            /* Dashboard Resolutions Breakdown */
+            const resContainer = document.getElementById('landingResolutionsContainer');
+            if (resContainer) {
+                resContainer.innerHTML = window.resolutions.map((r, idx) => {
+                    const yesArea = window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'yes').reduce((s, c) => s + c.area, 0);
+                    const noArea = window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'no').reduce((s, c) => s + c.area, 0);
+                    const yesPercent = totalArea > 0 ? ((yesArea / totalArea) * 100).toFixed(1) : "0.0";
+
+                    return `
+                        <div class="p-4 rounded-xl bg-slate-900/80 border border-slate-800 space-y-2">
+                            <div class="flex justify-between items-start gap-2">
+                                <h4 class="font-bold text-sm text-slate-100">Nghị Quyết ${idx + 1}: ${r.title}</h4>
+                                <span class="px-2 py-0.5 rounded text-[10px] font-bold uppercase bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Đang Mở</span>
+                            </div>
+                            <div class="flex flex-wrap gap-4 text-xs text-slate-300">
+                                <span><i class="fa-solid fa-thumbs-up text-emerald-400 mr-1"></i> Tán thành: <strong>${yesArea.toFixed(1)} m² (${yesPercent}%)</strong></span>
+                                <span><i class="fa-solid fa-thumbs-down text-rose-400 mr-1"></i> Không tán thành: <strong>${noArea.toFixed(1)} m²</strong></span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            if (document.getElementById('liveCheckinTotalBadge')) {
+                document.getElementById('liveCheckinTotalBadge').innerText = `${checkedInUnits} Căn Đã Check-In`;
+            }
+
+            if (!document.getElementById('view-dashboard').classList.contains('hidden')) {
+                window.renderCharts(checkedArea, Math.max(0, totalArea - checkedArea));
+            }
+
             window.renderUnitsTable();
-            window.renderCheckinListTable();
+            window.renderCheckinHistoryTable();
             window.renderProxyList();
             window.renderResidentVoting();
             window.renderAuditLogTable();
-        };
-
-        window.resetResidentDatabase = function() {
-            if (window.userRole !== "ADMIN") {
-                window.toast("🔒 Chỉ Ban Quản Trị (Admin) mới có quyền reset sổ bộ dữ liệu!");
-                return;
-            }
-
-            if (confirm("⚠️ CẢNH BÁO: Bạn có chắc chắn muốn XÓA SẠCH toàn bộ danh sách căn hộ & sổ bộ cư dân hiện tại để nạp file mới?")) {
-                window.residents = [];
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.addAuditLog("Reset Dữ Liệu Sổ Bộ", "Admin đã xóa toàn bộ sổ bộ để chuẩn bị nạp file mới");
-                window.toast("🗑️ Đã xóa sạch dữ liệu sổ bộ. Bạn có thể nạp file Excel mới ngay bây giờ!");
-                window.openImportWizardModal();
-            }
-        };
-
-        window.renderCheckinListTable = function() {
-            const body = document.getElementById('checkinListTableBody');
-            if (!body) return;
-
-            const query = (document.getElementById('checkinSearchInput')?.value || '').trim().toUpperCase();
-            const filterMode = document.getElementById('checkinFilterSelect')?.value || 'ALL';
-
-            const filtered = window.residents.filter(r => {
-                const matchQuery = r.unit.toUpperCase().includes(query) || r.name.toUpperCase().includes(query) || (r.cccd && r.cccd.includes(query));
-                if (!matchQuery) return false;
-                if (filterMode === 'CHECKED_IN') return r.checkedIn;
-                if (filterMode === 'NOT_CHECKED_IN') return !r.checkedIn;
-                return true;
-            });
-
-            if (filtered.length === 0) {
-                body.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500 italic">Không tìm thấy căn hộ phù hợp trong sổ bộ</td></tr>`;
-                return;
-            }
-
-            body.innerHTML = filtered.map(r => `
-                <tr class="hover:bg-slate-900/70 border-b border-slate-800/40">
-                    <td class="p-3 text-emerald-400 font-bold text-sm">${r.unit}</td>
-                    <td class="p-3 text-white font-semibold font-sans">${r.name}</td>
-                    <td class="p-3 ${r.cccdVerified ? 'text-emerald-300 font-bold' : 'text-slate-400 italic'}">${r.cccd || 'Chưa cập nhật'}</td>
-                    <td class="p-3 text-right font-bold text-purple-300">${r.area} m²</td>
-                    <td class="p-3 font-sans text-slate-300">${r.mode || '-'}</td>
-                    <td class="p-3 text-teal-400">${r.checkinTime || '-'}</td>
-                    <td class="p-3 text-center">
-                        <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${r.checkedIn ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-500'} font-sans">
-                            ${r.checkedIn ? '✓ Đã Check-In' : 'Chưa Check-In'}
-                        </span>
-                    </td>
-                    <td class="p-3 text-right">
-                        ${r.checkedIn ? `
-                            <button onclick="cancelSingleCheckin('${r.unit}')" class="px-2 py-1 bg-amber-900/40 hover:bg-amber-800 text-amber-300 rounded-lg text-[11px] font-sans transition" title="Hủy check-in căn này">
-                                <i class="fa-solid fa-xmark mr-1"></i>Hủy
-                            </button>
-                        ` : `
-                            <button onclick="manualCheckinUnit('${r.unit}')" class="px-2 py-1 bg-emerald-800/50 hover:bg-emerald-700 text-emerald-200 rounded-lg text-[11px] font-sans transition">
-                                <i class="fa-solid fa-check mr-1"></i>Duyệt
-                            </button>
-                        `}
-                    </td>
-                </tr>
-            `).join('');
-        };
-
-        window.resetCheckinData = function() {
-            if (window.userRole !== "ADMIN") {
-                window.toast("🔒 Chỉ Ban Quản Trị (Admin) mới có quyền reset dữ liệu check-in!");
-                return;
-            }
-
-            if (confirm("⚠️ CẢNH BÁO XÁC NHẬN: Bạn có chắc chắn muốn RESET TOÀN BỘ danh sách Check-In về trạng thái ban đầu?")) {
-                window.residents.forEach(r => {
-                    r.checkedIn = false;
-                    r.mode = "-";
-                    r.checkinTime = "-";
-                });
-
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.addAuditLog("Reset Check-In", "Ban Quản Trị đã reset toàn bộ danh sách điểm danh về 0");
-                window.toast("🔄 Đã reset toàn bộ dữ liệu Check-In thành công!");
-            }
-        };
-
-        window.cancelSingleCheckin = function(unitCode) {
-            if (window.userRole !== "ADMIN") {
-                window.toast("🔒 Chỉ Admin mới có quyền hủy check-in!");
-                return;
-            }
-            const res = window.residents.find(r => r.unit === unitCode);
-            if (res) {
-                res.checkedIn = false;
-                res.mode = "-";
-                res.checkinTime = "-";
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.addAuditLog("Hủy Check-In Căn Hộ", `Hủy check-in căn ${unitCode}`);
-                window.toast(`Đã hủy trạng thái check-in của căn ${unitCode}`);
-            }
-        };
-
-        window.manualCheckinUnit = function(unitCode) {
-            const res = window.residents.find(r => r.unit === unitCode);
-            if (res) {
-                res.checkedIn = true;
-                res.mode = "Thủ Công (BQT)";
-                res.checkinTime = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.addAuditLog("Duyệt Check-In Thủ Công", `Duyệt check-in cho căn ${unitCode}`);
-                window.toast(`Đã duyệt check-in thành công cho căn ${unitCode}`);
-            }
         };
 
         window.handleResidentQuickSearch = function(query) {
@@ -1029,14 +957,18 @@
             const matches = window.residents.filter(r => 
                 r.unit.toUpperCase().includes(q) || 
                 r.name.toUpperCase().includes(q) || 
-                (r.phone && r.phone.includes(q))
+                (r.phone && r.phone.includes(q)) ||
+                (r.cccd && r.cccd.includes(q))
             );
 
             if (matches.length > 0) {
-                selectEl.innerHTML = matches.map(r => `<option value="${r.unit}">${r.unit} - ${r.name} (${r.area}m²)</option>`).join('');
+                selectEl.innerHTML = matches.map(r => `<option value="${r.unit}">${r.unit}</option>`).join('');
                 window.onLoginResidentUnitSelectChange(matches[0].unit);
             } else {
-                selectEl.innerHTML = window.residents.map(r => `<option value="${r.unit}">${r.unit} - ${r.name} (${r.area}m²)</option>`).join('');
+                selectEl.innerHTML = window.residents.map(r => `<option value="${r.unit}">${r.unit}</option>`).join('');
+                if (window.residents.length > 0) {
+                    window.onLoginResidentUnitSelectChange(window.residents[0].unit);
+                }
             }
         };
 
@@ -1047,9 +979,17 @@
         window.onLoginResidentUnitSelectChange = function(unitCode) {
             window.selectedResidentUnit = unitCode;
             const resident = window.residents.find(r => r.unit === unitCode);
+            
+            const nameInput = document.getElementById('loginResidentNameInput');
+            const areaInput = document.getElementById('loginResidentAreaInput');
             const cccdInput = document.getElementById('loginResidentCccdInput');
-            if (cccdInput && resident) {
-                cccdInput.value = resident.cccd && resident.cccd !== "Chưa cập nhật" ? resident.cccd : "";
+
+            if (resident) {
+                if (nameInput) nameInput.value = resident.name || '';
+                if (areaInput) areaInput.value = (resident.area || 0) + ' m²';
+                if (cccdInput) {
+                    cccdInput.value = resident.cccd && resident.cccd !== "Chưa cập nhật" ? resident.cccd : "";
+                }
             }
         };
 
@@ -1100,7 +1040,7 @@
                 }
             }
 
-            // Enhanced Smart Name & CCCD Matching Algorithm
+            /* Enhanced Smart Name & CCCD Matching Algorithm */
             const normExtractedName = window.removeVietnameseTones(extractedName);
             
             let matched = window.residents.find(r => {
@@ -1113,7 +1053,7 @@
             });
 
             if (matched) {
-                // Auto-fill 12-digit CCCD and update Resident Data in list
+                /* Auto-fill 12-digit CCCD and update Resident Data in list */
                 if (extractedCccd && extractedCccd.length === 12) {
                     matched.cccd = extractedCccd;
                     matched.cccdVerified = true;
@@ -1121,19 +1061,31 @@
 
                 window.selectedResidentUnit = matched.unit;
                 
-                // Auto-select Unit in Dropdown
+                /* Auto-select Unit in Dropdown */
                 const loginResSel = document.getElementById('loginResidentUnitSelect');
                 if (loginResSel) {
                     loginResSel.value = matched.unit;
                 }
-                
-                // Auto-fill CCCD Field
+
+                /* Fill separate Owner Name field */
+                const nameInp = document.getElementById('loginResidentNameInput');
+                if (nameInp) {
+                    nameInp.value = extractedName || matched.name;
+                }
+
+                /* Fill Area field */
+                const areaInp = document.getElementById('loginResidentAreaInput');
+                if (areaInp) {
+                    areaInp.value = (matched.area || 0) + ' m²';
+                }
+
+                /* Auto-fill CCCD Field */
                 const cccdInp = document.getElementById('loginResidentCccdInput');
                 if (cccdInp) {
                     cccdInp.value = matched.cccd !== "Chưa cập nhật" ? matched.cccd : extractedCccd;
                 }
 
-                // Sync data across all views and Firestore
+                /* Sync data across all views and Firestore */
                 window.syncAllUI();
                 window.saveStateToFirestore();
 
@@ -1148,6 +1100,10 @@
                 }
                 window.toast(`✓ Đã nhận diện chủ hộ ${matched.name} (Căn ${matched.unit})`);
             } else {
+                const nameInp = document.getElementById('loginResidentNameInput');
+                if (nameInp && extractedName) {
+                    nameInp.value = extractedName;
+                }
                 if (banner) {
                     banner.className = "text-xs p-3 rounded-xl bg-amber-950/80 border border-amber-500 text-amber-200 space-y-1";
                     banner.innerHTML = `
@@ -1161,6 +1117,7 @@
 
         window.handleResidentQuickLogin = function() {
             const unit = document.getElementById('loginResidentUnitSelect')?.value;
+            const inputName = (document.getElementById('loginResidentNameInput')?.value || '').trim().toUpperCase();
             const cccdInput = (document.getElementById('loginResidentCccdInput')?.value || '').trim();
 
             if (unit) {
@@ -1169,6 +1126,9 @@
 
                 const resident = window.residents.find(r => r.unit === unit);
                 if (resident) {
+                    if (inputName) {
+                        resident.name = inputName;
+                    }
                     if (cccdInput.length === 12) {
                         resident.cccd = cccdInput;
                         resident.cccdVerified = true;
@@ -1176,7 +1136,7 @@
                     resident.checkedIn = true;
                     resident.checkinTime = new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
                     resident.mode = "Đăng Nhập Cư Dân";
-                    window.addAuditLog("Cư Dân Check-in", `Căn ${unit} cập nhật CCCD ${cccdInput} và check-in thành công`);
+                    window.addAuditLog("Cư Dân Check-in", `Căn ${unit} (${resident.name}) cập nhật CCCD ${cccdInput} và check-in thành công`);
                 }
 
                 document.getElementById('userRoleBadge').innerText = `Cư Dân (${unit})`;
@@ -1188,10 +1148,10 @@
             }
         };
 
-        window.handleLoginSubmit = async function() {
-            const role = document.getElementById('loginRoleSelect')?.value || "ADMIN";
-            const email = document.getElementById('loginEmailInput')?.value;
-            const pwd = document.getElementById('loginPasswordInput')?.value;
+        window.handleAdminLoginSubmit = async function() {
+            const role = document.getElementById('loginAdminRoleSelect')?.value || "ADMIN";
+            const email = document.getElementById('loginAdminEmailInput')?.value;
+            const pwd = document.getElementById('loginAdminPasswordInput')?.value;
 
             if (role === "ADMIN" && pwd !== window.buildingConfig.adminPwd) {
                 window.toast("Mật khẩu Admin không chính xác!");
@@ -1211,106 +1171,6 @@
             window.addAuditLog("Đăng Nhập Quản Trị", `Đăng nhập vai trò ${role}`);
             window.toast(`Đăng nhập thành công với quyền ${role}!`);
             window.switchView('dashboard');
-        };
-
-        window.togglePhoneMask = function(unit) {
-            if (window.userRole !== "ADMIN") {
-                window.toast("🔒 Chỉ Ban Quản Trị (Admin) mới có quyền xem SĐT đầy đủ!");
-                return;
-            }
-            window.showPhoneMap[unit] = !window.showPhoneMap[unit];
-            window.renderUnitsTable();
-        };
-
-        window.getPhoneDisplay = function(phone, unit) {
-            if (!phone || phone === "-") return '<span class="text-slate-500 italic font-mono">Chưa có</span>';
-            
-            if (window.userRole === "ADMIN") {
-                const isRevealed = !!window.showPhoneMap[unit];
-                const masked = phone.length >= 7 ? phone.substring(0, 3) + "****" + phone.substring(phone.length - 3) : phone;
-                
-                return `
-                    <div class="flex items-center gap-1.5 font-mono">
-                        <span class="text-slate-200 font-semibold">${isRevealed ? phone : masked}</span>
-                        <button onclick="togglePhoneMask('${unit}')" class="text-amber-400 hover:text-amber-300 p-1 text-xs" title="${isRevealed ? 'Ẩn số điện thoại' : 'Xem số điện thoại đầy đủ'}">
-                            <i class="fa-solid ${isRevealed ? 'fa-eye-slash' : 'fa-eye'}"></i>
-                        </button>
-                    </div>
-                `;
-            } else {
-                const masked = phone.length >= 7 ? phone.substring(0, 3) + "****" + phone.substring(phone.length - 3) : "••••••••••";
-                return `
-                    <div class="flex items-center gap-1 text-slate-400 font-mono" title="Chỉ Admin mới có quyền xem SĐT đầy đủ">
-                        <span>${masked}</span>
-                        <i class="fa-solid fa-lock text-[10px] text-amber-500/80"></i>
-                    </div>
-                `;
-            }
-        };
-
-        window.addNewResidentPrompt = function() {
-            const unit = prompt("Nhập Mã Căn Hộ (Ví dụ: B1-0716 hoặc B5-0716):");
-            if (!unit) return;
-            const name = prompt("Nhập Họ và Tên Chủ Sở Hữu:");
-            if (!name) return;
-            const phone = prompt("Nhập Số Điện Thoại:", "0912345678");
-            const areaStr = prompt("Nhập Diện Tích m²:", "75.0");
-
-            window.residents.push({
-                unit: unit.trim().toUpperCase(),
-                name: name.trim().toUpperCase(),
-                phone: (phone || "").trim(),
-                cccd: "Chưa cập nhật",
-                cccdVerified: false,
-                area: window.parseArea(areaStr),
-                checkedIn: false,
-                mode: "-",
-                checkinTime: "-",
-                votes: { resolutions: {}, candidates: null }
-            });
-
-            window.syncAllUI();
-            window.saveStateToFirestore();
-            window.addAuditLog("Thêm Căn Hộ Mới", `Thêm chủ sở hữu căn ${unit}`);
-            window.toast(`Đã thêm thành công căn hộ ${unit}!`);
-        };
-
-        window.deleteResident = function(unitCode) {
-            if (confirm(`Bạn chắc chắn muốn xóa dữ liệu căn ${unitCode}?`)) {
-                window.residents = window.residents.filter(r => r.unit !== unitCode);
-                window.syncAllUI();
-                window.saveStateToFirestore();
-                window.addAuditLog("Xóa Căn Hộ", `Xóa căn ${unitCode}`);
-                window.toast("Đã xóa dữ liệu thành công!");
-            }
-        };
-
-        window.renderUnitsTable = function() {
-            const body = document.getElementById('unitsTableBody');
-            if (!body) return;
-
-            if (window.residents.length === 0) {
-                body.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500 italic">Sổ bộ hiện đang trống. Nhấn "Nạp File Excel Cư Dân" để tải lên danh sách mới.</td></tr>`;
-                return;
-            }
-
-            body.innerHTML = window.residents.map(r => `
-                <tr class="hover:bg-slate-900/70 border-b border-slate-800/40">
-                    <td class="p-3 text-emerald-400 font-mono font-bold">${r.unit}</td>
-                    <td class="p-3 text-white font-medium">${r.name}</td>
-                    <td class="p-3">${window.getPhoneDisplay(r.phone, r.unit)}</td>
-                    <td class="p-3 font-mono ${r.cccdVerified ? 'text-emerald-300 font-bold' : 'text-slate-400 italic'}">
-                        ${r.cccd && r.cccd !== "Chưa cập nhật" ? r.cccd : 'Chưa cập nhật (Chờ Check-in)'}
-                    </td>
-                    <td class="p-3 text-right font-bold text-purple-300">${r.area} m²</td>
-                    <td class="p-3 text-center">
-                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.checkedIn ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-500'}">${r.checkedIn ? 'Đã Check-In' : 'Chưa'}</span>
-                    </td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteResident('${r.unit}')" class="p-1.5 bg-rose-900/40 hover:bg-rose-800 text-rose-300 rounded-lg"><i class="fa-solid fa-trash"></i></button>
-                    </td>
-                </tr>
-            `).join('');
         };
 
         window.tryDecodeQrCodeFromImage = function(file) {
@@ -1350,6 +1210,205 @@
                 img.onerror = () => resolve(null);
                 img.src = URL.createObjectURL(file);
             });
+        };
+
+        window.togglePhoneVisibility = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền bật/tắt xem SĐT!");
+                return;
+            }
+            window.showPhoneNumbers = !window.showPhoneNumbers;
+            const eyeIcon = document.getElementById('phoneEyeIcon');
+            if (eyeIcon) {
+                eyeIcon.className = window.showPhoneNumbers ? "fa-solid fa-eye text-emerald-400" : "fa-solid fa-eye-slash";
+            }
+            window.renderUnitsTable();
+            window.toast(window.showPhoneNumbers ? "Đã hiển thị số điện thoại đầy đủ" : "Đã che giấu số điện thoại bảo mật");
+        };
+
+        window.renderUnitsTable = function() {
+            const body = document.getElementById('unitsTableBody');
+            if (!body) return;
+
+            body.innerHTML = window.residents.map(r => {
+                let displayPhone = "091****678 🔒";
+                if (window.userRole === "ADMIN" && window.showPhoneNumbers) {
+                    displayPhone = r.phone || "Chưa có";
+                }
+
+                return `
+                    <tr class="hover:bg-slate-900/70 border-b border-slate-800/40 transition">
+                        <td class="p-3 font-bold text-emerald-400 font-mono text-sm">${r.unit}</td>
+                        <td class="p-3 text-white font-bold">${r.name}</td>
+                        <td class="p-3 font-mono ${r.cccd && r.cccd.length === 12 ? 'text-emerald-400 font-bold' : 'text-slate-500'}">
+                            ${r.cccd || 'Chưa cập nhật'}
+                        </td>
+                        <td class="p-3 font-mono text-slate-300 text-xs">${displayPhone}</td>
+                        <td class="p-3 text-right font-bold text-purple-300 text-sm">${r.area} m²</td>
+                        <td class="p-3 text-center">
+                            <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${r.checkedIn ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-slate-800 text-slate-500'}">
+                                ${r.checkedIn ? '✓ Đã Check-In' : 'Chưa'}
+                            </span>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteResident('${r.unit}')" class="p-1.5 bg-rose-900/40 hover:bg-rose-800 text-rose-300 rounded-lg transition" title="Xóa căn hộ">
+                                <i class="fa-solid fa-trash"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        };
+
+        window.resetEntireResidentRegistry = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền Reset dữ liệu Sổ bộ!");
+                return;
+            }
+
+            if (confirm("⚠️ BẠN CÓ CHẮC CHẮN MÓI RESET TOÀN BỘ SỔ BỘ CĂN HỘ?\n\nToàn bộ danh sách cư dân hiện tại sẽ bị xóa sạch để nạp file Excel mới.")) {
+                window.residents = [];
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.addAuditLog("Reset Sổ Bộ Data", "Admin thực hiện xóa sạch dữ liệu sổ bộ để nạp mới file Excel");
+                window.toast("Đã reset sổ bộ! Vui lòng bấm 'Nạp File Excel' để tải dữ liệu mới.");
+            }
+        };
+
+        window.renderCheckinHistoryTable = function() {
+            const body = document.getElementById('checkinHistoryTableBody');
+            if (!body) return;
+
+            const checkedList = window.residents.filter(r => r.checkedIn);
+            if (checkedList.length === 0) {
+                body.innerHTML = `<tr><td colspan="6" class="p-8 text-center text-slate-500">Chưa có lượt điểm danh check-in nào</td></tr>`;
+                return;
+            }
+
+            body.innerHTML = checkedList.map(r => `
+                <tr class="hover:bg-slate-900/70 border-b border-slate-800/40">
+                    <td class="p-3 text-amber-400">${r.checkinTime}</td>
+                    <td class="p-3 font-bold text-emerald-400 text-sm">${r.unit}</td>
+                    <td class="p-3 text-white font-bold">${r.name}</td>
+                    <td class="p-3 text-emerald-300 font-bold">${r.cccd || 'Chưa cập nhật'}</td>
+                    <td class="p-3 text-right text-purple-300 font-bold">${r.area} m²</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">${r.mode}</span>
+                    </td>
+                </tr>
+            `).join('');
+        };
+
+        window.resetCheckinData = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền Reset Check-In!");
+                return;
+            }
+
+            if (confirm("Xác nhận reset toàn bộ trạng thái Check-In của tất cả căn hộ về 0?")) {
+                window.residents.forEach(r => {
+                    r.checkedIn = false;
+                    r.checkinTime = "-";
+                    r.mode = "-";
+                });
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.addAuditLog("Reset Check-in Data", "Admin reset dữ liệu điểm danh tất cả căn hộ");
+                window.toast("Đã reset toàn bộ trạng thái check-in!");
+            }
+        };
+
+        window.deleteResident = function(unitCode) {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ tài khoản Ban Quản Trị (Admin) mới có quyền xóa!");
+                return;
+            }
+            if (confirm(`Bạn chắc chắn muốn xóa căn ${unitCode}?`)) {
+                window.residents = window.residents.filter(r => r.unit !== unitCode);
+                window.syncAllUI();
+                window.saveStateToFirestore();
+                window.addAuditLog("Xóa Căn Hộ", `Xóa căn ${unitCode}`);
+                window.toast("Đã xóa dữ liệu căn hộ!");
+            }
+        };
+
+        window.openSignatureModal = function() {
+            const sel = document.getElementById('proxyUnitSelect');
+            if (sel) {
+                sel.innerHTML = window.residents.map(r => `<option value="${r.unit}">${r.unit} - ${r.name}</option>`).join('');
+            }
+            document.getElementById('signatureModal')?.classList.remove('hidden');
+            window.initSignatureCanvas();
+        };
+
+        window.closeSignatureModal = function() {
+            document.getElementById('signatureModal')?.classList.add('hidden');
+        };
+
+        window.initSignatureCanvas = function() {
+            const canvas = document.getElementById('signatureCanvas');
+            if (!canvas) return;
+            sigCtx = canvas.getContext('2d');
+            sigCtx.strokeStyle = "#10b981";
+            sigCtx.lineWidth = 2.5;
+
+            const startSign = (e) => { isSigning = true; sigCtx.beginPath(); };
+            const sign = (e) => {
+                if (!isSigning) return;
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+                const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+                const x = (clientX - rect.left) * scaleX;
+                const y = (clientY - rect.top) * scaleY;
+                sigCtx.lineTo(x, y);
+                sigCtx.stroke();
+            };
+            const stopSign = () => { isSigning = false; };
+
+            canvas.onmousedown = startSign;
+            canvas.onmousemove = sign;
+            canvas.onmouseup = stopSign;
+
+            canvas.ontouchstart = startSign;
+            canvas.ontouchmove = sign;
+            canvas.ontouchend = stopSign;
+        };
+
+        window.clearSignatureCanvas = function() {
+            const canvas = document.getElementById('signatureCanvas');
+            if (canvas && sigCtx) sigCtx.clearRect(0, 0, canvas.width, canvas.height);
+        };
+
+        window.saveProxyRecord = function() {
+            const unit = document.getElementById('proxyUnitSelect')?.value;
+            const name = document.getElementById('proxyNameInput')?.value;
+            const cccd = document.getElementById('proxyCccdInput')?.value;
+            const phone = document.getElementById('proxyPhoneInput')?.value;
+
+            if (!name || !cccd) {
+                window.toast("Vui lòng điền đủ Họ tên và CCCD người nhận UQ!");
+                return;
+            }
+
+            const canvas = document.getElementById('signatureCanvas');
+            const sigData = canvas ? canvas.toDataURL() : "";
+
+            window.proxies.push({
+                id: 'proxy-' + Date.now(),
+                unit: unit,
+                proxyName: name,
+                proxyCccd: cccd,
+                phone: phone,
+                signatureImg: sigData
+            });
+
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.closeSignatureModal();
+            window.addAuditLog("Lập Giấy Ủy Quyền", `Căn ${unit} ủy quyền cho ${name}`);
+            window.toast("Đã lưu Giấy Ủy Quyền điện tử!");
         };
 
         window.renderProxyList = function() {
@@ -1470,17 +1529,50 @@
             window.toast(`Đã lưu bầu cử BQT căn ${current.unit}!`);
         };
 
-        window.renderAuditLogTable = function() {
-            const body = document.getElementById('auditLogTableBody');
-            if (!body) return;
-            body.innerHTML = window.auditLogs.map(a => `
-                <tr class="hover:bg-slate-900/50">
-                    <td class="p-2.5 text-slate-400">${a.timestamp}</td>
-                    <td class="p-2.5 text-emerald-400 font-bold">${a.actor}</td>
-                    <td class="p-2.5 text-white">${a.action}</td>
-                    <td class="p-2.5 text-slate-300">${a.details}</td>
-                </tr>
-            `).join('');
+        window.renderCharts = function(checkedArea, remainingArea) {
+            const quorumCtx = document.getElementById('quorumChart')?.getContext('2d');
+            if (quorumCtx) {
+                if (window.quorumChartInstance) window.quorumChartInstance.destroy();
+
+                window.quorumChartInstance = new Chart(quorumCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Đã Check-in (m²)', 'Chưa Check-in (m²)'],
+                        datasets: [{
+                            data: [checkedArea.toFixed(1), remainingArea.toFixed(1)],
+                            backgroundColor: ['#10b981', '#334155'],
+                            borderColor: ['#059669', '#1e293b'],
+                            borderWidth: 2
+                        }]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
+
+            const resCtx = document.getElementById('resolutionsChart')?.getContext('2d');
+            if (resCtx) {
+                if (window.resolutionsChartInstance) window.resolutionsChartInstance.destroy();
+
+                const labels = window.resolutions.map((r, idx) => `Nghị quyết ${idx + 1}`);
+                const yesData = window.resolutions.map(r => {
+                    return window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'yes').reduce((s, c) => s + c.area, 0);
+                });
+                const noData = window.resolutions.map(r => {
+                    return window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'no').reduce((s, c) => s + c.area, 0);
+                });
+
+                window.resolutionsChartInstance = new Chart(resCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            { label: 'Tán thành (m²)', data: yesData, backgroundColor: '#10b981' },
+                            { label: 'Không tán thành (m²)', data: noData, backgroundColor: '#f43f5e' }
+                        ]
+                    },
+                    options: { responsive: true, maintainAspectRatio: false }
+                });
+            }
         };
 
         window.exportOfficialPdfReport = function() {
@@ -1498,6 +1590,18 @@
             document.getElementById('pdfCheckedArea').innerText = checkedArea.toFixed(1);
             document.getElementById('pdfQuorumPercent').innerText = `${quorumPercent}%`;
             document.getElementById('pdfQuorumConclusion').innerText = isQuorumMet ? "ĐỦ ĐIỀU KIỆN TIẾN HÀNH HỘI NGHỊ (Đạt ≥ 50% tổng m² diện tích sở hữu)" : "CHƯA ĐỦ ĐIỀU KIỆN TIẾN HÀNH (Chưa đạt 50% tổng m²)";
+
+            const resBreakdown = document.getElementById('pdfResolutionsBreakdown');
+            resBreakdown.innerHTML = window.resolutions.map((r, idx) => {
+                const yesArea = window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'yes').reduce((s, c) => s + c.area, 0);
+                const noArea = window.residents.filter(res => res.votes && res.votes.resolutions && res.votes.resolutions[r.id] === 'no').reduce((s, c) => s + c.area, 0);
+                return `
+                    <div class="p-2 border-b border-gray-300">
+                        <p><strong>${idx + 1}. ${r.title}</strong></p>
+                        <p class="pl-4">+ Tán thành: ${yesArea.toFixed(1)} m² | + Không tán thành: ${noArea.toFixed(1)} m²</p>
+                    </div>
+                `;
+            }).join('');
 
             const element = document.getElementById('pdfReportTemplate');
             element.classList.remove('hidden');
@@ -1517,14 +1621,36 @@
             });
         };
 
+        window.downloadSampleExcelTemplate = function() {
+            const sampleData = [
+                ["Mã Căn Hộ", "Họ Và Tên Chủ Hộ", "Diện Tích m2", "Số CCCD", "Số Điện Thoại"],
+                ["B1-0716", "NGUYỄN VĂN AN", 75.5, "052092001111", "0912345678"],
+                ["B5-0716", "TRẦN THỊ BÌNH", 68.0, "052092002222", "0987654321"]
+            ];
+            const ws = XLSX.utils.aoa_to_sheet(sampleData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Template");
+            XLSX.writeFile(wb, "Template_SoBo_EcoHome_NhonBinh.xlsx");
+        };
+
         window.exportResidentsToExcel = function() {
             const data = window.residents.map(r => ({
-                "Mã Căn": r.unit, "Chủ Hộ": r.name, "SĐT": r.phone, "Số CCCD": r.cccd, "Diện Tích m2": r.area, "Trạng Thái": r.checkedIn ? "Đã Check-In" : "Chưa", "Thời Gian": r.checkinTime
+                "Mã Căn": r.unit, "Chủ Hộ": r.name, "Số CCCD": r.cccd, "SĐT": r.phone, "Diện Tích m2": r.area, "Trạng Thái": r.checkedIn ? "Đã Check-In" : "Chưa", "Thời Gian": r.checkinTime
             }));
             const ws = XLSX.utils.json_to_sheet(data);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "CheckIn");
-            XLSX.writeFile(wb, `BaoCao_Checkin_EcoHome.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "SoBoCanHo");
+            XLSX.writeFile(wb, `BaoCao_SoBo_EcoHome.xlsx`);
+        };
+
+        window.exportVotingToExcel = function() {
+            const data = window.residents.map(r => ({
+                "Mã Căn": r.unit, "Chủ Hộ": r.name, "Diện Tích m2": r.area, "Check-In": r.checkedIn ? "Đã Check-In" : "Chưa"
+            }));
+            const ws = XLSX.utils.json_to_sheet(data);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "BieuQuyet");
+            XLSX.writeFile(wb, `BaoCao_BieuQuyet_EcoHome.xlsx`);
         };
 
         window.exportAuditLogToExcel = function() {
@@ -1532,6 +1658,19 @@
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "AuditLog");
             XLSX.writeFile(wb, `AuditLog_EcoHome.xlsx`);
+        };
+
+        window.renderAuditLogTable = function() {
+            const body = document.getElementById('auditLogTableBody');
+            if (!body) return;
+            body.innerHTML = window.auditLogs.map(a => `
+                <tr class="hover:bg-slate-900/50">
+                    <td class="p-2.5 text-slate-400">${a.timestamp}</td>
+                    <td class="p-2.5 text-emerald-400 font-bold">${a.actor}</td>
+                    <td class="p-2.5 text-white">${a.action}</td>
+                    <td class="p-2.5 text-slate-300">${a.details}</td>
+                </tr>
+            `).join('');
         };
 
         window.openImportWizardModal = function() {
@@ -1574,7 +1713,6 @@
             document.getElementById('mapColUnit').innerHTML = options;
             document.getElementById('mapColName').innerHTML = options;
             document.getElementById('mapColArea').innerHTML = options;
-            document.getElementById('mapColPhone').innerHTML = options;
             document.getElementById('mapColCccd').innerHTML = `<option value="-1">-- Không chọn --</option>` + options;
         };
 
@@ -1582,7 +1720,6 @@
             const colUnit = parseInt(document.getElementById('mapColUnit').value || 0);
             const colName = parseInt(document.getElementById('mapColName').value || 0);
             const colArea = parseInt(document.getElementById('mapColArea').value || 0);
-            const colPhone = parseInt(document.getElementById('mapColPhone').value || 0);
             const colCccd = parseInt(document.getElementById('mapColCccd').value || -1);
 
             const previewBody = document.getElementById('wizardPreviewTableBody');
@@ -1593,8 +1730,7 @@
                 <tr class="hover:bg-slate-800/40">
                     <td class="p-2 text-emerald-400 font-bold">${row[colUnit] || 'N/A'}</td>
                     <td class="p-2 text-white">${row[colName] || 'N/A'}</td>
-                    <td class="p-2 text-slate-300 font-mono">${row[colPhone] || '-'}</td>
-                    <td class="p-2 text-slate-400">${colCccd >= 0 ? row[colCccd] : '-'}</td>
+                    <td class="p-2 text-slate-400">${colCccd >= 0 ? row[colCccd] : 'Chưa cập nhật'}</td>
                     <td class="p-2 text-right text-purple-300 font-bold">${window.parseArea(row[colArea])} m²</td>
                 </tr>
             `).join('');
@@ -1604,24 +1740,24 @@
             const colUnit = parseInt(document.getElementById('mapColUnit').value || 0);
             const colName = parseInt(document.getElementById('mapColName').value || 0);
             const colArea = parseInt(document.getElementById('mapColArea').value || 0);
-            const colPhone = parseInt(document.getElementById('mapColPhone').value || 0);
             const colCccd = parseInt(document.getElementById('mapColCccd').value || -1);
 
             const extracted = [];
             window.wizardRawMatrix.forEach(row => {
                 const u = row[colUnit] !== undefined ? row[colUnit].toString().trim() : '';
-                const n = row[colName] !== undefined ? row[colName].toString().trim() : 'Chủ sở hữu';
-                const p = row[colPhone] !== undefined ? row[colPhone].toString().trim() : '';
+                const n = row[colName] !== undefined ? row[colName].toString().trim() : 'Chủ hộ';
                 const a = row[colArea] !== undefined ? window.parseArea(row[colArea]) : 0;
-                const c = colCccd >= 0 && row[colCccd] !== undefined ? row[colCccd].toString().trim() : 'Chưa cập nhật';
+                const c = colCccd >= 0 && row[colCccd] !== undefined && row[colCccd].toString().trim().length === 12 
+                          ? row[colCccd].toString().trim() 
+                          : 'Chưa cập nhật';
 
                 if (u) {
                     extracted.push({
-                        unit: u.toUpperCase(),
+                        unit: u,
                         name: n.toUpperCase(),
-                        phone: p,
                         cccd: c,
-                        cccdVerified: false,
+                        phone: "0912345678",
+                        cccdVerified: c.length === 12,
                         area: a,
                         checkedIn: false,
                         mode: "-",
@@ -1636,11 +1772,12 @@
                 window.syncAllUI();
                 window.saveStateToFirestore();
                 window.closeImportWizardModal();
-                window.addAuditLog("Import File Excel", `Nạp ${extracted.length} căn hộ vào sổ bộ`);
-                window.toast(`Thành công! Đã đồng bộ ${extracted.length} căn hộ vào sổ bộ!`);
+                window.addAuditLog("Import File Excel", `Nạp ${extracted.length} căn hộ vào Sổ Bộ`);
+                window.toast(`Đồng bộ thành công ${extracted.length} căn hộ!`);
             }
         };
 
+        /* ON LOAD INITIALIZATION */
         window.addEventListener('load', () => {
             window.initFirebaseSync();
             window.syncAllUI();
