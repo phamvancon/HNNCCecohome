@@ -311,26 +311,26 @@
                         <div class="p-3.5 rounded-xl bg-purple-50 dark:bg-purple-500/10 border border-purple-200 dark:border-purple-500/20 text-xs text-purple-800 dark:text-purple-300 flex items-start gap-2">
                             <i class="fa-solid fa-user-shield text-base text-purple-600 dark:text-purple-400 mt-0.5"></i>
                             <div>
-                                <strong>Khu vực quản trị:</strong> Dành cho Ban Quản Trị (Pass: <code>215151365</code>) & Ban Tổ Chức (Pass: <code>phamvancon</code>) quản lý dữ liệu, khóa/mở check-in và xuất báo cáo.
+                                <strong>Khu vực quản trị:</strong> Dành cho Ban Quản Trị & Ban Tổ Chức quản lý dữ liệu, khóa/mở check-in và xuất báo cáo.
                             </div>
                         </div>
 
                         <div>
                             <label class="block text-slate-700 dark:text-slate-300 font-bold mb-1 text-xs">Vai trò quản trị:</label>
                             <select id="loginAdminRoleSelect" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl p-3 text-xs font-bold focus:border-purple-500">
-                                <option value="ADMIN">Ban Quản Trị (Full Admin - Pass: 215151365)</option>
-                                <option value="STAFF">Ban Tổ Chức / Lễ Tân (Pass: phamvancon)</option>
+                                <option value="ADMIN">Ban Quản Trị (Admin)</option>
+                                <option value="STAFF">Ban Tổ Chức / Lễ Tân</option>
                             </select>
                         </div>
 
                         <div>
                             <label class="block text-slate-700 dark:text-slate-300 font-bold mb-1 text-xs">Tài khoản Email / SĐT:</label>
-                            <input id="loginAdminEmailInput" type="text" value="bqt.ecohome@gmail.com" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl p-3 text-xs focus:border-purple-500">
+                            <input id="loginAdminEmailInput" type="text" placeholder="Nhập email hoặc SĐT..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl p-3 text-xs focus:border-purple-500">
                         </div>
 
                         <div>
                             <label class="block text-slate-700 dark:text-slate-300 font-bold mb-1 text-xs">Mật khẩu bảo mật:</label>
-                            <input id="loginAdminPasswordInput" type="password" value="215151365" class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl p-3 text-xs font-mono focus:border-purple-500">
+                            <input id="loginAdminPasswordInput" type="password" value="" placeholder="Nhập mật khẩu..." class="w-full bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 text-slate-900 dark:text-white rounded-xl p-3 text-xs font-mono focus:border-purple-500">
                         </div>
 
                         <button onclick="handleAdminLoginSubmit()" class="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2">
@@ -1314,12 +1314,12 @@
             const pwd = document.getElementById('loginAdminPasswordInput')?.value;
 
             if (role === "ADMIN" && pwd !== window.buildingConfig.adminPwd) {
-                window.toast("Mật khẩu Admin (Pass: 215151365) không chính xác!");
+                window.toast("Mật khẩu Ban Quản Trị không chính xác!");
                 return;
             }
 
             if (role === "STAFF" && pwd !== window.buildingConfig.staffPwd) {
-                window.toast("Mật khẩu Ban Tổ Chức (Pass: phamvancon) không chính xác!");
+                window.toast("Mật khẩu Ban Tổ Chức không chính xác!");
                 return;
             }
 
