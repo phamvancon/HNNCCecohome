@@ -792,7 +792,8 @@
 
         window.buildingConfig = {
             badge: "Chung cư EcoHome Nhơn Bình",
-            adminPwd: "215151365"
+            adminPwd: "215151365",
+            staffPwd: "phamvancon"
         };
 
         window.residents = [
@@ -830,14 +831,14 @@
         /* Signature State */
         let isSigning = false;
         let sigCtx = null;
-
-        /* Vietnamese String Normalizer */
-        window.removeVietnameseTones = function(str) {
-            if (!str) return '';
-            return str
-                .normalize('NFD')
-                .replace(/[\u0300-\u036f]/g, '')
-                .replace(/đ/g, 'd').replace(/Đ/g, 'D');
+        /* Helper function to mask CCCD for public security */
+        window.maskCccd = function(cccdStr) {
+            if (!cccdStr || cccdStr === "Chưa cập nhật") return "Chưa cập nhật";
+            if (window.userRole === "ADMIN" || window.userRole === "STAFF") return cccdStr;
+            if (cccdStr.length === 12) {
+                return cccdStr.substring(0, 4) + "****" + cccdStr.substring(8);
+            }
+            return "********";
         };
 
         /* Audit Log Helper */
@@ -1321,7 +1322,12 @@
             const pwd = document.getElementById('loginAdminPasswordInput')?.value;
 
             if (role === "ADMIN" && pwd !== window.buildingConfig.adminPwd) {
-                window.toast("Mật khẩu Admin không chính xác!");
+                window.toast("Mật khẩu Admin quản lý cao nhất không chính xác!");
+                return;
+            }
+
+            if (role === "STAFF" && pwd !== window.buildingConfig.staffPwd) {
+                window.toast("Mật khẩu Ban Tổ Chức không chính xác!");
                 return;
             }
 
@@ -1408,7 +1414,7 @@
                         <td class="p-3 font-bold text-emerald-400 font-mono text-sm">${r.unit}</td>
                         <td class="p-3 text-white font-bold">${r.name}</td>
                         <td class="p-3 font-mono ${r.cccd && r.cccd.length === 12 ? 'text-emerald-400 font-bold' : 'text-slate-500'}">
-                            ${r.cccd || 'Chưa cập nhật'}
+                            ${window.maskCccd(r.cccd)}
                         </td>
                         <td class="p-3 font-mono text-slate-300 text-xs">${displayPhone}</td>
                         <td class="p-3 text-right font-bold text-purple-300 text-sm">${r.area} m²</td>
@@ -1457,7 +1463,7 @@
                     <td class="p-3 text-amber-400">${r.checkinTime}</td>
                     <td class="p-3 font-bold text-emerald-400 text-sm">${r.unit}</td>
                     <td class="p-3 text-white font-bold">${r.name}</td>
-                    <td class="p-3 text-emerald-300 font-bold">${r.cccd || 'Chưa cập nhật'}</td>
+                    <td class="p-3 text-emerald-300 font-bold">${window.maskCccd(r.cccd)}</td>
                     <td class="p-3 text-right text-purple-300 font-bold">${r.area} m²</td>
                     <td class="p-3 text-center">
                         <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-teal-500/10 text-teal-400 border border-teal-500/20">${r.mode}</span>
