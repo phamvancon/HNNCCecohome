@@ -8,9 +8,6 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🏢</text></svg>">
     <title>AI Quét CCCD & Biểu Quyết Số - EcoHome Nhơn Bình</title>
 
-    <!-- PWA Web App Manifest -->
-    <link rel="manifest" href="data:application/manifest+json;utf8,%7B%22name%22%3A%22EcoHome%20HQ%22%2C%22short_name%22%3A%22EcoHomeHQ%22%2C%22start_url%22%3A%22.%22%2C%22display%22%3A%22standalone%22%2C%22background_color%22%3A%22%230f172a%22%2C%22theme_color%22%3A%22%2310b981%22%7D">
-
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -36,12 +33,12 @@
 
     <style>
         .glass-panel {
-            background: rgba(30, 41, 59, 0.82);
+            background: rgba(15, 23, 42, 0.88);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .light .glass-panel {
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.94);
             backdrop-filter: blur(16px);
             border: 1px solid rgba(0, 0, 0, 0.08);
         }
@@ -55,14 +52,9 @@
             0%, 100% { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); border-color: rgba(16, 185, 129, 0.8); }
             50% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.9); border-color: rgba(16, 185, 129, 1); }
         }
-        @keyframes shake-warning {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-6px); }
-            40%, 80% { transform: translateX(6px); }
-        }
         
         .glow-emerald { animation: pulse-glow-emerald 2s infinite ease-in-out; }
-        .glow-rose { animation: pulse-glow-rose 1.4s infinite ease-in-out, shake-warning 0.5s ease-in-out; }
+        .glow-rose { animation: pulse-glow-rose 1.4s infinite ease-in-out; }
 
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: rgba(15, 23, 42, 0.6); }
@@ -70,7 +62,6 @@
         
         @media print {
             .no-print { display: none !important; }
-            .print-only { display: block !important; }
             body { background: white !important; color: black !important; }
         }
     </style>
@@ -115,437 +106,507 @@
             }
         };
 
-        window.toggleMobileMenu = function() {
-            const menu = document.getElementById('mobileMenu');
-            if (menu) menu.classList.toggle('hidden');
+        window.toggleSidebar = function() {
+            const sidebar = document.getElementById('sidebarNav');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar) {
+                sidebar.classList.toggle('-translate-x-full');
+            }
+            if (overlay) {
+                overlay.classList.toggle('hidden');
+            }
         };
     </script>
 </head>
-<body class="h-full flex flex-col font-sans antialiased bg-slate-950 text-slate-100 transition-colors duration-300 light:bg-slate-100 light:text-slate-900">
+<body class="h-full bg-slate-950 text-slate-100 font-sans antialiased transition-colors duration-300 light:bg-slate-100 light:text-slate-900 flex flex-col lg:flex-row">
 
-    <!-- HEADER & MAIN NAVIGATION -->
-    <header class="glass-panel sticky top-0 z-40 border-b border-slate-800 light:border-slate-200 bg-slate-900/90 light:bg-white/90">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Brand Badge -->
-                <div class="flex items-center gap-3 cursor-pointer" onclick="switchView('dashboard')">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20">
-                        <i class="fa-solid font-bold fa-building-user text-xl"></i>
-                    </div>
-                    <div>
-                        <h1 class="text-sm sm:text-base font-bold text-slate-100 light:text-slate-900 leading-tight">EcoHome Nhơn Bình</h1>
-                        <p class="text-[11px] text-emerald-400 font-medium">Hội Nghị Số / TT06/2019/TT-BXD</p>
-                    </div>
-                </div>
+    <!-- OVERLAY FOR MOBILE SIDEBAR -->
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
 
-                <!-- Navigation Tabs -->
-                <nav class="hidden lg:flex items-center gap-1 bg-slate-800/60 light:bg-slate-200/60 p-1.5 rounded-xl border border-slate-700/50 light:border-slate-300 text-xs">
-                    <button id="nav-login" onclick="switchView('login')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-right-to-bracket mr-1 text-emerald-400"></i>1. Đăng Nhập</button>
-                    <button id="nav-dashboard" onclick="switchView('dashboard')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-chart-pie mr-1 text-teal-400"></i>2. Dashboard BQT</button>
-                    <button id="nav-units" onclick="switchView('units')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-building-circle-check mr-1 text-indigo-400"></i>3. Sổ Bộ Căn Hộ</button>
-                    <button id="nav-checkin" onclick="switchView('checkin')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-list-check mr-1 text-emerald-300"></i>4. Danh Sách Check-In</button>
-                    <button id="nav-proxy" onclick="switchView('proxy')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-file-signature mr-1 text-amber-400"></i>5. Ủy Quyền & Chữ Ký</button>
-                    <button id="nav-voting" onclick="switchView('voting')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-vote-yea mr-1 text-blue-400"></i>6. Biểu Quyết Số</button>
-                    <button id="nav-audit" onclick="switchView('audit')" class="nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white"><i class="fa-solid fa-clock-rotate-left mr-1 text-purple-400"></i>7. Audit Log</button>
-                </nav>
-
-                <!-- Actions & Profile Badge -->
-                <div class="flex items-center gap-2">
-                    <button onclick="toggleTheme()" class="p-2 rounded-xl bg-slate-800 light:bg-slate-200 text-slate-300 light:text-slate-700 hover:text-white transition" title="Đổi giao diện sáng/tối">
-                        <i id="themeIcon" class="fa-solid fa-moon text-sm"></i>
-                    </button>
-                    <button onclick="switchView('login')" class="px-3 py-1.5 rounded-xl bg-slate-800 light:bg-slate-200 border border-slate-700 light:border-slate-300 text-xs font-bold text-emerald-400 flex items-center gap-1.5 shadow-sm">
-                        <i class="fa-solid fa-user-shield text-xs"></i>
-                        <span id="userRoleBadge">BQT (Admin)</span>
-                    </button>
-                    <button onclick="toggleMobileMenu()" class="lg:hidden p-2 rounded-lg bg-slate-800 text-slate-300 hover:text-white">
-                        <i class="fa-solid fa-bars text-lg"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <!-- Mobile Drawer Menu -->
-        <div id="mobileMenu" class="hidden lg:hidden border-t border-slate-800 bg-slate-900 px-4 pt-2 pb-3 space-y-1 text-xs">
-            <button onclick="switchView('login'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-right-to-bracket mr-2 text-emerald-400"></i>1. Trang Đăng Nhập (Cư Dân / Admin)</button>
-            <button onclick="switchView('dashboard'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-chart-pie mr-2 text-teal-400"></i>2. Dashboard BQT & Thống Kê Realtime</button>
-            <button onclick="switchView('units'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-building-circle-check mr-2 text-indigo-400"></i>3. Sổ Bộ Căn Hộ & Cư Dân</button>
-            <button onclick="switchView('checkin'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-list-check mr-2 text-emerald-300"></i>4. Danh Sách Check-In Realtime</button>
-            <button onclick="switchView('proxy'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-file-signature mr-2 text-amber-400"></i>5. Quản Lý Giấy Ủy Quyền & Chữ Ký</button>
-            <button onclick="switchView('voting'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-vote-yea mr-2 text-blue-400"></i>6. Biểu Quyết Điện Tử (TT06/2019)</button>
-            <button onclick="switchView('audit'); toggleMobileMenu();" class="w-full text-left px-3 py-2 rounded-lg text-slate-200 hover:bg-slate-800"><i class="fa-solid fa-clock-rotate-left mr-2 text-purple-400"></i>7. Nhật Ký Thao Tác (Audit Log)</button>
-        </div>
-    </header>
-
-    <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 lg:p-8 space-y-6">
-
-        <!-- VIEW 1: TRANG ĐĂNG NHẬP (1A: CƯ DÂN / 1B: ADMIN) -->
-        <section id="view-login" class="space-y-6">
-            <div class="max-w-md mx-auto glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-5 text-center shadow-2xl">
-                <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-2xl shadow-lg border border-emerald-500/20">
-                    <i class="fa-solid fa-building-user"></i>
+    <!-- LEFT SIDEBAR NAVIGATION PANEL -->
+    <aside id="sidebarNav" class="fixed top-0 left-0 bottom-0 w-64 glass-panel border-r border-slate-800 z-50 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out flex flex-col justify-between">
+        <div class="p-4 space-y-6 overflow-y-auto">
+            <!-- App Brand Badge -->
+            <div class="flex items-center gap-3 p-2 bg-slate-900/80 rounded-xl border border-slate-800/80 cursor-pointer" onclick="switchView('dashboard')">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-bold shadow-lg shadow-emerald-500/20 flex-shrink-0">
+                    <i class="fa-solid fa-building-user text-xl"></i>
                 </div>
                 <div>
-                    <h2 class="text-xl font-bold text-white">Cổng Đăng Nhập Căn Hộ EcoHome</h2>
-                    <p class="text-xs text-slate-400 mt-1">Lựa chọn cổng truy cập dành cho Cư Dân hoặc Ban Quản Trị</p>
+                    <h1 class="text-sm font-bold text-white leading-tight">EcoHome Nhơn Bình</h1>
+                    <p class="text-[10px] text-emerald-400 font-medium">Hội Nghị Số / TT06/2019</p>
                 </div>
+            </div>
 
-                <!-- Tab Switching Buttons -->
-                <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800 text-xs font-bold">
-                    <button id="tabBtnResident" onclick="switchLoginTab('resident')" class="py-2.5 rounded-lg border border-emerald-500 text-emerald-400 bg-emerald-500/10 transition">
-                        <i class="fa-solid fa-user mr-1.5"></i> 1A. Cư Dân
-                    </button>
-                    <button id="tabBtnAdmin" onclick="switchLoginTab('admin')" class="py-2.5 rounded-lg border border-transparent text-slate-400 transition hover:text-white">
-                        <i class="fa-solid fa-user-shield mr-1.5"></i> 1B. Admin / BTC
-                    </button>
+            <!-- Navigation Links -->
+            <div class="space-y-1">
+                <div class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">Bảng Điều Hướng Hệ Thống</div>
+                
+                <button id="nav-login" onclick="switchView('login')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-right-to-bracket text-emerald-400 text-sm w-5"></i>
+                    <span>1. Cổng Đăng Nhập</span>
+                </button>
+
+                <button id="nav-dashboard" onclick="switchView('dashboard')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-chart-pie text-teal-400 text-sm w-5"></i>
+                    <span>2. Dashboard BQT</span>
+                </button>
+
+                <button id="nav-units" onclick="switchView('units')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-building-circle-check text-indigo-400 text-sm w-5"></i>
+                    <span>3. Sổ Bộ Căn Hộ</span>
+                </button>
+
+                <button id="nav-checkin" onclick="switchView('checkin')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-list-check text-emerald-300 text-sm w-5"></i>
+                    <span>4. Danh Sách Check-In</span>
+                </button>
+
+                <button id="nav-proxy" onclick="switchView('proxy')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-file-signature text-amber-400 text-sm w-5"></i>
+                    <span>5. Ủy Quyền & Chữ Ký</span>
+                </button>
+
+                <button id="nav-voting" onclick="switchView('voting')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-vote-yea text-blue-400 text-sm w-5"></i>
+                    <span>6. Biểu Quyết Số</span>
+                </button>
+
+                <button id="nav-audit" onclick="switchView('audit')" class="nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition">
+                    <i class="fa-solid fa-clock-rotate-left text-purple-400 text-sm w-5"></i>
+                    <span>7. Audit Log</span>
+                </button>
+            </div>
+
+            <!-- Sidebar Status Widget -->
+            <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2 text-xs">
+                <div class="flex justify-between items-center text-slate-400 text-[11px]">
+                    <span>Trạng Thái Check-In:</span>
+                    <span id="sidebarLockBadge" class="font-bold text-emerald-400">ĐANG MỞ</span>
                 </div>
+                <div class="flex justify-between items-center text-slate-400 text-[11px]">
+                    <span>Quorum m² Hiện Tại:</span>
+                    <span id="sidebarQuorumVal" class="font-bold text-amber-400">0.0%</span>
+                </div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-1">
+                    <div id="sidebarQuorumBar" class="bg-amber-400 h-full w-0 transition-all duration-500"></div>
+                </div>
+            </div>
+        </div>
 
-                <!-- Form 1A: Cổng Đăng Nhập Cư Dân -->
-                <div id="formResidentLogin" class="space-y-4 text-left pt-2">
-                    <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-start gap-2">
-                        <i class="fa-solid fa-circle-info text-base text-emerald-400 mt-0.5"></i>
-                        <div>
-                            <strong>Hướng dẫn:</strong> Tìm kiếm nhanh mã căn/tên chủ hộ hoặc sử dụng <strong>Camera AI/QR</strong> để tự động kiểm tra tư cách cư dân, cập nhật 12 số CCCD và vào cổng biểu quyết.
-                        </div>
+        <!-- Sidebar Footer Controls -->
+        <div class="p-4 border-t border-slate-800 space-y-2">
+            <div class="flex items-center justify-between text-xs">
+                <span class="text-slate-400">Vai trò:</span>
+                <span id="userRoleBadge" class="px-2 py-0.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-bold">BQT (Admin)</span>
+            </div>
+            <button onclick="toggleTheme()" class="w-full py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl border border-slate-800 text-xs font-bold transition flex items-center justify-center gap-2">
+                <i id="themeIcon" class="fa-solid fa-moon text-amber-400"></i>
+                <span>Giao Diện Sáng / Tối</span>
+            </button>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <div class="lg:pl-64 flex-1 flex flex-col min-h-screen">
+        <!-- Top Navbar Header -->
+        <header class="glass-panel sticky top-0 z-30 border-b border-slate-800 bg-slate-900/90 px-4 py-3 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="lg:hidden p-2 rounded-xl bg-slate-800 text-slate-300 hover:text-white">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                <div>
+                    <h2 id="topBarTitle" class="text-base font-bold text-white">Cổng Đăng Nhập Cư Dân & BQT</h2>
+                    <p class="text-[11px] text-slate-400">Chung cư EcoHome Nhơn Bình, Quy Nhơn</p>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="switchView('login')" class="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-bold text-emerald-400 border border-slate-700 flex items-center gap-1.5 shadow-sm">
+                    <i class="fa-solid fa-user-shield text-xs"></i>
+                    <span>Đổi Tài Khoản</span>
+                </button>
+            </div>
+        </header>
+
+        <main class="flex-1 p-4 sm:p-6 lg:p-8 max-w-7xl w-full mx-auto space-y-6">
+
+            <!-- VIEW 1: TRANG ĐĂNG NHẬP (1A: CƯ DÂN / 1B: ADMIN) -->
+            <section id="view-login" class="space-y-6">
+                <div class="max-w-md mx-auto glass-panel p-6 sm:p-8 rounded-2xl border border-slate-800 space-y-5 text-center shadow-2xl">
+                    <div class="w-14 h-14 rounded-2xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center mx-auto text-2xl shadow-lg border border-emerald-500/20">
+                        <i class="fa-solid fa-building-user"></i>
                     </div>
-
                     <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">
-                            <i class="fa-solid fa-magnifying-glass text-emerald-400 mr-1"></i> 1A.1. Tìm kiếm nhanh thông tin cư dân:
-                        </label>
-                        <input id="loginResidentSearchInput" type="text" onkeyup="handleResidentQuickSearch(this.value)" placeholder="Nhập mã căn (B1-0716), họ tên hoặc SĐT..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs focus:border-emerald-500 focus:outline-none">
+                        <h2 class="text-xl font-bold text-white">Cổng Đăng Nhập Căn Hộ EcoHome</h2>
+                        <p class="text-xs text-slate-400 mt-1">Lựa chọn cổng truy cập dành cho Cư Dân hoặc Ban Quản Trị</p>
                     </div>
 
-                    <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2">
-                        <label class="block text-slate-300 font-bold text-xs flex items-center justify-between">
-                            <span><i class="fa-solid fa-camera text-teal-400 mr-1"></i> 1A.2. Quét AI OCR CCCD / Mã QR Xác Thực:</span>
-                            <span class="text-[10px] text-teal-400 font-mono bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">AI Auto-Check</span>
-                        </label>
-                        <input type="file" accept="image/*" capture="environment" id="loginCameraInput" class="hidden" onchange="handleResidentImageSelected(event)">
-                        <button onclick="triggerResidentCamera()" class="w-full py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
-                            <i class="fa-solid fa-expand text-sm"></i> 📷 Chụp / Quét CCCD Kiểm Tra Tư Cách Cư Dân
+                    <!-- Tab Switching Buttons -->
+                    <div class="grid grid-cols-2 gap-2 bg-slate-900 p-1.5 rounded-xl border border-slate-800 text-xs font-bold">
+                        <button id="tabBtnResident" onclick="switchLoginTab('resident')" class="py-2.5 rounded-lg border border-emerald-500 text-emerald-400 bg-emerald-500/10 transition">
+                            <i class="fa-solid fa-user mr-1.5"></i> 1A. Cư Dân
                         </button>
-                        
-                        <div id="loginAiVerificationBanner" class="hidden text-xs p-3 rounded-xl transition-all"></div>
+                        <button id="tabBtnAdmin" onclick="switchLoginTab('admin')" class="py-2.5 rounded-lg border border-transparent text-slate-400 transition hover:text-white">
+                            <i class="fa-solid fa-user-shield mr-1.5"></i> 1B. Admin / BTC
+                        </button>
                     </div>
 
-                    <!-- Tách riêng Mã Căn Hộ + Diện Tích m² thành 1 Hàng, và Họ Tên Chủ Sở Hữu thành Mục Riêng -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <!-- Form 1A: Cổng Đăng Nhập Cư Dân -->
+                    <div id="formResidentLogin" class="space-y-4 text-left pt-2">
+                        <div id="checkinLockNoticeBanner" class="hidden p-3 rounded-xl text-xs font-bold flex items-center justify-between border transition-all"></div>
+
+                        <div class="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-xs text-emerald-300 flex items-start gap-2">
+                            <i class="fa-solid fa-circle-info text-base text-emerald-400 mt-0.5"></i>
+                            <div>
+                                <strong>Hướng dẫn:</strong> Tìm kiếm nhanh mã căn/tên chủ hộ hoặc sử dụng <strong>Camera AI/QR</strong> để tự động kiểm tra tư cách cư dân, cập nhật 12 số CCCD và vào cổng biểu quyết.
+                            </div>
+                        </div>
+
                         <div>
                             <label class="block text-slate-300 font-bold mb-1 text-xs">
-                                <i class="fa-solid fa-building text-emerald-400 mr-1"></i> Mã Căn Hộ:
+                                <i class="fa-solid fa-magnifying-glass text-emerald-400 mr-1"></i> 1A.1. Tìm kiếm nhanh thông tin cư dân:
                             </label>
-                            <select id="loginResidentUnitSelect" onchange="onLoginResidentUnitSelectChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 font-bold text-sm focus:border-emerald-500"></select>
+                            <input id="loginResidentSearchInput" type="text" onkeyup="handleResidentQuickSearch(this.value)" placeholder="Nhập mã căn (B1-0716), họ tên hoặc SĐT..." class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs focus:border-emerald-500 focus:outline-none">
                         </div>
+
+                        <div class="p-3 bg-slate-900/90 rounded-xl border border-slate-800 space-y-2">
+                            <label class="block text-slate-300 font-bold text-xs flex items-center justify-between">
+                                <span><i class="fa-solid fa-camera text-teal-400 mr-1"></i> 1A.2. Quét AI OCR CCCD / Mã QR Xác Thực:</span>
+                                <span class="text-[10px] text-teal-400 font-mono bg-teal-500/10 px-2 py-0.5 rounded border border-teal-500/20">AI Auto-Check</span>
+                            </label>
+                            <input type="file" accept="image/*" capture="environment" id="loginCameraInput" class="hidden" onchange="handleResidentImageSelected(event)">
+                            <button onclick="triggerResidentCamera()" class="w-full py-2.5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-500 hover:to-emerald-500 text-white rounded-xl text-xs font-bold transition flex items-center justify-center gap-2 shadow-md">
+                                <i class="fa-solid fa-expand text-sm"></i> 📷 Chụp / Quét CCCD Kiểm Tra Tư Cách Cư Dân
+                            </button>
+                            
+                            <div id="loginAiVerificationBanner" class="hidden text-xs p-3 rounded-xl transition-all"></div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-slate-300 font-bold mb-1 text-xs">
+                                    <i class="fa-solid fa-building text-emerald-400 mr-1"></i> Mã Căn Hộ:
+                                </label>
+                                <select id="loginResidentUnitSelect" onchange="onLoginResidentUnitSelectChange(this.value)" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 font-bold text-sm focus:border-emerald-500"></select>
+                            </div>
+                            <div>
+                                <label class="block text-slate-300 font-bold mb-1 text-xs">
+                                    <i class="fa-solid fa-chart-area text-purple-400 mr-1"></i> Diện Tích (m²):
+                                </label>
+                                <input id="loginResidentAreaInput" type="text" readonly value="0 m²" class="w-full bg-slate-900/90 border border-slate-800 text-purple-300 rounded-xl p-3 font-mono font-bold text-sm cursor-not-allowed">
+                            </div>
+                        </div>
+
                         <div>
                             <label class="block text-slate-300 font-bold mb-1 text-xs">
-                                <i class="fa-solid fa-chart-area text-purple-400 mr-1"></i> Diện Tích (m²):
+                                <i class="fa-solid fa-user-check text-teal-400 mr-1"></i> Họ và Tên Chủ Sở Hữu (AI Quét / Đối soát):
                             </label>
-                            <input id="loginResidentAreaInput" type="text" readonly value="0 m²" class="w-full bg-slate-900/90 border border-slate-800 text-purple-300 rounded-xl p-3 font-mono font-bold text-sm cursor-not-allowed">
+                            <input id="loginResidentNameInput" type="text" placeholder="Nhập hoặc AI tự động quét điền họ tên..." class="w-full bg-slate-900 border border-slate-700 text-white font-bold rounded-xl p-3 text-sm focus:border-emerald-500 uppercase">
                         </div>
-                    </div>
 
-                    <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">
-                            <i class="fa-solid fa-user-check text-teal-400 mr-1"></i> Họ và Tên Chủ Sở Hữu (AI Quét / Đối soát):
-                        </label>
-                        <input id="loginResidentNameInput" type="text" placeholder="Nhập hoặc AI tự động quét điền họ tên..." class="w-full bg-slate-900 border border-slate-700 text-white font-bold rounded-xl p-3 text-sm focus:border-emerald-500 uppercase">
-                    </div>
-
-                    <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">
-                            <i class="fa-solid fa-id-card text-emerald-400 mr-1"></i> Số CCCD (12 số - Cập nhật tự động sau check-in):
-                        </label>
-                        <input id="loginResidentCccdInput" type="text" maxlength="12" placeholder="Nhập 12 số CCCD (Ví dụ: 05209200xxxx)" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 rounded-xl p-3 font-mono text-sm focus:border-emerald-500">
-                    </div>
-
-                    <button onclick="handleResidentQuickLogin()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-right-to-bracket text-sm"></i> Xác Nhận Check-In & Vào Cổng Biểu Quyết
-                    </button>
-                </div>
-
-                <!-- Form 1B: Cổng Đăng Nhập Admin / Staff -->
-                <div id="formAdminLogin" class="space-y-4 text-left pt-2 hidden">
-                    <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 flex items-start gap-2">
-                        <i class="fa-solid fa-user-shield text-base text-purple-400 mt-0.5"></i>
                         <div>
-                            <strong>Khu vực quản trị:</strong> Dành cho thành viên Ban Quản Trị & Lễ Tân Ban Tổ Chức quản lý dữ liệu, kiểm tra danh sách check-in và xuất báo cáo.
+                            <label class="block text-slate-300 font-bold mb-1 text-xs">
+                                <i class="fa-solid fa-id-card text-emerald-400 mr-1"></i> Số CCCD (12 số - Cập nhật tự động sau check-in):
+                            </label>
+                            <input id="loginResidentCccdInput" type="text" maxlength="12" placeholder="Nhập 12 số CCCD (Ví dụ: 05209200xxxx)" class="w-full bg-slate-900 border border-slate-700 text-emerald-400 rounded-xl p-3 font-mono text-sm focus:border-emerald-500">
+                        </div>
+
+                        <button onclick="handleResidentQuickLogin()" class="w-full py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-emerald-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-right-to-bracket text-sm"></i> Xác Nhận Check-In & Vào Cổng Biểu Quyết
+                        </button>
+                    </div>
+
+                    <!-- Form 1B: Cổng Đăng Nhập Admin / Staff -->
+                    <div id="formAdminLogin" class="space-y-4 text-left pt-2 hidden">
+                        <div class="p-3.5 rounded-xl bg-purple-500/10 border border-purple-500/20 text-xs text-purple-300 flex items-start gap-2">
+                            <i class="fa-solid fa-user-shield text-base text-purple-400 mt-0.5"></i>
+                            <div>
+                                <strong>Khu vực quản trị:</strong> Dành cho Ban Quản Trị & Ban Tổ Chức quản lý dữ liệu, khóa/mở check-in và xuất báo cáo.
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1 text-xs">Vai trò quản trị:</label>
+                            <select id="loginAdminRoleSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs font-bold focus:border-purple-500">
+                                <option value="ADMIN">Ban Quản Trị (Full Admin)</option>
+                                <option value="STAFF">Ban Tổ Chức / Lễ Tân Check-In</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1 text-xs">Tài khoản Email / SĐT:</label>
+                            <input id="loginAdminEmailInput" type="text" value="bqt.ecohome@gmail.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs focus:border-purple-500">
+                        </div>
+
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1 text-xs">Mật khẩu bảo mật:</label>
+                            <input id="loginAdminPasswordInput" type="password" value="215151365" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs font-mono focus:border-purple-500">
+                        </div>
+
+                        <button onclick="handleAdminLoginSubmit()" class="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-key text-sm"></i> Đăng Nhập Quản Trị Hệ Thống
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: DASHBOARD BAN QUẢN TRỊ -->
+            <section id="view-dashboard" class="hidden space-y-6">
+                <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-6 sm:p-8 border border-slate-700/60 shadow-2xl">
+                    <div class="relative z-10 max-w-3xl space-y-3">
+                        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> THỜI GIAN THỰC • THÔNG TƯ 06/2019/TT-BXD
+                        </span>
+                        <h2 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Dashboard Ban Quản Trị EcoHome Nhơn Bình</h2>
+                        <p class="text-slate-300 text-xs sm:text-sm leading-relaxed">
+                            Tự động tính toán Quorum m² diện tích sở hữu. Yêu cầu đạt ≥ 50% diện tích m² toàn nhà chung cư để mở phiên họp hợp lệ.
+                        </p>
+                        <div class="pt-2 flex flex-wrap gap-3">
+                            <button id="btnAdminToggleLockDashboard" onclick="toggleCheckinLock()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2">
+                                <i id="lockDashIcon" class="fa-solid fa-lock-open"></i>
+                                <span id="lockDashText">Cổng Check-In: ĐANG MỞ (Bấm để Khóa)</span>
+                            </button>
+                            <button onclick="exportOfficialPdfReport()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2">
+                                <i class="fa-solid fa-file-pdf text-sm"></i> Xuất Biên Bản PDF
+                            </button>
+                            <button onclick="exportVotingToExcel()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/20 flex items-center gap-2">
+                                <i class="fa-solid fa-file-excel text-sm"></i> Xuất Excel Biểu Quyết
+                            </button>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Vai trò quản trị:</label>
-                        <select id="loginAdminRoleSelect" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs font-bold focus:border-purple-500">
-                            <option value="ADMIN">Ban Quản Trị (Full Admin)</option>
-                            <option value="STAFF">Ban Tổ Chức / Lễ Tân Check-In</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Tài khoản Email / SĐT:</label>
-                        <input id="loginAdminEmailInput" type="text" value="bqt.ecohome@gmail.com" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs focus:border-purple-500">
-                    </div>
-
-                    <div>
-                        <label class="block text-slate-300 font-bold mb-1 text-xs">Mật khẩu bảo mật:</label>
-                        <input id="loginAdminPasswordInput" type="password" value="215151365" class="w-full bg-slate-900 border border-slate-700 text-white rounded-xl p-3 text-xs font-mono focus:border-purple-500">
-                    </div>
-
-                    <button onclick="handleAdminLoginSubmit()" class="w-full py-3.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-purple-600/20 flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-key text-sm"></i> Đăng Nhập Quản Trị Hệ Thống
-                    </button>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 2: DASHBOARD BAN QUẢN TRỊ -->
-        <section id="view-dashboard" class="hidden space-y-6">
-            <div class="relative overflow-hidden rounded-2xl bg-gradient-to-r from-slate-900 via-slate-800 to-emerald-950 p-6 sm:p-8 border border-slate-700/60 shadow-2xl">
-                <div class="relative z-10 max-w-3xl space-y-3">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> THỜI GIAN THỰC • THÔNG TƯ 06/2019/TT-BXD
-                    </span>
-                    <h2 class="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">Dashboard Ban Quản Trị EcoHome Nhơn Bình</h2>
-                    <p class="text-slate-300 text-sm leading-relaxed">
-                        Tự động tính toán Quorum m² diện tích sở hữu. Yêu cầu đạt ≥ 50% diện tích m² toàn nhà chung cư để mở phiên họp hợp lệ.
-                    </p>
-                    <div class="pt-2 flex flex-wrap gap-3">
-                        <button onclick="exportOfficialPdfReport()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2">
-                            <i class="fa-solid fa-file-pdf text-sm"></i> Xuất Biên Bản PDF (Chuẩn Pháp Lý)
-                        </button>
-                        <button onclick="exportVotingToExcel()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-blue-600/20 flex items-center gap-2">
-                            <i class="fa-solid fa-file-excel text-sm"></i> Xuất Báo Cáo Excel
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- KPI Cards -->
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                <div class="glass-panel p-5 rounded-xl border border-slate-800">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tổng Căn Hộ</span>
-                        <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-building"></i></div>
-                    </div>
-                    <div id="statTotalUnits" class="text-2xl font-bold text-white mt-2">0</div>
-                    <p class="text-xs text-slate-400 mt-1">Sổ bộ chung cư</p>
                 </div>
 
-                <div class="glass-panel p-5 rounded-xl border border-slate-800">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Đã Check-In</span>
-                        <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-user-check"></i></div>
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tổng Căn Hộ</span>
+                            <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center"><i class="fa-solid fa-building"></i></div>
+                        </div>
+                        <div id="statTotalUnits" class="text-2xl font-bold text-white mt-2">0</div>
+                        <p class="text-xs text-slate-400 mt-1">Sổ bộ chung cư</p>
                     </div>
-                    <div id="statCheckedInUnits" class="text-2xl font-bold text-emerald-400 mt-2">0</div>
-                    <p id="statCheckedInPercent" class="text-xs text-emerald-500 mt-1">0% tổng số căn</p>
-                </div>
 
-                <div class="glass-panel p-5 rounded-xl border border-slate-800">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tổng Diện Tích m²</span>
-                        <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center"><i class="fa-solid fa-chart-area"></i></div>
+                    <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Đã Check-In</span>
+                            <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-user-check"></i></div>
+                        </div>
+                        <div id="statCheckedInUnits" class="text-2xl font-bold text-emerald-400 mt-2">0</div>
+                        <p id="statCheckedInPercent" class="text-xs text-emerald-500 mt-1">0% tổng số căn</p>
                     </div>
-                    <div id="statTotalArea" class="text-2xl font-bold text-white mt-2">0 m²</div>
-                    <p id="statCheckedInArea" class="text-xs text-purple-400 mt-1">Check-in: 0 m²</p>
-                </div>
 
-                <div class="glass-panel p-5 rounded-xl border border-slate-800">
-                    <div class="flex items-center justify-between">
-                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tỷ Lệ Quorum</span>
-                        <div id="quorumBadgeIcon" class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div>
+                    <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tổng Diện Tích m²</span>
+                            <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center"><i class="fa-solid fa-chart-area"></i></div>
+                        </div>
+                        <div id="statTotalArea" class="text-2xl font-bold text-white mt-2">0 m²</div>
+                        <p id="statCheckedInArea" class="text-xs text-purple-400 mt-1">Check-in: 0 m²</p>
                     </div>
-                    <div id="statQuorumPercent" class="text-2xl font-bold text-amber-400 mt-2">0.0%</div>
-                    <p id="statQuorumStatus" class="text-xs text-slate-400 mt-1">Cần ≥ 50% m² hợp lệ</p>
-                </div>
-            </div>
 
-            <!-- Charts Grid -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pie-chart text-emerald-400"></i> Quorum m² Tham Dự</h4>
-                        <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">TT06/2019</span>
-                    </div>
-                    <div class="relative w-full h-52 flex items-center justify-center">
-                        <canvas id="quorumChart"></canvas>
-                    </div>
-                    <p class="text-[11px] text-slate-400 text-center mt-2">Yêu cầu ≥ 50% m² diện tích sở hữu để tiến hành hội nghị.</p>
-                </div>
-
-                <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between lg:col-span-2">
-                    <div class="flex items-center justify-between mb-2">
-                        <h4 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-chart-column text-blue-400"></i> Kết Quả Biểu Quyết m² Theo Thời Gian Thực</h4>
-                    </div>
-                    <div class="relative w-full h-52">
-                        <canvas id="resolutionsChart"></canvas>
-                    </div>
-                    <p class="text-[11px] text-slate-400 text-center mt-2">Tổng hợp ý kiến Tán thành / Không tán thành tính trọng số m².</p>
-                </div>
-            </div>
-
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-                <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-emerald-400"></i> Danh Sách Biểu Quyết Các Nghị Quyết</h3>
-                <div id="landingResolutionsContainer" class="space-y-4"></div>
-            </div>
-        </section>
-
-        <!-- VIEW 3: SỔ BỘ CĂN HỘ & CƯ DÂN -->
-        <section id="view-units" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-building-circle-check text-indigo-400"></i> Sổ Bộ Căn Hộ & Cư Dân EcoHome Nhơn Bình</h3>
-                        <p class="text-xs text-slate-400">Quản lý căn hộ, diện tích m², cập nhật 12 số CCCD, nạp Excel custom và ẩn/hiện SĐT bảo mật</p>
-                    </div>
-                    <div class="flex flex-wrap items-center gap-2">
-                        <button onclick="openImportWizardModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-file-excel"></i> Nạp File Excel
-                        </button>
-                        <button onclick="downloadSampleExcelTemplate()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
-                            <i class="fa-solid fa-download text-teal-400"></i> Mẫu Excel
-                        </button>
-                        <button onclick="exportResidentsToExcel()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
-                            <i class="fa-solid fa-file-export text-emerald-400"></i> Xuất Excel
-                        </button>
-                        <button id="adminOnlyResetDatasetBtn" onclick="resetEntireResidentRegistry()" class="px-3 py-2 bg-rose-900/80 hover:bg-rose-800 text-rose-200 text-xs font-bold rounded-xl transition border border-rose-700 flex items-center gap-1.5">
-                            <i class="fa-solid fa-trash-arrow-up"></i> Reset Sổ Bộ (Admin)
-                        </button>
-                        <button onclick="togglePhoneVisibility()" class="px-3 py-2 bg-purple-900/80 hover:bg-purple-800 text-purple-200 text-xs font-bold rounded-xl transition border border-purple-700 flex items-center gap-1.5" title="Chỉ Admin mới có thể bật/tắt hiển thị SĐT">
-                            <i id="phoneEyeIcon" class="fa-solid fa-eye-slash"></i> SĐT Admin
-                        </button>
+                    <div class="glass-panel p-5 rounded-xl border border-slate-800">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Tỷ Lệ Quorum</span>
+                            <div id="quorumBadgeIcon" class="w-8 h-8 rounded-lg bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div>
+                        </div>
+                        <div id="statQuorumPercent" class="text-2xl font-bold text-amber-400 mt-2">0.0%</div>
+                        <p id="statQuorumStatus" class="text-xs text-slate-400 mt-1">Cần ≥ 50% m² hợp lệ</p>
                     </div>
                 </div>
 
-                <div class="overflow-x-auto rounded-xl border border-slate-800">
-                    <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="text-xs uppercase bg-slate-900/90 text-slate-400 border-b border-slate-800">
-                            <tr>
-                                <th class="p-3">Mã Căn Hộ</th>
-                                <th class="p-3">Chủ Sở Hữu</th>
-                                <th class="p-3">Số CCCD (12 số)</th>
-                                <th class="p-3">Số Điện Thoại</th>
-                                <th class="p-3 text-right">Diện Tích (m²)</th>
-                                <th class="p-3 text-center">Trạng Thái Check-In</th>
-                                <th class="p-3 text-right">Thao Tác</th>
-                            </tr>
-                        </thead>
-                        <tbody id="unitsTableBody" class="divide-y divide-slate-800/60 text-xs"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 4: DANH SÁCH CHECK-IN REALTIME -->
-        <section id="view-checkin" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                    <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-emerald-400"></i> Danh Sách Check-In Thời Gian Thực</h3>
-                        <p class="text-xs text-slate-400">Theo dõi trực tiếp lượt điểm danh cư dân, thời gian chính xác và 12 số CCCD</p>
+                <!-- Charts Grid -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pie-chart text-emerald-400"></i> Quorum m² Tham Dự</h4>
+                            <span class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">TT06/2019</span>
+                        </div>
+                        <div class="relative w-full h-52 flex items-center justify-center">
+                            <canvas id="quorumChart"></canvas>
+                        </div>
+                        <p class="text-[11px] text-slate-400 text-center mt-2">Yêu cầu ≥ 50% m² diện tích sở hữu để tiến hành hội nghị.</p>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span id="liveCheckinTotalBadge" class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/20 font-bold">0 Căn Đã Check-In</span>
-                        <button id="btnAdminResetCheckin" onclick="resetCheckinData()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
-                            <i class="fa-solid fa-rotate-left"></i> Reset Check-In (Admin)
-                        </button>
+
+                    <div class="glass-panel p-5 rounded-2xl border border-slate-800 flex flex-col justify-between lg:col-span-2">
+                        <div class="flex items-center justify-between mb-2">
+                            <h4 class="text-sm font-bold text-white flex items-center gap-2"><i class="fa-solid fa-chart-column text-blue-400"></i> Kết Quả Biểu Quyết m² Theo Thời Gian Thực</h4>
+                        </div>
+                        <div class="relative w-full h-52">
+                            <canvas id="resolutionsChart"></canvas>
+                        </div>
+                        <p class="text-[11px] text-slate-400 text-center mt-2">Tổng hợp ý kiến Tán thành / Không tán thành tính trọng số m².</p>
                     </div>
-                </div>
-
-                <div class="overflow-x-auto rounded-xl border border-slate-800">
-                    <table class="w-full text-left text-sm text-slate-300">
-                        <thead class="text-xs uppercase bg-slate-900/90 text-slate-400 border-b border-slate-800">
-                            <tr>
-                                <th class="p-3">Thời Gian Check-In</th>
-                                <th class="p-3">Mã Căn Hộ</th>
-                                <th class="p-3">Chủ Sở Hữu</th>
-                                <th class="p-3">Số CCCD (12 số)</th>
-                                <th class="p-3 text-right">Diện Tích (m²)</th>
-                                <th class="p-3 text-center">Hình Thức Check-In</th>
-                            </tr>
-                        </thead>
-                        <tbody id="checkinHistoryTableBody" class="divide-y divide-slate-800/60 text-xs font-mono"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
-
-        <!-- VIEW 5: QUẢN LÝ GIẤY ỦY QUYỀN VÀ CHỮ KÝ ĐIỆN TỬ -->
-        <section id="view-proxy" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
-                    <div>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-signature text-amber-400"></i> Quản Lý Giấy Ủy Quyền & Chữ Ký Điện Tử</h2>
-                        <p class="text-xs text-slate-400">Lập giấy ủy quyền tham dự & biểu quyết thay có chữ ký số Touch Canvas</p>
-                    </div>
-                    <button onclick="openSignatureModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-600/20">
-                        <i class="fa-solid fa-pen-nib"></i> Tạo Giấy Ủy Quyền Mới
-                    </button>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="proxyListContainer"></div>
-            </div>
-        </section>
-
-        <!-- VIEW 6: BIỂU QUYẾT ĐIỆN TỬ -->
-        <section id="view-voting" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-                    <div>
-                        <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-vote-yea text-blue-400"></i> Cổng Biểu Quyết Điện Tử Cư Dân</h2>
-                        <p class="text-xs text-slate-400">Mỗi biểu quyết được tính trọng số m² diện tích căn hộ sở hữu hợp lệ</p>
-                    </div>
-                    <div class="flex items-center gap-3">
-                        <label class="text-xs text-slate-400">Chọn căn hộ:</label>
-                        <select id="residentUnitSelect" onchange="onResidentUnitSelected()" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:border-blue-500"></select>
-                    </div>
-                </div>
-
-                <div id="selectedUnitInfoBanner" class="mt-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-sm flex flex-wrap justify-between items-center gap-2"></div>
-            </div>
-
-            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-signature text-emerald-400"></i> Biểu Quyết Nghị Quyết Hội Nghị</h3>
-                    <div id="residentResolutionsList" class="space-y-4"></div>
                 </div>
 
                 <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-users text-purple-400"></i> Bầu Cử Ban Quản Trị (BQT)</h3>
-                    <div id="residentCandidatesList" class="space-y-4"></div>
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-emerald-400"></i> Danh Sách Biểu Quyết Các Nghị Quyết</h3>
+                    <div id="landingResolutionsContainer" class="space-y-4"></div>
                 </div>
-            </div>
-        </section>
+            </section>
 
-        <!-- VIEW 7: NHẬT KÝ THAO TÁC HỆ THỐNG -->
-        <section id="view-audit" class="hidden space-y-6">
-            <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
-                <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-                    <div>
-                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Nhật Ký Thao Tác Hệ Thống (Audit Log)</h3>
-                        <p class="text-xs text-slate-400">Ghi lại minh bạch toàn bộ lịch sử điểm danh, biểu quyết, ủy quyền và đăng nhập</p>
+            <!-- VIEW 3: SỔ BỘ CĂN HỘ & CƯ DÂN -->
+            <section id="view-units" class="hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-building-circle-check text-indigo-400"></i> Sổ Bộ Căn Hộ & Cư Dân EcoHome Nhơn Bình</h3>
+                            <p class="text-xs text-slate-400">Quản lý căn hộ, diện tích m², cập nhật 12 số CCCD, nạp Excel custom và ẩn/hiện SĐT bảo mật</p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <button onclick="openImportWizardModal()" class="px-3 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-file-excel"></i> Nạp File Excel
+                            </button>
+                            <button onclick="downloadSampleExcelTemplate()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
+                                <i class="fa-solid fa-download text-teal-400"></i> Mẫu Excel
+                            </button>
+                            <button onclick="exportResidentsToExcel()" class="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition border border-slate-700">
+                                <i class="fa-solid fa-file-export text-emerald-400"></i> Xuất Excel
+                            </button>
+                            <button id="adminOnlyResetDatasetBtn" onclick="resetEntireResidentRegistry()" class="px-3 py-2 bg-rose-900/80 hover:bg-rose-800 text-rose-200 text-xs font-bold rounded-xl transition border border-rose-700 flex items-center gap-1.5">
+                                <i class="fa-solid fa-trash-arrow-up"></i> Reset Sổ Bộ (Admin)
+                            </button>
+                            <button onclick="togglePhoneVisibility()" class="px-3 py-2 bg-purple-900/80 hover:bg-purple-800 text-purple-200 text-xs font-bold rounded-xl transition border border-purple-700 flex items-center gap-1.5" title="Chỉ Admin mới có thể bật/tắt hiển thị SĐT">
+                                <i id="phoneEyeIcon" class="fa-solid fa-eye-slash"></i> SĐT Admin
+                            </button>
+                        </div>
                     </div>
-                    <button onclick="exportAuditLogToExcel()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
-                        <i class="fa-solid fa-file-excel"></i> Xuất Audit Log Excel
-                    </button>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="text-xs uppercase bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Mã Căn Hộ</th>
+                                    <th class="p-3">Chủ Sở Hữu</th>
+                                    <th class="p-3">Số CCCD (12 số)</th>
+                                    <th class="p-3">Số Điện Thoại</th>
+                                    <th class="p-3 text-right">Diện Tích (m²)</th>
+                                    <th class="p-3 text-center">Trạng Thái Check-In</th>
+                                    <th class="p-3 text-right">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="unitsTableBody" class="divide-y divide-slate-800/60 text-xs"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 4: DANH SÁCH CHECK-IN REALTIME -->
+            <section id="view-checkin" class="hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-emerald-400"></i> Danh Sách Check-In Thời Gian Thực</h3>
+                            <p class="text-xs text-slate-400">Theo dõi trực tiếp lượt điểm danh cư dân, thời gian chính xác và 12 số CCCD</p>
+                        </div>
+                        <div class="flex items-center gap-2 flex-wrap">
+                            <button id="btnAdminToggleLockCheckinPage" onclick="toggleCheckinLock()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
+                                <i id="lockPageIcon" class="fa-solid fa-lock-open"></i>
+                                <span id="lockPageText">Check-In Đang Mở (Khóa)</span>
+                            </button>
+                            <span id="liveCheckinTotalBadge" class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1.5 rounded-xl border border-emerald-500/20 font-bold">0 Căn Đã Check-In</span>
+                            <button id="btnAdminResetCheckin" onclick="resetCheckinData()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
+                                <i class="fa-solid fa-rotate-left"></i> Reset Check-In (Admin)
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-x-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="text-xs uppercase bg-slate-900/90 text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Thời Gian Check-In</th>
+                                    <th class="p-3">Mã Căn Hộ</th>
+                                    <th class="p-3">Chủ Sở Hữu</th>
+                                    <th class="p-3">Số CCCD (12 số)</th>
+                                    <th class="p-3 text-right">Diện Tích (m²)</th>
+                                    <th class="p-3 text-center">Hình Thức Check-In</th>
+                                </tr>
+                            </thead>
+                            <tbody id="checkinHistoryTableBody" class="divide-y divide-slate-800/60 text-xs font-mono"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 5: QUẢN LÝ GIẤY ỦY QUYỀN VÀ CHỮ KÝ ĐIỆN TỬ -->
+            <section id="view-proxy" class="hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+                        <div>
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-signature text-amber-400"></i> Quản Lý Giấy Ủy Quyền & Chữ Ký Điện Tử</h2>
+                            <p class="text-xs text-slate-400">Lập giấy ủy quyền tham dự & biểu quyết thay có chữ ký số Touch Canvas</p>
+                        </div>
+                        <button onclick="openSignatureModal()" class="px-4 py-2.5 bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs rounded-xl transition flex items-center gap-2 shadow-lg shadow-amber-600/20">
+                            <i class="fa-solid fa-pen-nib"></i> Tạo Giấy Ủy Quyền Mới
+                        </button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="proxyListContainer"></div>
+                </div>
+            </section>
+
+            <!-- VIEW 6: BIỂU QUYẾT ĐIỆN TỬ -->
+            <section id="view-voting" class="hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+                        <div>
+                            <h2 class="text-xl font-bold text-white flex items-center gap-2"><i class="fa-solid fa-vote-yea text-blue-400"></i> Cổng Biểu Quyết Điện Tử Cư Dân</h2>
+                            <p class="text-xs text-slate-400">Mỗi biểu quyết được tính trọng số m² diện tích căn hộ sở hữu hợp lệ</p>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <label class="text-xs text-slate-400">Chọn căn hộ:</label>
+                            <select id="residentUnitSelect" onchange="onResidentUnitSelected()" class="bg-slate-900 border border-slate-700 text-white text-sm rounded-xl px-3 py-2 focus:border-blue-500"></select>
+                        </div>
+                    </div>
+
+                    <div id="selectedUnitInfoBanner" class="mt-4 p-4 rounded-xl bg-slate-900/60 border border-slate-800 text-sm flex flex-wrap justify-between items-center gap-2"></div>
                 </div>
 
-                <div class="max-h-[500px] overflow-y-auto rounded-xl border border-slate-800">
-                    <table class="w-full text-left text-xs text-slate-300">
-                        <thead class="bg-slate-900 text-slate-400 sticky top-0 border-b border-slate-800">
-                            <tr>
-                                <th class="p-3">Thời Gian</th>
-                                <th class="p-3">Vai Trò</th>
-                                <th class="p-3">Thao Tác</th>
-                                <th class="p-3">Nội Dung Chi Tiết</th>
-                            </tr>
-                        </thead>
-                        <tbody id="auditLogTableBody" class="divide-y divide-slate-800/50 font-mono"></tbody>
-                    </table>
-                </div>
-            </div>
-        </section>
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-file-signature text-emerald-400"></i> Biểu Quyết Nghị Quyết Hội Nghị</h3>
+                        <div id="residentResolutionsList" class="space-y-4"></div>
+                    </div>
 
-    </main>
+                    <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                        <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-users text-purple-400"></i> Bầu Cử Ban Quản Trị (BQT)</h3>
+                        <div id="residentCandidatesList" class="space-y-4"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 7: NHẬT KÝ THAO TÁC HỆ THỐNG -->
+            <section id="view-audit" class="hidden space-y-6">
+                <div class="glass-panel p-6 rounded-2xl border border-slate-800 space-y-4">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div>
+                            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-purple-400"></i> Nhật Ký Thao Tác Hệ Thống (Audit Log)</h3>
+                            <p class="text-xs text-slate-400">Ghi lại minh bạch toàn bộ lịch sử điểm danh, biểu quyết, ủy quyền và đăng nhập</p>
+                        </div>
+                        <button onclick="exportAuditLogToExcel()" class="px-3.5 py-2 bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md">
+                            <i class="fa-solid fa-file-excel"></i> Xuất Audit Log Excel
+                        </button>
+                    </div>
+
+                    <div class="max-h-[500px] overflow-y-auto rounded-xl border border-slate-800">
+                        <table class="w-full text-left text-xs text-slate-300">
+                            <thead class="bg-slate-900 text-slate-400 sticky top-0 border-b border-slate-800">
+                                <tr>
+                                    <th class="p-3">Thời Gian</th>
+                                    <th class="p-3">Vai Trò</th>
+                                    <th class="p-3">Thao Tác</th>
+                                    <th class="p-3">Nội Dung Chi Tiết</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auditLogTableBody" class="divide-y divide-slate-800/50 font-mono"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
 
     <!-- HIDDEN PDF REPORT TEMPLATE -->
     <div id="pdfReportTemplate" class="hidden p-8 bg-white text-black space-y-4 font-serif text-sm leading-relaxed" style="width: 800px; margin: auto;">
@@ -718,7 +779,8 @@
         window.db = null;
         window.auth = null;
         window.userRole = "ADMIN";
-        window.showPhoneNumbers = false; // Security Flag
+        window.showPhoneNumbers = false; 
+        window.isCheckinLocked = false;  
 
         try {
             const app = initializeApp(window.firebaseConfig);
@@ -769,7 +831,7 @@
         let isSigning = false;
         let sigCtx = null;
 
-        /* Vietnamese String Normalizer for Smart Name Matching */
+        /* Vietnamese String Normalizer */
         window.removeVietnameseTones = function(str) {
             if (!str) return '';
             return str
@@ -820,12 +882,32 @@
             if (activeView) activeView.classList.remove('hidden');
 
             document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.className = "nav-btn px-3 py-1.5 rounded-lg font-medium text-slate-300 hover:text-white";
+                btn.className = "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-slate-300 hover:text-white hover:bg-slate-800/60 transition";
             });
 
             const activeNav = document.getElementById(`nav-${viewName}`);
             if (activeNav) {
-                activeNav.className = "nav-btn px-3 py-1.5 rounded-lg font-bold bg-emerald-600 text-white shadow-md";
+                activeNav.className = "nav-btn w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-bold bg-emerald-600 text-white shadow-md";
+            }
+
+            // Update Topbar Title dynamically
+            const titles = {
+                login: "1. Cổng Đăng Nhập Cư Dân & BQT",
+                dashboard: "2. Dashboard BQT & Thống Kê Realtime",
+                units: "3. Sổ Bộ Căn Hộ & Cư Dân",
+                checkin: "4. Danh Sách Check-In Realtime",
+                proxy: "5. Quản Lý Giấy Ủy Quyền & Chữ Ký",
+                voting: "6. Cổng Biểu Quyết Điện Tử",
+                audit: "7. Nhật Ký Thao Tác (Audit Log)"
+            };
+            const titleEl = document.getElementById('topBarTitle');
+            if (titleEl && titles[viewName]) titleEl.innerText = titles[viewName];
+
+            // Close mobile sidebar after navigating
+            const sidebar = document.getElementById('sidebarNav');
+            if (sidebar && window.innerWidth < 1024) {
+                sidebar.classList.add('-translate-x-full');
+                document.getElementById('sidebarOverlay')?.classList.add('hidden');
             }
 
             window.syncAllUI();
@@ -844,6 +926,7 @@
                         if (data.candidates) window.candidates = data.candidates;
                         if (data.proxies) window.proxies = data.proxies;
                         if (data.auditLogs) window.auditLogs = data.auditLogs;
+                        if (typeof data.isCheckinLocked !== 'undefined') window.isCheckinLocked = data.isCheckinLocked;
                         window.syncAllUI();
                     }
                 }, (error) => {
@@ -864,11 +947,25 @@
                     candidates: window.candidates,
                     proxies: window.proxies,
                     auditLogs: window.auditLogs,
+                    isCheckinLocked: window.isCheckinLocked,
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
             } catch (e) {
                 console.warn("Save firestore notice:", e);
             }
+        };
+
+        window.toggleCheckinLock = function() {
+            if (window.userRole !== "ADMIN") {
+                window.toast("🔒 Chỉ Ban Quản Trị (Admin) mới có quyền Khóa / Mở Cổng Check-In!");
+                return;
+            }
+            window.isCheckinLocked = !window.isCheckinLocked;
+            const statusText = window.isCheckinLocked ? "ĐÃ KHÓA" : "ĐÃ MỞ";
+            window.addAuditLog("Đổi Trạng Thái Check-In", `Ban Quản Trị đã ${statusText} cổng đăng nhập điểm danh cư dân.`);
+            window.syncAllUI();
+            window.saveStateToFirestore();
+            window.toast(`Đã ${statusText.toLowerCase()} cổng đăng nhập check-in cư dân!`);
         };
 
         window.syncAllUI = function() {
@@ -879,7 +976,62 @@
             const quorumPercent = totalArea > 0 ? ((checkedArea / totalArea) * 100).toFixed(1) : "0.0";
             const checkedInUnitPercent = totalUnits > 0 ? ((checkedInUnits / totalUnits) * 100).toFixed(1) : "0.0";
 
-            /* Initialize dropdown and separate fields for login 1A */
+            /* Sidebar Widget Updates */
+            const sidebarLock = document.getElementById('sidebarLockBadge');
+            if (sidebarLock) {
+                sidebarLock.innerText = window.isCheckinLocked ? "ĐÃ KHÓA" : "ĐANG MỞ";
+                sidebarLock.className = window.isCheckinLocked ? "font-bold text-rose-400" : "font-bold text-emerald-400";
+            }
+            const sidebarQuorum = document.getElementById('sidebarQuorumVal');
+            if (sidebarQuorum) sidebarQuorum.innerText = `${quorumPercent}%`;
+            const sidebarBar = document.getElementById('sidebarQuorumBar');
+            if (sidebarBar) sidebarBar.style.width = `${Math.min(100, parseFloat(quorumPercent))}%`;
+
+            /* Lock Notice Banner 1A */
+            const lockNotice = document.getElementById('checkinLockNoticeBanner');
+            if (lockNotice) {
+                if (window.isCheckinLocked) {
+                    lockNotice.classList.remove('hidden');
+                    lockNotice.className = "p-3 rounded-xl bg-rose-950/90 border border-rose-500 text-rose-200 text-xs font-bold flex items-center justify-between glow-rose";
+                    lockNotice.innerHTML = `<span><i class="fa-solid fa-lock text-rose-400 mr-2 text-sm"></i> CỔNG CHECK-IN ĐANG KHÓA — Ban Quản Trị chưa mở phiên điểm danh. Vui lòng quay lại sau!</span>`;
+                } else {
+                    lockNotice.classList.add('hidden');
+                }
+            }
+
+            /* Dashboard Lock Button */
+            const lockDashBtn = document.getElementById('btnAdminToggleLockDashboard');
+            if (lockDashBtn) {
+                const icon = document.getElementById('lockDashIcon');
+                const text = document.getElementById('lockDashText');
+                if (window.isCheckinLocked) {
+                    lockDashBtn.className = "px-4 py-2.5 bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-rose-600/20 flex items-center gap-2 glow-rose";
+                    if (icon) icon.className = "fa-solid fa-lock text-sm";
+                    if (text) text.innerText = "Cổng Check-In: ĐÃ KHÓA (Bấm để Mở)";
+                } else {
+                    lockDashBtn.className = "px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center gap-2";
+                    if (icon) icon.className = "fa-solid fa-lock-open text-sm";
+                    if (text) text.innerText = "Cổng Check-In: ĐANG MỞ (Bấm để Khóa)";
+                }
+            }
+
+            /* Checkin Page Lock Button */
+            const lockPageBtn = document.getElementById('btnAdminToggleLockCheckinPage');
+            if (lockPageBtn) {
+                const icon = document.getElementById('lockPageIcon');
+                const text = document.getElementById('lockPageText');
+                if (window.isCheckinLocked) {
+                    lockPageBtn.className = "px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md glow-rose";
+                    if (icon) icon.className = "fa-solid fa-lock";
+                    if (text) text.innerText = "Đã Khóa Check-In (Mở)";
+                } else {
+                    lockPageBtn.className = "px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-1.5 shadow-md";
+                    if (icon) icon.className = "fa-solid fa-lock-open";
+                    if (text) text.innerText = "Check-In Đang Mở (Khóa)";
+                }
+            }
+
+            /* Dropdowns & Resident Fields */
             const loginUnitSel = document.getElementById('loginResidentUnitSelect');
             if (loginUnitSel && window.residents.length > 0) {
                 if (!loginUnitSel.options.length || loginUnitSel.options.length !== window.residents.length) {
@@ -911,7 +1063,7 @@
                 }
             }
 
-            /* Dashboard Resolutions Breakdown */
+            /* Dashboard Resolutions Summary */
             const resContainer = document.getElementById('landingResolutionsContainer');
             if (resContainer) {
                 resContainer.innerHTML = window.resolutions.map((r, idx) => {
@@ -1040,7 +1192,7 @@
                 }
             }
 
-            /* Enhanced Smart Name & CCCD Matching Algorithm */
+            /* Smart Name & CCCD Matching */
             const normExtractedName = window.removeVietnameseTones(extractedName);
             
             let matched = window.residents.find(r => {
@@ -1053,7 +1205,6 @@
             });
 
             if (matched) {
-                /* Auto-fill 12-digit CCCD and update Resident Data in list */
                 if (extractedCccd && extractedCccd.length === 12) {
                     matched.cccd = extractedCccd;
                     matched.cccdVerified = true;
@@ -1061,31 +1212,18 @@
 
                 window.selectedResidentUnit = matched.unit;
                 
-                /* Auto-select Unit in Dropdown */
                 const loginResSel = document.getElementById('loginResidentUnitSelect');
-                if (loginResSel) {
-                    loginResSel.value = matched.unit;
-                }
+                if (loginResSel) loginResSel.value = matched.unit;
 
-                /* Fill separate Owner Name field */
                 const nameInp = document.getElementById('loginResidentNameInput');
-                if (nameInp) {
-                    nameInp.value = extractedName || matched.name;
-                }
+                if (nameInp) nameInp.value = extractedName || matched.name;
 
-                /* Fill Area field */
                 const areaInp = document.getElementById('loginResidentAreaInput');
-                if (areaInp) {
-                    areaInp.value = (matched.area || 0) + ' m²';
-                }
+                if (areaInp) areaInp.value = (matched.area || 0) + ' m²';
 
-                /* Auto-fill CCCD Field */
                 const cccdInp = document.getElementById('loginResidentCccdInput');
-                if (cccdInp) {
-                    cccdInp.value = matched.cccd !== "Chưa cập nhật" ? matched.cccd : extractedCccd;
-                }
+                if (cccdInp) cccdInp.value = matched.cccd !== "Chưa cập nhật" ? matched.cccd : extractedCccd;
 
-                /* Sync data across all views and Firestore */
                 window.syncAllUI();
                 window.saveStateToFirestore();
 
@@ -1101,9 +1239,7 @@
                 window.toast(`✓ Đã nhận diện chủ hộ ${matched.name} (Căn ${matched.unit})`);
             } else {
                 const nameInp = document.getElementById('loginResidentNameInput');
-                if (nameInp && extractedName) {
-                    nameInp.value = extractedName;
-                }
+                if (nameInp && extractedName) nameInp.value = extractedName;
                 if (banner) {
                     banner.className = "text-xs p-3 rounded-xl bg-amber-950/80 border border-amber-500 text-amber-200 space-y-1";
                     banner.innerHTML = `
@@ -1116,6 +1252,11 @@
         };
 
         window.handleResidentQuickLogin = function() {
+            if (window.isCheckinLocked) {
+                window.toast("⛔ Cổng đăng nhập/check-in hiện đang KHÓA bởi Ban Quản Trị!");
+                return;
+            }
+
             const unit = document.getElementById('loginResidentUnitSelect')?.value;
             const inputName = (document.getElementById('loginResidentNameInput')?.value || '').trim().toUpperCase();
             const cccdInput = (document.getElementById('loginResidentCccdInput')?.value || '').trim();
@@ -1126,9 +1267,7 @@
 
                 const resident = window.residents.find(r => r.unit === unit);
                 if (resident) {
-                    if (inputName) {
-                        resident.name = inputName;
-                    }
+                    if (inputName) resident.name = inputName;
                     if (cccdInput.length === 12) {
                         resident.cccd = cccdInput;
                         resident.cccdVerified = true;
@@ -1266,7 +1405,7 @@
                 return;
             }
 
-            if (confirm("⚠️ BẠN CÓ CHẮC CHẮN MÓI RESET TOÀN BỘ SỔ BỘ CĂN HỘ?\n\nToàn bộ danh sách cư dân hiện tại sẽ bị xóa sạch để nạp file Excel mới.")) {
+            if (confirm("⚠️ BẠN CÓ CHẮC CHẮN MỐI RESET TOÀN BỘ SỔ BỘ CĂN HỘ?\n\nToàn bộ danh sách cư dân hiện tại sẽ bị xóa sạch để nạp file Excel mới.")) {
                 window.residents = [];
                 window.syncAllUI();
                 window.saveStateToFirestore();
@@ -1780,7 +1919,7 @@
         /* ON LOAD INITIALIZATION */
         window.addEventListener('load', () => {
             window.initFirebaseSync();
-            window.syncAllUI();
+            window.switchView('login');
         });
     </script>
 </body>
