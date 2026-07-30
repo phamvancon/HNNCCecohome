@@ -1251,7 +1251,7 @@
             }
         };
 
-        window.handleResidentQuickLogin = function() {
+        window.handleResidentQuickLogin = async function() {
             if (window.isCheckinLocked) {
                 window.toast("⛔ Cổng đăng nhập/check-in hiện đang KHÓA bởi Ban Quản Trị!");
                 return;
@@ -1262,6 +1262,26 @@
             const cccdInput = (document.getElementById('loginResidentCccdInput')?.value || '').trim();
 
             if (unit) {
+                // Tự động kéo & làm mới dữ liệu từ Firestore khi cư dân đăng nhập
+                if (window.db) {
+                    try {
+                        const { doc, getDoc } = await import("https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js");
+                        const docRef = doc(window.db, "meetings", window.appId);
+                        const docSnap = await getDoc(docRef);
+                        if (docSnap.exists()) {
+                            const data = docSnap.data();
+                            if (data.residents) window.residents = data.residents;
+                            if (data.resolutions) window.resolutions = data.resolutions;
+                            if (data.candidates) window.candidates = data.candidates;
+                            if (data.proxies) window.proxies = data.proxies;
+                            if (data.auditLogs) window.auditLogs = data.auditLogs;
+                            if (typeof data.isCheckinLocked !== 'undefined') window.isCheckinLocked = data.isCheckinLocked;
+                        }
+                    } catch (e) {
+                        console.warn("Lỗi làm mới dữ liệu từ Firestore:", e);
+                    }
+                }
+
                 window.selectedResidentUnit = unit;
                 window.userRole = "RESIDENT";
 
@@ -1280,7 +1300,15 @@
 
                 document.getElementById('userRoleBadge').innerText = `Cư Dân (${unit})`;
                 window.addAuditLog("Cư Dân Đăng Nhập", `Căn hộ ${unit} đăng nhập hệ thống biểu quyết`);
-                window.toast(`Chào mừng cư dân căn ${unit}!`);
+
+                // Làm sạch form thông tin tạm thời sau khi đăng nhập thành công
+                if (document.getElementById('loginResidentSearchInput')) document.getElementById('loginResidentSearchInput').value = '';
+                if (document.getElementById('loginResidentNameInput')) document.getElementById('loginResidentNameInput').value = '';
+                if (document.getElementById('loginResidentCccdInput')) document.getElementById('loginResidentCccdInput').value = '';
+                const banner = document.getElementById('loginAiVerificationBanner');
+                if (banner) banner.classList.add('hidden');
+
+                window.toast(`✓ Đã cập nhật dữ liệu mới nhất cho căn ${unit}!`);
                 window.syncAllUI();
                 window.saveStateToFirestore();
                 window.switchView('voting');
