@@ -38,6 +38,20 @@
                             800: '#065f46',
                             900: '#064e3b',
                         }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' },
+                            '50%': { opacity: '0.85', boxShadow: '0 0 35px rgba(16, 185, 129, 0.7)' },
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' },
+                        }
                     }
                 }
             }
@@ -53,6 +67,7 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #10b981; }
         
+        /* Dark mode glassmorphism */
         .dark .glass-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
@@ -65,6 +80,7 @@
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
+        /* Light mode styles */
         html:not(.dark) .glass-card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(16px);
@@ -81,7 +97,6 @@
 </head>
 <body class="h-full flex flex-col text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 antialiased min-h-screen">
 
-    <!-- PUBLIC VIEW -->
     <div id="public-view" class="min-h-screen flex flex-col bg-slate-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-teal-950 dark:via-slate-950 dark:to-slate-950">
 
         <!-- Top Navigation Header -->
@@ -96,7 +111,7 @@
                             <div class="flex items-center space-x-2">
                                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 uppercase tracking-wider">Hội Nghị Nhà Chung Cư 2026</span>
                                 <span id="sync-status-badge" class="text-xs text-teal-700 dark:text-teal-300/80 font-medium">
-                                    <i class="fa-solid fa-cloud-arrow-up mr-1 animate-pulse"></i>Đang kết nối...
+                                    <i class="fa-solid fa-cloud-arrow-up mr-1 animate-pulse"></i>PVC Cloud
                                 </span>
                             </div>
                             <h1 class="text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white mt-0.5 uppercase drop-shadow-sm">
@@ -132,7 +147,7 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
-                    <span class="tracking-wide">Ghi nhận điểm danh Cloud thời gian thực</span>
+                    <span class="tracking-wide">Tự động ghi nhận điểm danh thời gian thực</span>
                 </div>
 
                 <!-- Live Clock Display Box -->
@@ -361,6 +376,7 @@
 
         <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
+            <!-- ADMIN AUTHENTICATION FORM -->
             <div id="admin-auth-view" class="max-w-md mx-auto my-12 glass-card p-8 rounded-3xl border border-slate-300 dark:border-slate-800 shadow-2xl text-center space-y-5">
                 <div class="w-16 h-16 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-emerald-500/30 shadow-inner">
                     <i class="fa-solid fa-lock"></i>
@@ -394,6 +410,7 @@
                 </form>
             </div>
 
+            <!-- ADMIN PANEL WORKSPACE -->
             <div id="admin-panel-view" class="hidden space-y-6">
                 
                 <div id="admin-summary-overview" class="glass-card rounded-2xl p-5 shadow-xl border border-slate-300 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -791,8 +808,6 @@
         /* Master Password */
         const ADMIN_PASS = "215151365";
         const DEFAULT_TOTAL_AREA = 27734.30; /* 27.734,3 m² */
-        const STORAGE_KEY_APTS = 'ecohome_apartments_data';
-        const STORAGE_KEY_SETTINGS = 'ecohome_settings_config';
         
         const DEFAULT_BLOCK_NAMES = {
             'B1': 'Khối B1',
@@ -808,25 +823,20 @@
         };
 
         /* Firebase Configuration */
-        const firebaseConfig = {
-            apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
-            authDomain: "hnnccecohome.firebaseapp.com",
-            projectId: "hnnccecohome",
-            storageBucket: "hnnccecohome.firebasestorage.app",
-            messagingSenderId: "439144090149",
-            appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
-            measurementId: "G-MTWM4RJY1E"
-        };
+        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
+           apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
+  authDomain: "hnnccecohome.firebaseapp.com",
+  projectId: "hnnccecohome",
+  storageBucket: "hnnccecohome.firebasestorage.app",
+  messagingSenderId: "439144090149",
+  appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
+  measurementId: "G-MTWM4RJY1E"
+};
 
         /* Initialize Firebase */
-        let app, auth, db;
-        try {
-            app = initializeApp(firebaseConfig);
-            auth = getAuth(app);
-            db = getFirestore(app);
-        } catch (e) {
-            console.warn("Firebase init warning:", e);
-        }
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-2026';
         const apartmentsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'apartments');
@@ -841,53 +851,8 @@
             isAdminAuthenticated: false,
             hasFiredConfetti: false,
             isInitialLoadDone: false,
-            useCloudSync: true,
             theme: localStorage.getItem('theme') || 'dark'
         };
-
-        /* Helper to sanitize ID for Firebase Doc Path */
-        function sanitizeDocId(rawId) {
-            if (!rawId) return 'UNKNOWN';
-            return String(rawId)
-                .trim()
-                .toUpperCase()
-                .replace(/\s+/g, '')
-                .replace(/\//g, '-')
-                .replace(/\\/g, '-');
-        }
-
-        /* Local Storage Backup Helpers */
-        function saveToLocalStorage() {
-            try {
-                localStorage.setItem(STORAGE_KEY_APTS, JSON.stringify(state.apartments));
-                localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify({
-                    totalAreaOverride: state.totalAreaOverride,
-                    manualEntries: state.manualEntries,
-                    blockNames: state.blockNames
-                }));
-            } catch (err) {
-                console.warn("LocalStorage save error:", err);
-            }
-        }
-
-        function loadFromLocalStorage() {
-            try {
-                const storedApts = localStorage.getItem(STORAGE_KEY_APTS);
-                const storedSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
-
-                if (storedApts) {
-                    state.apartments = JSON.parse(storedApts);
-                }
-                if (storedSettings) {
-                    const parsed = JSON.parse(storedSettings);
-                    if (parsed.totalAreaOverride) state.totalAreaOverride = parsed.totalAreaOverride;
-                    if (parsed.manualEntries) state.manualEntries = parsed.manualEntries;
-                    if (parsed.blockNames) state.blockNames = { ...DEFAULT_BLOCK_NAMES, ...parsed.blockNames };
-                }
-            } catch (err) {
-                console.warn("LocalStorage load error:", err);
-            }
-        }
 
         /* Confetti Celebration Trigger Function */
         function triggerCelebrationConfetti() {
@@ -904,23 +869,8 @@
             }
         }
 
+        /* Firebase Batch Write Helper */
         async function saveBatchApartmentsToCloud(dataset, clearExisting = false) {
-            if (!state.useCloudSync) {
-                if (clearExisting) state.apartments = [];
-                dataset.forEach(apt => {
-                    const cleanId = sanitizeDocId(apt.id);
-                    const idx = state.apartments.findIndex(a => sanitizeDocId(a.id) === cleanId);
-                    if (idx >= 0) {
-                        state.apartments[idx] = { ...state.apartments[idx], ...apt };
-                    } else {
-                        state.apartments.push({ id: cleanId, area: apt.area, attended: !!apt.attended });
-                    }
-                });
-                saveToLocalStorage();
-                render();
-                return;
-            }
-
             try {
                 if (clearExisting) {
                     const existingSnaps = await getDocs(apartmentsColRef);
@@ -945,8 +895,7 @@
                     const chunk = dataset.slice(i, i + chunkSize);
                     const batch = writeBatch(db);
                     chunk.forEach(apt => {
-                        const cleanId = sanitizeDocId(apt.id);
-                        const docRef = doc(apartmentsColRef, cleanId);
+                        const docRef = doc(apartmentsColRef, apt.id);
                         batch.set(docRef, {
                             area: apt.area,
                             attended: apt.attended || false,
@@ -956,10 +905,8 @@
                     await batch.commit();
                 }
             } catch (err) {
-                console.warn("Error saving batch to cloud, falling back to local:", err);
-                state.useCloudSync = false;
-                updateSyncBadge(false, "Bộ Nhớ Cục Bộ (Local)");
-                saveBatchApartmentsToCloud(dataset, clearExisting);
+                console.error("Error saving batch to cloud:", err);
+                showToast("Lỗi khi đồng bộ dữ liệu lên Cloud!", "error");
             }
         }
 
@@ -1000,47 +947,27 @@
                     await signInAnonymously(auth);
                 }
 
+                updateSyncBadge(true, "PVC Cloud");
                 setupRealtimeListeners();
             } catch (err) {
-                console.warn("Firebase auth warning, switching to local storage:", err);
-                enableLocalStorageFallback("Dữ Liệu Cục Bộ (Local)");
-            }
-        }
-
-        function enableLocalStorageFallback(reasonText = "Dữ Liệu Cục Bộ") {
-            state.useCloudSync = false;
-            updateSyncBadge(false, reasonText);
-            loadFromLocalStorage();
-            if (state.apartments.length === 0) {
-                loadFullEcohomeDataset(false);
-            } else {
-                render();
+                console.error("Firebase auth error:", err);
+                updateSyncBadge(false, "Lỗi kết nối Firebase");
             }
         }
 
         function updateSyncBadge(isOnline, text) {
             const badge = document.getElementById('sync-status-badge');
-            const adminBadge = document.getElementById('admin-sync-badge');
-            if (badge) {
-                if (isOnline) {
-                    badge.innerHTML = `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>${text}`;
-                    badge.className = "text-xs text-emerald-700 dark:text-emerald-300 font-medium";
-                } else {
-                    badge.innerHTML = `<i class="fa-solid fa-hard-drive text-amber-500 mr-1"></i>${text}`;
-                    badge.className = "text-xs text-amber-700 dark:text-amber-300 font-medium";
-                }
-            }
-            if (adminBadge) {
-                adminBadge.innerHTML = isOnline 
-                    ? `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>Firebase Cloud Sync` 
-                    : `<i class="fa-solid fa-hard-drive text-amber-500 mr-1"></i>LocalStorage Fallback Mode`;
+            if (!badge) return;
+            if (isOnline) {
+                badge.innerHTML = `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>${text}`;
+                badge.className = "text-xs text-emerald-700 dark:text-emerald-300 font-medium";
+            } else {
+                badge.innerHTML = `<i class="fa-solid fa-cloud-slash text-rose-500 mr-1"></i>${text}`;
+                badge.className = "text-xs text-rose-700 dark:text-rose-300 font-medium";
             }
         }
 
         function setupRealtimeListeners() {
-            let apartmentsLoaded = false;
-            let settingsLoaded = false;
-
             onSnapshot(apartmentsColRef, (snapshot) => {
                 const loadedList = [];
                 snapshot.forEach((docSnap) => {
@@ -1061,13 +988,10 @@
                 state.isInitialLoadDone = true;
                 loadedList.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
                 state.apartments = loadedList;
-                state.useCloudSync = true;
-                updateSyncBadge(true, "Cloud Sync Realtime");
-                saveToLocalStorage();
                 render();
             }, (error) => {
-                console.warn("Apartments listener notice:", error.message || error);
-                enableLocalStorageFallback("Dữ Liệu Cục Bộ (Local)");
+                console.error("Apartments listener error:", error);
+                showToast("Lỗi đồng bộ dữ liệu căn hộ!", "error");
             });
 
             onSnapshot(settingsDocRef, (docSnap) => {
@@ -1084,11 +1008,10 @@
                     if (data && data.blockNames && typeof data.blockNames === 'object') {
                         state.blockNames = { ...DEFAULT_BLOCK_NAMES, ...data.blockNames };
                     }
-                    saveToLocalStorage();
                     render();
                 }
             }, (error) => {
-                console.warn("Settings listener notice:", error.message || error);
+                console.error("Settings listener error:", error);
             });
         }
 
@@ -1381,7 +1304,7 @@
                                     cellVal.includes('căn hộ') || cellVal.includes('can ho') ||
                                     cellVal.includes('số căn') || cellVal.includes('so can') ||
                                     cellVal.includes('mã ch') || cellVal === 'căn' || cellVal === 'can' ||
-                                    cellVal.includes('mã số') || cellVal.includes('ký hiệu')
+                                    cellVal.includes('mã số') || (cellVal.includes('mã') && !cellVal.includes('chủ sở hữu'))
                                 )) {
                                     codeColIndex = c;
                                     headerRowIndex = r;
@@ -1390,7 +1313,7 @@
                                 if (areaColIndex === -1 && (
                                     cellVal.includes('diện tích') || cellVal.includes('dien tich') || 
                                     cellVal.includes('dt') || cellVal.includes('m2') || cellVal.includes('m²') ||
-                                    cellVal.includes('d.tích') || cellVal.includes('s (m2)')
+                                    cellVal.includes('d.tích') || cellVal.includes('d.tich')
                                 )) {
                                     areaColIndex = c;
                                     if (headerRowIndex === -1) headerRowIndex = r;
@@ -1399,7 +1322,8 @@
                                 if (attendedColIndex === -1 && (
                                     cellVal.includes('tham dự') || cellVal.includes('tham du') ||
                                     cellVal.includes('điểm danh') || cellVal.includes('diem danh') ||
-                                    cellVal.includes('có mặt') || cellVal.includes('trạng thái')
+                                    cellVal.includes('có mặt') || cellVal.includes('co mat') ||
+                                    cellVal.includes('trạng thái') || cellVal.includes('trang thai')
                                 )) {
                                     attendedColIndex = c;
                                 }
@@ -1410,6 +1334,7 @@
 
                         if (codeColIndex === -1 || areaColIndex === -1) {
                             let colStats = [];
+                            
                             for (let r = Math.max(0, headerRowIndex + 1); r < jsonData.length; r++) {
                                 const row = jsonData[r];
                                 if (!row || !Array.isArray(row)) continue;
@@ -1465,11 +1390,12 @@
                             const lowerCode = rawCode.toLowerCase();
                             if (lowerCode.includes('tổng') || lowerCode.includes('tong') || 
                                 lowerCode.includes('căn hộ') || lowerCode.includes('mã căn') || 
-                                lowerCode.includes('stt') || lowerCode.includes('cộng')) {
+                                lowerCode.includes('stt') || lowerCode.includes('cộng') ||
+                                lowerCode.includes('bảng') || lowerCode.includes('danh sách')) {
                                 continue;
                             }
 
-                            let formattedCode = sanitizeDocId(rawCode);
+                            let formattedCode = rawCode.toUpperCase().replace(/\s+/g, '');
                             let rawArea = String(row[areaColIndex] || '').replace(',', '.').replace(/[^0-9\.]/g, '');
                             let areaNum = parseFloat(rawArea);
 
@@ -1525,7 +1451,7 @@
                 if (!line.trim()) return;
                 const parts = line.split(/[,|\t]+/);
                 if (parts.length >= 2) {
-                    const idStr = sanitizeDocId(parts[0]);
+                    const idStr = parts[0].trim().toUpperCase();
                     const areaNum = parseFloat(parts[1].trim().replace(',', '.'));
                     if (idStr && !isNaN(areaNum) && areaNum > 0) {
                         importedApts.push({
@@ -1594,17 +1520,7 @@
             };
 
             const updated = [...(state.manualEntries || []), newEntry];
-            state.manualEntries = updated;
-
-            if (state.useCloudSync) {
-                try {
-                    await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
-                } catch (e) {
-                    console.warn("Cloud save failed, saved locally:", e);
-                }
-            }
-            saveToLocalStorage();
-            render();
+            await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
 
             document.getElementById('manual-add-area').value = '';
             document.getElementById('manual-add-percent').value = '';
@@ -1614,26 +1530,12 @@
 
         async function deleteManualIncrement(id) {
             const updated = (state.manualEntries || []).filter(e => e.id !== id);
-            state.manualEntries = updated;
-            if (state.useCloudSync) {
-                try {
-                    await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
-                } catch (e) { console.warn("Cloud save failed, saved locally:", e); }
-            }
-            saveToLocalStorage();
-            render();
+            await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
             showToast("Đã xóa lượt cộng dồn!", "info");
         }
 
         async function clearAllManualIncrements() {
-            state.manualEntries = [];
-            if (state.useCloudSync) {
-                try {
-                    await setDoc(settingsDocRef, { manualEntries: [] }, { merge: true });
-                } catch (e) { console.warn("Cloud save failed, saved locally:", e); }
-            }
-            saveToLocalStorage();
-            render();
+            await setDoc(settingsDocRef, { manualEntries: [] }, { merge: true });
             showToast("Đã xóa toàn bộ lịch sử cộng dồn!", "info");
         }
 
@@ -1664,14 +1566,14 @@
 
         function calculateProxySummary() {
             const inputVal = document.getElementById('proxy-codes-input')?.value || '';
-            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => sanitizeDocId(c)).filter(c => c.length > 0 && c !== 'UNKNOWN');
+            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => c.trim().toUpperCase()).filter(c => c.length > 0);
             const uniqueCodes = [...new Set(codes)];
 
             const matched = [];
             let totalArea = 0;
 
             uniqueCodes.forEach(code => {
-                const found = state.apartments.find(a => sanitizeDocId(a.id) === code);
+                const found = state.apartments.find(a => a.id.toUpperCase() === code);
                 if (found) {
                     matched.push(found);
                     totalArea += found.area;
@@ -1709,10 +1611,10 @@
 
         async function executeApplyProxyAttendance() {
             const inputVal = document.getElementById('proxy-codes-input')?.value || '';
-            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => sanitizeDocId(c)).filter(c => c.length > 0 && c !== 'UNKNOWN');
+            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => c.trim().toUpperCase()).filter(c => c.length > 0);
             const uniqueCodes = [...new Set(codes)];
 
-            const matchedApts = state.apartments.filter(a => uniqueCodes.includes(sanitizeDocId(a.id)));
+            const matchedApts = state.apartments.filter(a => uniqueCodes.includes(a.id.toUpperCase()));
             if (matchedApts.length === 0) {
                 showToast("Không tìm thấy căn hộ hợp lệ nào trong danh sách!", "error");
                 return;
@@ -1821,36 +1723,29 @@
             const newStatus = !apt.attended;
             
             apt.attended = newStatus;
-            saveToLocalStorage();
             render();
 
-            if (state.useCloudSync) {
-                try {
-                    const cleanId = sanitizeDocId(aptId);
-                    const docRef = doc(apartmentsColRef, cleanId);
-                    await setDoc(docRef, { area: apt.area, attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
-                } catch (e) {
-                    console.warn("Error toggling attendance on cloud, keeping local state:", e);
-                }
+            try {
+                const docRef = doc(apartmentsColRef, aptId);
+                await setDoc(docRef, { area: apt.area, attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
+                showToast(`Căn hộ ${aptId}: ${newStatus ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
+            } catch (e) {
+                console.error("Error toggling attendance:", e);
+                apt.attended = !newStatus;
+                render();
+                showToast("Lỗi cập nhật trạng thái!", "error");
             }
-            showToast(`Căn hộ ${aptId}: ${newStatus ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
         }
 
         async function deleteApartment(aptId) {
-            const cleanId = sanitizeDocId(aptId);
-            state.apartments = state.apartments.filter(a => sanitizeDocId(a.id) !== cleanId);
-            saveToLocalStorage();
-            render();
-
-            if (state.useCloudSync) {
-                try {
-                    const docRef = doc(apartmentsColRef, cleanId);
-                    await deleteDoc(docRef);
-                } catch (e) {
-                    console.warn("Error deleting apartment on cloud:", e);
-                }
+            try {
+                const docRef = doc(apartmentsColRef, aptId);
+                await deleteDoc(docRef);
+                showToast(`Đã xóa căn hộ ${aptId}`, 'info');
+            } catch (e) {
+                console.error("Error deleting apartment:", e);
+                showToast("Lỗi khi xóa căn hộ!", "error");
             }
-            showToast(`Đã xóa căn hộ ${aptId}`, 'info');
         }
 
         function renderAdminTable() {
