@@ -38,20 +38,6 @@
                             800: '#065f46',
                             900: '#064e3b',
                         }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' },
-                            '50%': { opacity: '0.85', boxShadow: '0 0 35px rgba(16, 185, 129, 0.7)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-6px)' },
-                        }
                     }
                 }
             }
@@ -67,7 +53,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #10b981; }
         
-        /* Dark mode glassmorphism */
         .dark .glass-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
@@ -80,7 +65,6 @@
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        /* Light mode styles */
         html:not(.dark) .glass-card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(16px);
@@ -97,6 +81,7 @@
 </head>
 <body class="h-full flex flex-col text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 antialiased min-h-screen">
 
+    <!-- PUBLIC VIEW -->
     <div id="public-view" class="min-h-screen flex flex-col bg-slate-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-teal-950 dark:via-slate-950 dark:to-slate-950">
 
         <!-- Top Navigation Header -->
@@ -110,8 +95,8 @@
                         <div>
                             <div class="flex items-center space-x-2">
                                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 uppercase tracking-wider">Hội Nghị Nhà Chung Cư 2026</span>
-                                <span id="sync-status-badge" class="text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                                    <i class="fa-solid fa-cloud-arrow-up mr-1 animate-pulse text-emerald-500"></i><span id="sync-text">Đang kết nối Cloud...</span>
+                                <span id="sync-status-badge" class="text-xs text-teal-700 dark:text-teal-300/80 font-medium">
+                                    <i class="fa-solid fa-cloud-arrow-up mr-1 animate-pulse"></i>Đang kết nối...
                                 </span>
                             </div>
                             <h1 class="text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white mt-0.5 uppercase drop-shadow-sm">
@@ -140,7 +125,6 @@
             </div>
         </header>
 
-        <!-- Live Status Bar & Realtime Clock -->
         <div class="bg-slate-200/90 dark:bg-slate-900/90 border-b border-slate-300 dark:border-slate-800 py-2.5 px-4 shadow-md sticky top-[71px] z-20 backdrop-blur-md">
             <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
                 <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
@@ -148,7 +132,7 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
-                    <span class="tracking-wide">Tự động ghi nhận điểm danh thời gian thực</span>
+                    <span class="tracking-wide">Ghi nhận điểm danh Cloud thời gian thực</span>
                 </div>
 
                 <!-- Live Clock Display Box -->
@@ -161,10 +145,8 @@
             </div>
         </div>
 
-        <!-- Main Public View Content -->
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             
-            <!-- Progress Banner Card -->
             <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden border border-slate-300 dark:border-emerald-500/20">
                 <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -187,7 +169,6 @@
                     </div>
                 </div>
 
-                <!-- Visual Progress Bar -->
                 <div class="relative pt-8 pb-2">
                     <!-- Marker 30% -->
                     <div class="absolute top-0 left-[30%] -translate-x-1/2 flex flex-col items-center z-20">
@@ -220,7 +201,6 @@
                 </div>
             </div>
 
-            <!-- Key Metrics Grid -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="glass-card rounded-2xl p-5 border border-slate-300 dark:border-slate-800 hover:border-slate-400 transition">
                     <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
@@ -264,7 +244,7 @@
                         <span id="metric-total-units" class="text-2xl font-black text-slate-900 dark:text-white font-mono">0</span>
                         <span class="text-xs font-bold text-slate-500 dark:text-slate-400">căn</span>
                     </div>
-                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Dữ liệu căn hộ đồng bộ tự động</p>
+                    <p class="text-[11px] text-slate-500 dark:text-slate-400 mt-2">Dữ liệu căn hộ đồng bộ Cloud</p>
                 </div>
 
                 <div class="glass-card rounded-2xl p-5 border border-teal-300 dark:border-teal-500/20 hover:border-teal-500/40 transition">
@@ -285,7 +265,6 @@
                 </div>
             </div>
 
-            <!-- Public Apartment Search & Table Block -->
             <div class="glass-card-light rounded-3xl overflow-hidden shadow-2xl text-slate-800 border border-slate-200">
                 <div class="p-5 border-b border-slate-200/80 bg-slate-50/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
@@ -337,7 +316,7 @@
 
         <footer class="bg-slate-200 dark:bg-slate-950 text-slate-600 dark:text-slate-500 text-xs py-6 mt-12 border-t border-slate-300 dark:border-slate-800">
             <div class="max-w-7xl mx-auto px-4 text-center space-y-1.5">
-                <p class="font-bold text-slate-700 dark:text-slate-400">Ban Quản Trị / Ban Tổ Chức Hội Nghị Nhà Chung Cư Ecohome Nhơn Bình 2026</p>
+                <p class="font-bold text-slate-700 dark:text-slate-400">Ban Quản Tị / Ban Tổ Chức Hội Nghị Nhà Chung Cư Ecohome Nhơn Bình 2026</p>
                 <p class="text-slate-500 dark:text-slate-600">Tổng diện tích căn hộ tính toán chính xác gốc: 27.734,30 m²</p>
             </div>
         </footer>
@@ -354,7 +333,7 @@
                     <div>
                         <div class="flex items-center space-x-2">
                             <span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 uppercase">Trang Quản Trị Admin</span>
-                            <span id="admin-sync-badge" class="text-xs text-teal-700 dark:text-teal-300/80"><i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>Realtime Cloud Sync</span>
+                            <span id="admin-sync-badge" class="text-xs text-teal-700 dark:text-teal-300/80"><i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>Firebase Cloud Sync</span>
                         </div>
                         <h1 class="text-base sm:text-lg font-black tracking-tight text-slate-900 dark:text-white mt-0.5">
                             NHÀ CHUNG CƯ ECOHOME NHƠN BÌNH 2026
@@ -382,19 +361,18 @@
 
         <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-            <!-- ADMIN AUTHENTICATION FORM -->
             <div id="admin-auth-view" class="max-w-md mx-auto my-12 glass-card p-8 rounded-3xl border border-slate-300 dark:border-slate-800 shadow-2xl text-center space-y-5">
                 <div class="w-16 h-16 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-emerald-500/30 shadow-inner">
                     <i class="fa-solid fa-lock"></i>
                 </div>
                 <div>
                     <h4 class="font-black text-slate-900 dark:text-white text-lg">Đăng Nhập Quản Trị Viên</h4>
-                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Mật khẩu mặc định: <strong class="text-emerald-600 dark:text-emerald-400 font-mono font-bold">215151365</strong></p>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Vui lòng nhập mật khẩu Admin để mở khóa hệ thống quản lý.</p>
                 </div>
 
                 <form onsubmit="handleAdminLogin(event)" class="space-y-4 pt-2">
                     <div class="relative flex items-center">
-                        <input type="password" id="admin-pass-input" placeholder="Nhập mật khẩu (215151365)..." required enterkeyhint="go" autocomplete="current-password"
+                        <input type="password" id="admin-pass-input" placeholder="Nhập mật khẩu (xxxx)..." required enterkeyhint="go" autocomplete="current-password"
                             class="w-full pl-4 pr-12 py-3 text-center text-sm font-bold tracking-wider bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition shadow-inner">
                         <button type="button" onclick="togglePasswordVisibility()" class="absolute right-3 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none p-2 text-sm transition" title="Ẩn/Hiện mật khẩu">
                             <i id="toggle-pass-icon" class="fa-solid fa-eye-slash"></i>
@@ -416,7 +394,6 @@
                 </form>
             </div>
 
-            <!-- ADMIN PANEL WORKSPACE -->
             <div id="admin-panel-view" class="hidden space-y-6">
                 
                 <div id="admin-summary-overview" class="glass-card rounded-2xl p-5 shadow-xl border border-slate-300 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -440,47 +417,340 @@
                         <button onclick="exportApartmentsToExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 border border-emerald-500/30 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
                             <i class="fa-solid fa-file-excel text-emerald-300"></i> Xuất Excel
                         </button>
-                        <button onclick="toggleAddModal(true)" class="px-3.5 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-plus"></i> Thêm Căn Hộ
+                        <button onclick="switchAdminTab('stats')" class="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-building text-indigo-500"></i> Xem theo Khối Tòa
+                        </button>
+                        <button onclick="switchAdminTab('manage')" class="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-list-check text-amber-500"></i> Quản Lý Căn Hộ
                         </button>
                     </div>
                 </div>
 
-                <!-- Admin Management Table Container -->
-                <div class="glass-card rounded-3xl p-6 shadow-2xl border border-slate-300 dark:border-slate-800">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                <div class="flex border border-slate-300 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-2 rounded-2xl shadow-sm text-xs font-bold text-slate-500 dark:text-slate-400 gap-2 overflow-x-auto">
+                    <button onclick="switchAdminTab('import')" id="tab-btn-import" class="py-2.5 px-4 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-2 bg-emerald-500/10 rounded-xl">
+                        <i class="fa-solid fa-file-import"></i> Nạp Dữ Liệu (Excel/Paste)
+                    </button>
+                    <button onclick="switchAdminTab('manual-add')" id="tab-btn-manual-add" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
+                        <i class="fa-solid fa-calculator text-blue-500"></i> Cộng Dồn Thủ Công
+                    </button>
+                    <button onclick="switchAdminTab('proxy')" id="tab-btn-proxy" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
+                        <i class="fa-solid fa-file-signature text-purple-500"></i> Tính % Ủy Quyền Tập Trung
+                    </button>
+                    <button onclick="switchAdminTab('stats')" id="tab-btn-stats" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
+                        <i class="fa-solid fa-chart-pie text-indigo-500"></i> Thống Kê Theo Khối Tòa
+                    </button>
+                    <button onclick="switchAdminTab('manage')" id="tab-btn-manage" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
+                        <i class="fa-solid fa-list-check text-amber-500"></i> Quản Lý Căn Hộ
+                    </button>
+                </div>
+
+                <div id="tab-content-import" class="glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
+                    
+                    <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
                         <div class="flex items-center gap-3">
-                            <h3 class="font-black text-slate-900 dark:text-white text-base">Quản Lý Điểm Danh Căn Hộ</h3>
-                            <span id="admin-unit-count-badge" class="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">0 Căn</span>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-lg shadow-md">
+                                <i class="fa-solid fa-database"></i>
+                            </div>
+                            <div>
+                                <h5 class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Nạp Toàn Bộ 1.380 Căn Hộ EcoHome Nhơn Bình (5 Tòa NO1 - NO5)</h5>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tự động khởi tạo chuẩn xác 1.380 căn hộ thuộc 5 tòa NO1, NO2, NO3, NO4, NO5 với diện tích từ 35,1 m² - 76,7 m².</p>
+                            </div>
+                        </div>
+                        <button onclick="loadFullEcohomeDataset(true)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition whitespace-nowrap">
+                            <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i> Nạp Toàn Bộ (1.380 Căn)
+                        </button>
+                    </div>
+
+                    <div class="border-2 border-dashed border-slate-300 dark:border-slate-700 hover:border-emerald-500 rounded-2xl p-6 text-center bg-white/50 dark:bg-slate-900/50 hover:bg-slate-50 dark:hover:bg-slate-900/90 transition cursor-pointer relative group"
+                         onclick="document.getElementById('excel-file-input').click()">
+                        <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileUpload(event)">
+                        <div class="w-12 h-12 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl group-hover:scale-110 transition border border-emerald-500/30">
+                            <i class="fa-solid fa-file-excel"></i>
+                        </div>
+                        <h5 class="font-bold text-slate-900 dark:text-white text-sm">Tải Lên File Excel (.xlsx, .csv)</h5>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
+                            Tự động quét các cột: <strong class="text-emerald-600 dark:text-emerald-300">Mã Căn Hộ</strong> và <strong class="text-emerald-600 dark:text-emerald-300">Diện Tích</strong> từ file bảng tính.
+                        </p>
+                        <span class="inline-block mt-3 px-3.5 py-1 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm">
+                            Chọn tệp từ máy tính
+                        </span>
+                    </div>
+
+                    <div class="relative flex py-1 items-center">
+                        <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
+                        <span class="flex-shrink mx-4 text-slate-400 dark:text-slate-500 text-xs font-bold uppercase">Hoặc Dán Trực Tiếp Văn Bản</span>
+                        <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
+                    </div>
+
+                    <div class="space-y-2">
+                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                            Dán danh sách Mã căn & Diện tích (Ví dụ định dạng: MãCăn, DiệnTích):
+                        </label>
+                        <textarea id="paste-import-input" rows="5" placeholder="Ví dụ copy từ Excel:&#10;B1-0101, 68.5&#10;B1-0102, 72.3&#10;B2-0205, 55.0"
+                            class="w-full p-3 text-xs font-mono bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition"></textarea>
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] text-slate-500">Chấp nhận phân cách bởi Dấu phẩy (,), Tab, hoặc Dấu gạch đứng (|)</span>
+                            <button onclick="handlePasteImport()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow transition">
+                                <i class="fa-solid fa-circle-plus mr-1"></i> Nạp Danh Sách
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-content-manual-add" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
+                    <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-500/30 rounded-2xl p-4 text-xs text-blue-900 dark:text-blue-200 space-y-1">
+                        <div class="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300 text-sm">
+                            <i class="fa-solid fa-calculator text-blue-500"></i> Cộng Dồn Diện Tích / Tỷ Lệ Manual
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-400">Nhập diện tích (m²) hoặc tỷ lệ % cần cộng thêm thủ công vào tổng kết quả điểm danh của hội nghị.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Diện tích cộng thêm (m²):</label>
+                            <input type="number" step="0.01" id="manual-add-area" oninput="onManualInputAreaChange()" placeholder="VD: 150.5"
+                                class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tỷ lệ quy đổi (%):</label>
+                            <input type="number" step="0.001" id="manual-add-percent" oninput="onManualInputPercentChange()" placeholder="VD: 0.542"
+                                class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white outline-none">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Ghi chú / Nội dung:</label>
+                            <input type="text" id="manual-add-note" placeholder="VD: Khách hàng ủy quyền trực tiếp..."
+                                class="w-full px-3 py-2 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-blue-500 text-slate-900 dark:text-white outline-none">
+                        </div>
+                    </div>
+
+                    <div class="flex justify-end gap-2">
+                        <button onclick="executeAddManualIncrement()" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                            <i class="fa-solid fa-plus"></i> Thêm Vào Lịch Sử Cộng Dồn
+                        </button>
+                    </div>
+
+                    <div class="space-y-2 pt-2">
+                        <div class="flex items-center justify-between">
+                            <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">Lịch Sử Các Lượt Cộng Dồn Manual:</span>
+                            <button onclick="clearAllManualIncrements()" class="text-rose-500 hover:text-rose-600 text-xs font-semibold">Xóa toàn bộ cộng dồn</button>
+                        </div>
+                        <div class="max-h-52 overflow-y-auto border border-slate-300 dark:border-slate-800 rounded-xl custom-scrollbar">
+                            <table class="w-full text-left text-xs text-slate-800 dark:text-slate-300">
+                                <thead class="bg-slate-100 dark:bg-slate-900 font-bold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-2.5">Thời Gian</th>
+                                        <th class="p-2.5 text-right">Diện Tích (m²)</th>
+                                        <th class="p-2.5 text-right">Tỷ Lệ (%)</th>
+                                        <th class="p-2.5">Ghi Chú</th>
+                                        <th class="p-2.5 text-center">Xóa</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="manual-history-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80">
+                                    <tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có lượt cộng dồn manual nào</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-content-proxy" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
+                    <div class="bg-purple-50 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-500/30 rounded-2xl p-4 text-xs text-purple-900 dark:text-purple-200 space-y-1">
+                        <div class="font-bold flex items-center gap-1.5 text-purple-700 dark:text-purple-300 text-sm">
+                            <i class="fa-solid fa-file-signature text-purple-500"></i> Tính % Ủy Quyền Cho Nhiều Căn Hộ Cộng Dồn
+                        </div>
+                        <p class="text-slate-600 dark:text-slate-400">Nhập danh sách các mã căn hộ do 1 đại diện nắm giữ. Hệ thống tự động quét, lấy diện tích từ danh sách căn hộ đã nạp, quy đổi tỷ lệ %, và hỗ trợ điểm danh hàng loạt trên Cloud.</p>
+                    </div>
+
+                    <div class="bg-white/80 dark:bg-slate-900/90 border border-slate-300 dark:border-slate-800 rounded-2xl p-4 space-y-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Tên Người/Đại Diện Nhận Ủy Quyền:</label>
+                                <input type="text" id="proxy-rep-name" placeholder="Ví dụ: Ông Nguyễn Văn A..."
+                                    class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white outline-none">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Ghi chú / Số Giấy Ủy Quyền:</label>
+                                <input type="text" id="proxy-rep-note" placeholder="Ví dụ: Giấy UQ số 05/2026..."
+                                    class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white outline-none">
+                            </div>
                         </div>
 
-                        <div class="flex flex-wrap items-center gap-2">
-                            <input type="text" id="admin-search-input" oninput="renderAdminTable()" placeholder="Tìm kiếm mã căn..." class="px-3 py-1.5 text-xs bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                            
-                            <button onclick="bulkSetAttendance(true)" class="px-3 py-1.5 bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-700 dark:text-emerald-300 text-xs font-bold rounded-xl border border-emerald-500/30 transition">
-                                <i class="fa-solid fa-check-double mr-1"></i> Check-in tất cả
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Danh sách Mã Căn Hộ (phân cách bởi dấu phẩy, tab, hoặc dòng):</label>
+                            <textarea id="proxy-codes-input" rows="4" oninput="calculateProxySummary()" placeholder="Ví dụ: B1-0101, B1-0102, B1-0103..."
+                                class="w-full p-3 text-xs font-mono bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-purple-500 text-slate-900 dark:text-white outline-none transition"></textarea>
+                        </div>
+
+                        <div id="proxy-live-summary" class="grid grid-cols-1 sm:grid-cols-3 gap-3 p-3 bg-purple-50/50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800/50 rounded-xl text-xs">
+                            <div class="text-center p-2 bg-white dark:bg-slate-900 rounded-lg shadow-sm">
+                                <span class="block text-slate-500 text-[11px] font-medium">Số Căn Tìm Thấy</span>
+                                <span id="proxy-summary-count" class="text-lg font-black text-purple-600 dark:text-purple-400 font-mono">0</span>
+                            </div>
+                            <div class="text-center p-2 bg-white dark:bg-slate-900 rounded-lg shadow-sm">
+                                <span class="block text-slate-500 text-[11px] font-medium">Tổng Diện Tích (m²)</span>
+                                <span id="proxy-summary-area" class="text-lg font-black text-emerald-600 dark:text-emerald-400 font-mono">0,00</span>
+                            </div>
+                            <div class="text-center p-2 bg-white dark:bg-slate-900 rounded-lg shadow-sm">
+                                <span class="block text-slate-500 text-[11px] font-medium">Tỷ Lệ Đóng Góp (%)</span>
+                                <span id="proxy-summary-percent" class="text-lg font-black text-indigo-600 dark:text-indigo-400 font-mono">0,000%</span>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col sm:flex-row items-center gap-2 pt-2">
+                            <button onclick="executeApplyProxyAttendance()" class="w-full sm:w-1/2 py-2.5 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-check-double"></i> Điểm Danh Hàng Loạt
                             </button>
-                            
-                            <button onclick="bulkSetAttendance(false)" class="px-3 py-1.5 bg-rose-500/20 hover:bg-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-bold rounded-xl border border-rose-500/30 transition">
-                                <i class="fa-solid fa-rotate-left mr-1"></i> Bỏ chọn tất cả
+                            <button onclick="executeSaveProxyLog()" class="w-full sm:w-1/2 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow-md flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-plus-circle"></i> Lưu Nhật Ký Ủy Quyền
                             </button>
                         </div>
                     </div>
 
-                    <div class="overflow-x-auto max-h-[550px] custom-scrollbar rounded-2xl border border-slate-200 dark:border-slate-800">
+                    <div class="space-y-2">
+                        <span class="font-bold text-slate-700 dark:text-slate-300 text-xs">Chi Tiết Căn Hộ Ủy Quyền:</span>
+                        <div class="max-h-52 overflow-y-auto border border-slate-300 dark:border-slate-800 rounded-xl custom-scrollbar">
+                            <table class="w-full text-left text-xs text-slate-800 dark:text-slate-300">
+                                <thead class="bg-slate-100 dark:bg-slate-900 font-bold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
+                                    <tr>
+                                        <th class="p-2.5">Mã Căn</th>
+                                        <th class="p-2.5 text-right">Diện Tích (m²)</th>
+                                        <th class="p-2.5 text-right">% Đóng Góp</th>
+                                        <th class="p-2.5 text-center">Trạng Thái Cloud</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="proxy-matched-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80">
+                                    <tr><td colspan="4" class="p-4 text-center text-slate-500">Dán danh sách mã căn để kiểm tra</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="tab-content-stats" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-300 dark:border-slate-800 pb-3">
+                        <div>
+                            <h4 class="font-bold text-slate-900 dark:text-white text-sm">Thống Kê Chi Tiết Tỷ Lệ Theo Khối Tòa Nhà (Khối B1 - Khối B5)</h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Phân tích tỷ lệ tham dự thực tế của từng khối nhà trong dự án Ecohome Nhơn Bình</p>
+                        </div>
+                        <span class="text-xs font-bold text-indigo-700 dark:text-indigo-300 bg-indigo-500/20 px-2.5 py-1 rounded-lg border border-indigo-500/30 self-start sm:self-auto">
+                            Realtime Cloud Data
+                        </span>
+                    </div>
+
+                    <div class="bg-indigo-50 dark:bg-indigo-950/50 border border-indigo-300 dark:border-indigo-500/30 rounded-2xl p-4 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h5 class="font-bold text-indigo-800 dark:text-indigo-300 text-xs flex items-center gap-1.5">
+                                    <i class="fa-solid fa-pen-to-square text-indigo-500"></i> Tùy Chỉnh Tên Hiển Thị Các Khối
+                                </h5>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Chỉnh sửa tên gọi hiển thị của từng khối (VD: Khối B1, Khối B2...) và lưu lên Cloud.</p>
+                            </div>
+                            <button onclick="saveCustomBlockNames()" class="px-3.5 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-bold transition shadow-sm flex items-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu Tên Khối
+                            </button>
+                        </div>
+                        <div id="block-rename-inputs" class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-xs">
+                        </div>
+                    </div>
+
+                    <div id="building-stats-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pt-2">
+                    </div>
+                </div>
+
+                <div id="tab-content-manage" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-700 dark:text-slate-300">Danh sách căn hộ:</span>
+                            <span id="admin-table-count" class="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">(0 căn)</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="exportApartmentsToExcel()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-excel text-sm"></i> Xuất File Excel
+                            </button>
+                            <button onclick="requestClearAllData()" class="text-rose-500 hover:text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-trash-can"></i> Xóa toàn bộ dữ liệu Cloud
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-100 dark:bg-slate-900/90 p-3 rounded-2xl border border-slate-300 dark:border-slate-800">
+                        <div class="sm:col-span-5 relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="admin-search-input" oninput="renderAdminTable()" placeholder="Tìm mã căn (VD: B1-0101, 0203)..." 
+                                class="w-full pl-8 pr-8 py-2 text-xs bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white transition font-medium">
+                            <button onclick="clearAdminSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs" title="Xóa từ khóa tìm kiếm">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <select id="admin-filter-building" onchange="renderAdminTable()" class="w-full text-xs py-2 px-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-bold text-slate-800 dark:text-slate-200">
+                                <option value="all">Tất cả Khối</option>
+                                <option value="B1">Khối B1</option>
+                                <option value="B2">Khối B2</option>
+                                <option value="B3">Khối B3</option>
+                                <option value="B4">Khối B4</option>
+                                <option value="B5">Khối B5</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <select id="admin-filter-status" onchange="renderAdminTable()" class="w-full text-xs py-2 px-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-bold text-slate-800 dark:text-slate-200">
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="attended">Đã tham dự</option>
+                                <option value="absent">Chưa tham dự</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-3 flex items-center gap-1.5">
+                            <button onclick="toggleAllVisibleAdmin(true)" class="flex-1 py-2 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[11px] font-bold transition shadow flex items-center justify-center gap-1 whitespace-nowrap" title="Tích chọn tất cả danh sách đang hiển thị">
+                                <i class="fa-solid fa-check-double text-xs"></i>Tích hết
+                            </button>
+                            <button onclick="toggleAllVisibleAdmin(false)" class="flex-1 py-2 px-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-[11px] font-bold transition border border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1 whitespace-nowrap" title="Bỏ tích chọn tất cả danh sách đang hiển thị">
+                                <i class="fa-solid fa-rotate-left text-xs"></i>Bỏ hết
+                            </button>
+                            <button onclick="invertVisibleAdmin()" class="py-2 px-2.5 bg-indigo-100 dark:bg-indigo-950 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/30 rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1 whitespace-nowrap" title="Đảo trạng thái danh sách đang chọn">
+                                <i class="fa-solid fa-right-left text-xs"></i>Đảo chọn
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
+                        <span class="text-slate-500 font-bold text-[11px] shrink-0 mr-1">Lọc nhanh:</span>
+                        <button onclick="setAdminQuickFilter('all', 'all')" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-[11px] border border-slate-300 dark:border-slate-700 transition shrink-0">
+                            Tất cả
+                        </button>
+                        <button onclick="setAdminQuickFilter('B1', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
+                            Khối B1
+                        </button>
+                        <button onclick="setAdminQuickFilter('B2', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
+                            Khối B2
+                        </button>
+                        <button onclick="setAdminQuickFilter('B3', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
+                            Khối B3
+                        </button>
+                        <button onclick="setAdminQuickFilter('B4', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
+                            Khối B4
+                        </button>
+                        <button onclick="setAdminQuickFilter('B5', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
+                            Khối B5
+                        </button>
+                        <button onclick="setAdminQuickFilter('all', 'absent')" class="px-3 py-1 bg-amber-100 dark:bg-amber-950/80 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
+                            Chưa tham dự
+                        </button>
+                    </div>
+
+                    <div class="max-h-[500px] overflow-y-auto border border-slate-300 dark:border-slate-800 rounded-2xl custom-scrollbar">
                         <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-200/80 dark:bg-slate-900 text-slate-700 dark:text-slate-300 font-extrabold uppercase tracking-wider sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
+                            <thead class="bg-slate-100 dark:bg-slate-900 font-extrabold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
                                 <tr>
-                                    <th class="py-3 px-4 text-center">Xác Nhận</th>
-                                    <th class="py-3 px-4">Mã Căn Hộ</th>
-                                    <th class="py-3 px-4">Khối Tòa</th>
-                                    <th class="py-3 px-4 text-right">Diện Tích (m²)</th>
-                                    <th class="py-3 px-4 text-right">Tỷ Lệ (%)</th>
-                                    <th class="py-3 px-4 text-center">Trạng Thái</th>
-                                    <th class="py-3 px-4 text-center">Thao Tác</th>
+                                    <th class="p-3">Mã Căn</th>
+                                    <th class="p-3">Diện Tích (m²)</th>
+                                    <th class="p-3 text-center">Trạng Thái Tham Dự</th>
+                                    <th class="p-3 text-right">Thao Tác</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-apartment-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80">
+                            <tbody id="admin-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-300">
                             </tbody>
                         </table>
                     </div>
@@ -489,593 +759,1423 @@
             </div>
 
         </div>
-    </div><!-- END ADMIN VIEW -->
+    </div><!-- END STANDALONE ADMIN PAGE VIEW -->
 
-    <!-- Add/Edit Apartment Modal -->
-    <div id="apartment-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl space-y-4">
-            <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
-                <h3 id="modal-title" class="font-black text-slate-900 dark:text-white text-base">Thêm Căn Hộ Mới</h3>
-                <button onclick="toggleAddModal(false)" class="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
+    <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card rounded-3xl shadow-2xl border border-slate-300 dark:border-slate-800 w-full max-w-sm p-6 text-center space-y-4 transform scale-95 transition-transform duration-300">
+            <div class="w-12 h-12 bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto text-xl border border-rose-500/30">
+                <i class="fa-solid fa-triangle-exclamation"></i>
             </div>
-            
-            <form onsubmit="handleSaveApartment(event)" class="space-y-3">
-                <input type="hidden" id="modal-edit-code" value="">
-                
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Mã Căn Hộ</label>
-                    <input type="text" id="modal-code-input" required placeholder="VD: B1-0101" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 font-bold uppercase">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Khối Tòa</label>
-                    <input type="text" id="modal-block-input" placeholder="VD: Tòa B1" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500">
-                </div>
-
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">Diện Tích (m²)</label>
-                    <input type="number" step="0.01" min="1" id="modal-area-input" required placeholder="VD: 65.50" class="w-full px-3 py-2 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 font-mono">
-                </div>
-
-                <div class="flex items-center gap-2 pt-2">
-                    <input type="checkbox" id="modal-attended-input" class="w-4 h-4 text-emerald-500 rounded border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 focus:ring-emerald-500 cursor-pointer">
-                    <label for="modal-attended-input" class="cursor-pointer text-xs font-bold text-emerald-600 dark:text-emerald-400">Đã Điểm Danh Tham Dự</label>
-                </div>
-
-                <div class="flex items-center justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800">
-                    <button type="button" onclick="toggleAddModal(false)" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold">Hủy</button>
-                    <button type="submit" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-500/20">Lưu Căn Hộ</button>
-                </div>
-            </form>
+            <div>
+                <h4 class="font-bold text-slate-900 dark:text-white text-base">Xác nhận xóa dữ liệu?</h4>
+                <p class="text-xs text-slate-500 dark:text-slate-400 mt-1">Toàn bộ dữ liệu căn hộ trên Cloud Firebase sẽ bị xóa vĩnh viễn. Bạn chắc chắn muốn tiếp tục?</p>
+            </div>
+            <div class="flex justify-center gap-2.5 pt-2">
+                <button onclick="closeConfirmModal()" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold rounded-xl text-xs transition">Hủy bỏ</button>
+                <button onclick="executeClearAllData()" class="px-4 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-xs transition shadow">Xác nhận Xóa</button>
+            </div>
         </div>
     </div>
 
-    <!-- Firebase SDK & Application Logic Module -->
+    <!-- Notification Toast Box -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 border border-slate-700 text-xs font-semibold">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toast-msg">Thông báo...</span>
+    </div>
+
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-       const firebaseConfig = {
-  apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
-  authDomain: "hnnccecohome.firebaseapp.com",
-  projectId: "hnnccecohome",
-  storageBucket: "hnnccecohome.firebasestorage.app",
-  messagingSenderId: "439144090149",
-  appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
-  measurementId: "G-MTWM4RJY1E"
-};
+        /* Master Password */
+        const ADMIN_PASS = "215151365";
+        const DEFAULT_TOTAL_AREA = 27734.30; /* 27.734,3 m² */
+        const STORAGE_KEY_APTS = 'ecohome_apartments_data';
+        const STORAGE_KEY_SETTINGS = 'ecohome_settings_config';
+        
+        const DEFAULT_BLOCK_NAMES = {
+            'B1': 'Khối B1',
+            'B2': 'Khối B2',
+            'B3': 'Khối B3',
+            'B4': 'Khối B4',
+            'B5': 'Khối B5',
+            'NO1': 'Khối B1',
+            'NO2': 'Khối B2',
+            'NO3': 'Khối B3',
+            'NO4': 'Khối B4',
+            'NO5': 'Khối B5'
+        };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+        /* Firebase Configuration */
+        const firebaseConfig = {
+            apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
+            authDomain: "hnnccecohome.firebaseapp.com",
+            projectId: "hnnccecohome",
+            storageBucket: "hnnccecohome.firebasestorage.app",
+            messagingSenderId: "439144090149",
+            appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
+            measurementId: "G-MTWM4RJY1E"
+        };
 
-        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-nhon-binh-2026';
-        let currentUser = null;
+        /* Initialize Firebase */
+        let app, auth, db;
+        try {
+            app = initializeApp(firebaseConfig);
+            auth = getAuth(app);
+            db = getFirestore(app);
+        } catch (e) {
+            console.warn("Firebase init warning:", e);
+        }
 
-        // Firestore path used by this deployment:
-        // /artifacts/ecohome-nhon-binh-2026/public/data/apartments/{apartmentId}
-        console.info("Firestore apartments path:", `artifacts/${appId}/public/data/apartments`);
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-2026';
+        const apartmentsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'apartments');
+        const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
 
-        window.TOTAL_PROJECT_AREA = 27734.30;
-        window.DEFAULT_ADMIN_PASS = "215151365";
-        window.isAdminLoggedIn = false;
-        window.hasTriggered30 = false;
-        window.hasTriggered50 = false;
-        window.apartmentsData = [];
+        /* Application Global State */
+        let state = {
+            totalAreaOverride: DEFAULT_TOTAL_AREA,
+            apartments: [],
+            manualEntries: [],
+            blockNames: { ...DEFAULT_BLOCK_NAMES },
+            isAdminAuthenticated: false,
+            hasFiredConfetti: false,
+            isInitialLoadDone: false,
+            useCloudSync: true,
+            theme: localStorage.getItem('theme') || 'dark'
+        };
 
-        const initialApartments = [
-            { code: "B1-0101", block: "Tòa B1", area: 68.50, attended: false },
-            { code: "B1-0102", block: "Tòa B1", area: 72.30, attended: false },
-            { code: "B1-0103", block: "Tòa B1", area: 65.00, attended: false },
-            { code: "B1-0104", block: "Tòa B1", area: 58.20, attended: false },
-            { code: "B1-0201", block: "Tòa B1", area: 68.50, attended: false },
-            { code: "B1-0202", block: "Tòa B1", area: 72.30, attended: false },
-            { code: "B2-0101", block: "Tòa B2", area: 70.10, attended: false },
-            { code: "B2-0102", block: "Tòa B2", area: 64.80, attended: false },
-            { code: "B2-0201", block: "Tòa B2", area: 75.00, attended: false },
-            { code: "B2-0202", block: "Tòa B2", area: 68.50, attended: false },
-            { code: "C1-0101", block: "Tòa C1", area: 62.00, attended: false },
-            { code: "C1-0102", block: "Tòa C1", area: 66.40, attended: false },
-            { code: "C2-0101", block: "Tòa C2", area: 69.80, attended: false },
-            { code: "C2-0102", block: "Tòa C2", area: 71.20, attended: false }
-        ];
+        /* Helper to sanitize ID for Firebase Doc Path */
+        function sanitizeDocId(rawId) {
+            if (!rawId) return 'UNKNOWN';
+            return String(rawId)
+                .trim()
+                .toUpperCase()
+                .replace(/\s+/g, '')
+                .replace(/\//g, '-')
+                .replace(/\\/g, '-');
+        }
 
-        async function initFirebaseSync() {
+        /* Local Storage Backup Helpers */
+        function saveToLocalStorage() {
             try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    const userCred = await signInWithCustomToken(auth, __initial_auth_token);
-                    currentUser = userCred.user;
-                } else {
-                    const userCred = await signInAnonymously(auth);
-                    currentUser = userCred.user;
+                localStorage.setItem(STORAGE_KEY_APTS, JSON.stringify(state.apartments));
+                localStorage.setItem(STORAGE_KEY_SETTINGS, JSON.stringify({
+                    totalAreaOverride: state.totalAreaOverride,
+                    manualEntries: state.manualEntries,
+                    blockNames: state.blockNames
+                }));
+            } catch (err) {
+                console.warn("LocalStorage save error:", err);
+            }
+        }
+
+        function loadFromLocalStorage() {
+            try {
+                const storedApts = localStorage.getItem(STORAGE_KEY_APTS);
+                const storedSettings = localStorage.getItem(STORAGE_KEY_SETTINGS);
+
+                if (storedApts) {
+                    state.apartments = JSON.parse(storedApts);
+                }
+                if (storedSettings) {
+                    const parsed = JSON.parse(storedSettings);
+                    if (parsed.totalAreaOverride) state.totalAreaOverride = parsed.totalAreaOverride;
+                    if (parsed.manualEntries) state.manualEntries = parsed.manualEntries;
+                    if (parsed.blockNames) state.blockNames = { ...DEFAULT_BLOCK_NAMES, ...parsed.blockNames };
                 }
             } catch (err) {
-                console.warn("Auth token fallback to anonymous:", err);
-                try {
-                    const userCred = await signInAnonymously(auth);
-                    currentUser = userCred.user;
-                } catch (e) {
-                    console.error("Firebase auth failed:", e);
-                }
+                console.warn("LocalStorage load error:", err);
+            }
+        }
+
+        /* Confetti Celebration Trigger Function */
+        function triggerCelebrationConfetti() {
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+                setTimeout(() => {
+                    confetti({ particleCount: 60, angle: 60, spread: 60, origin: { x: 0 } });
+                    confetti({ particleCount: 60, angle: 120, spread: 60, origin: { x: 1 } });
+                }, 200);
+            }
+        }
+
+        async function saveBatchApartmentsToCloud(dataset, clearExisting = false) {
+            if (!state.useCloudSync) {
+                if (clearExisting) state.apartments = [];
+                dataset.forEach(apt => {
+                    const cleanId = sanitizeDocId(apt.id);
+                    const idx = state.apartments.findIndex(a => sanitizeDocId(a.id) === cleanId);
+                    if (idx >= 0) {
+                        state.apartments[idx] = { ...state.apartments[idx], ...apt };
+                    } else {
+                        state.apartments.push({ id: cleanId, area: apt.area, attended: !!apt.attended });
+                    }
+                });
+                saveToLocalStorage();
+                render();
+                return;
             }
 
-            if (!currentUser) return;
-
-            const apartmentsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'apartments');
-
-            onSnapshot(apartmentsColRef, async (snapshot) => {
-                if (snapshot.empty) {
-                    // Firestore is readable but has no apartment documents yet.
-                    // Show the built-in sample data immediately so the dashboard never stays blank.
-                    window.apartmentsData = [...initialApartments];
-                    updateSyncBadge(true);
-                    updateMetricsAndUI();
-
-                    // Try to seed Firestore. If rules intentionally block client writes,
-                    // the public dashboard still continues to work with local fallback data.
-                    try {
-                        for (const item of initialApartments) {
-                            const cleanDocId = item.code.replace(/[^a-zA-Z0-9_-]/g, '_');
-                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId), item);
+            try {
+                if (clearExisting) {
+                    const existingSnaps = await getDocs(apartmentsColRef);
+                    const deleteBatches = [];
+                    let batch = writeBatch(db);
+                    let count = 0;
+                    existingSnaps.forEach((docSnap) => {
+                        batch.delete(docSnap.ref);
+                        count++;
+                        if (count >= 400) {
+                            deleteBatches.push(batch.commit());
+                            batch = writeBatch(db);
+                            count = 0;
                         }
-                    } catch (seedError) {
-                        console.warn("Firestore seed blocked; using local fallback data:", seedError);
+                    });
+                    if (count > 0) deleteBatches.push(batch.commit());
+                    await Promise.all(deleteBatches);
+                }
+
+                const chunkSize = 400;
+                for (let i = 0; i < dataset.length; i += chunkSize) {
+                    const chunk = dataset.slice(i, i + chunkSize);
+                    const batch = writeBatch(db);
+                    chunk.forEach(apt => {
+                        const cleanId = sanitizeDocId(apt.id);
+                        const docRef = doc(apartmentsColRef, cleanId);
+                        batch.set(docRef, {
+                            area: apt.area,
+                            attended: apt.attended || false,
+                            updatedAt: new Date().toISOString()
+                        }, { merge: true });
+                    });
+                    await batch.commit();
+                }
+            } catch (err) {
+                console.warn("Error saving batch to cloud, falling back to local:", err);
+                state.useCloudSync = false;
+                updateSyncBadge(false, "Bộ Nhớ Cục Bộ (Local)");
+                saveBatchApartmentsToCloud(dataset, clearExisting);
+            }
+        }
+
+        /* Theme Toggle Logic */
+        function applyTheme(theme) {
+            state.theme = theme;
+            localStorage.setItem('theme', theme);
+            const htmlEl = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+
+            if (theme === 'dark') {
+                htmlEl.classList.add('dark');
+                if (themeIcon) themeIcon.className = "fa-solid fa-moon text-amber-300";
+                if (themeText) themeText.innerText = "Tối";
+            } else {
+                htmlEl.classList.remove('dark');
+                if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-500";
+                if (themeText) themeText.innerText = "Sáng";
+            }
+        }
+
+        function toggleTheme() {
+            const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+            showToast(`Đã chuyển sang giao diện ${newTheme === 'dark' ? 'Tối' : 'Sáng'}`, "info");
+        }
+
+        async function initFirebaseAndSync() {
+            try {
+                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (e) {
+                        await signInAnonymously(auth);
                     }
                 } else {
-                    const list = [];
-                    snapshot.forEach(docSnap => {
-                        list.push(docSnap.data());
+                    await signInAnonymously(auth);
+                }
+
+                setupRealtimeListeners();
+            } catch (err) {
+                console.warn("Firebase auth warning, switching to local storage:", err);
+                enableLocalStorageFallback("Dữ Liệu Cục Bộ (Local)");
+            }
+        }
+
+        function enableLocalStorageFallback(reasonText = "Dữ Liệu Cục Bộ") {
+            state.useCloudSync = false;
+            updateSyncBadge(false, reasonText);
+            loadFromLocalStorage();
+            if (state.apartments.length === 0) {
+                loadFullEcohomeDataset(false);
+            } else {
+                render();
+            }
+        }
+
+        function updateSyncBadge(isOnline, text) {
+            const badge = document.getElementById('sync-status-badge');
+            const adminBadge = document.getElementById('admin-sync-badge');
+            if (badge) {
+                if (isOnline) {
+                    badge.innerHTML = `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>${text}`;
+                    badge.className = "text-xs text-emerald-700 dark:text-emerald-300 font-medium";
+                } else {
+                    badge.innerHTML = `<i class="fa-solid fa-hard-drive text-amber-500 mr-1"></i>${text}`;
+                    badge.className = "text-xs text-amber-700 dark:text-amber-300 font-medium";
+                }
+            }
+            if (adminBadge) {
+                adminBadge.innerHTML = isOnline 
+                    ? `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>Firebase Cloud Sync` 
+                    : `<i class="fa-solid fa-hard-drive text-amber-500 mr-1"></i>LocalStorage Fallback Mode`;
+            }
+        }
+
+        function setupRealtimeListeners() {
+            let apartmentsLoaded = false;
+            let settingsLoaded = false;
+
+            onSnapshot(apartmentsColRef, (snapshot) => {
+                const loadedList = [];
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    loadedList.push({
+                        id: docSnap.id,
+                        area: typeof data.area === 'number' ? data.area : parseFloat(data.area) || 0,
+                        attended: !!data.attended
                     });
-                    list.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
-                    window.apartmentsData = list;
-                    updateSyncBadge(true);
-                    updateMetricsAndUI();
+                });
+
+                if (loadedList.length === 0 && !state.isInitialLoadDone) {
+                    state.isInitialLoadDone = true;
+                    loadFullEcohomeDataset(false);
+                    return;
+                }
+
+                state.isInitialLoadDone = true;
+                loadedList.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
+                state.apartments = loadedList;
+                state.useCloudSync = true;
+                updateSyncBadge(true, "Cloud Sync Realtime");
+                saveToLocalStorage();
+                render();
+            }, (error) => {
+                console.warn("Apartments listener notice:", error.message || error);
+                enableLocalStorageFallback("Dữ Liệu Cục Bộ (Local)");
+            });
+
+            onSnapshot(settingsDocRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const data = docSnap.data();
+                    if (data && typeof data.totalAreaOverride === 'number' && data.totalAreaOverride > 0) {
+                        state.totalAreaOverride = data.totalAreaOverride;
+                    }
+                    if (data && Array.isArray(data.manualEntries)) {
+                        state.manualEntries = data.manualEntries;
+                    } else {
+                        state.manualEntries = [];
+                    }
+                    if (data && data.blockNames && typeof data.blockNames === 'object') {
+                        state.blockNames = { ...DEFAULT_BLOCK_NAMES, ...data.blockNames };
+                    }
+                    saveToLocalStorage();
+                    render();
                 }
             }, (error) => {
-                console.error("Firestore sync error:", error);
-
-                // IMPORTANT: A Firestore permission error must not leave the public
-                // dashboard at 0 apartments / 0 m². Use the embedded data as fallback.
-                window.apartmentsData = [...initialApartments];
-                updateSyncBadge(false);
-                updateMetricsAndUI();
+                console.warn("Settings listener notice:", error.message || error);
             });
         }
 
-        function updateSyncBadge(isOk) {
-            const syncText = document.getElementById("sync-text");
-            const adminSyncBadge = document.getElementById("admin-sync-badge");
-            if (isOk) {
-                if (syncText) syncText.innerText = "Realtime Cloud Sync";
-                if (adminSyncBadge) adminSyncBadge.innerHTML = `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>Realtime Cloud Sync`;
-            } else {
-                if (syncText) syncText.innerText = "Lỗi kết nối Cloud";
-                if (adminSyncBadge) adminSyncBadge.innerHTML = `<i class="fa-solid fa-cloud-circle-exclamation text-rose-500 mr-1"></i>Offline / Mất kết nối`;
-            }
-        }
-
-        function formatNumber(num) {
-            return num.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-        }
-        window.formatNumber = formatNumber;
-
-        function updateLiveClock() {
-            const now = new Date();
-            const dateStr = now.toLocaleDateString('vi-VN', { weekday: 'short', year: 'numeric', month: '2-digit', day: '2-digit' });
-            const timeStr = now.toLocaleTimeString('vi-VN', { hour12: false });
+        function render() {
+            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
             
-            const dateEl = document.getElementById("live-clock-date");
-            const timeEl = document.getElementById("live-clock-time");
-            if (dateEl) dateEl.innerText = dateStr;
-            if (timeEl) timeEl.innerText = timeStr;
-        }
-
-        function updateMetricsAndUI() {
-            const totalUnits = window.apartmentsData.length;
-            let attendedArea = 0;
+            let attendedApartmentArea = 0;
             let attendedUnits = 0;
 
-            window.apartmentsData.forEach(item => {
-                if (item.attended) {
-                    attendedArea += parseFloat(item.area || 0);
+            state.apartments.forEach(apt => {
+                if (apt.attended) {
+                    attendedApartmentArea += apt.area;
                     attendedUnits++;
                 }
             });
 
-            const percent = (attendedArea / window.TOTAL_PROJECT_AREA) * 100;
-            const missingArea = Math.max(0, window.TOTAL_PROJECT_AREA - attendedArea);
-            const unitsPercent = totalUnits > 0 ? ((attendedUnits / totalUnits) * 100).toFixed(1) : "0.0";
+            const manualAreaSum = (state.manualEntries || []).reduce((sum, item) => sum + (parseFloat(item.area) || 0), 0);
+            const totalAttendedArea = attendedApartmentArea + manualAreaSum;
 
-            document.getElementById("metric-percent").innerText = percent.toFixed(2) + "%";
-            document.getElementById("metric-total-area").innerText = formatNumber(window.TOTAL_PROJECT_AREA);
-            document.getElementById("metric-attended-area").innerText = formatNumber(attendedArea);
-            document.getElementById("metric-missing-area").innerText = formatNumber(missingArea) + " m²";
-            document.getElementById("metric-total-units").innerText = totalUnits;
-            document.getElementById("metric-attended-units").innerText = attendedUnits;
-            document.getElementById("metric-units-percent").innerText = unitsPercent + "%";
+            const totalUnits = state.apartments.length;
+            const percentArea = effectiveTotalArea > 0 ? (totalAttendedArea / effectiveTotalArea) * 100 : 0;
+            const percentUnits = totalUnits > 0 ? (attendedUnits / totalUnits) * 100 : 0;
+            const missingArea = Math.max(0, effectiveTotalArea - totalAttendedArea);
 
-            const barFill = document.getElementById("progress-bar-fill");
-            if (barFill) barFill.style.width = Math.min(100, percent).toFixed(2) + "%";
+            document.getElementById('metric-total-area').innerText = formatNumber(effectiveTotalArea);
+            document.getElementById('metric-attended-area').innerText = formatNumber(totalAttendedArea);
+            document.getElementById('metric-missing-area').innerText = `${formatNumber(missingArea)} m²`;
+            document.getElementById('metric-total-units').innerText = totalUnits;
+            document.getElementById('metric-attended-units').innerText = attendedUnits;
+            document.getElementById('metric-units-percent').innerText = `${percentUnits.toFixed(1)}%`;
+            document.getElementById('metric-percent').innerText = `${percentArea.toFixed(2)}%`;
 
-            const statusBadge = document.getElementById("status-badge");
-            const adminSummaryBadge = document.getElementById("admin-summary-badge");
-            const adminSummaryPercent = document.getElementById("admin-summary-percent");
-            const adminSummaryArea = document.getElementById("admin-summary-area");
+            const barFill = document.getElementById('progress-bar-fill');
+            barFill.style.width = `${Math.min(percentArea, 100)}%`;
 
-            if (adminSummaryPercent) adminSummaryPercent.innerText = percent.toFixed(2) + "%";
-            if (adminSummaryArea) adminSummaryArea.innerText = `(${formatNumber(attendedArea)} / ${formatNumber(window.TOTAL_PROJECT_AREA)} m²)`;
+            const statusBadge = document.getElementById('status-badge');
+            if (percentArea >= 50) {
+                statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 animate-bounce shadow-lg shadow-emerald-500/20";
+                statusBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 50% BIỂU QUYẾT`;
 
-            if (percent >= 50) {
-                if (statusBadge) {
-                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30 flex items-center gap-1.5";
-                    statusBadge.innerHTML = `<i class="fa-solid fa-check-double text-emerald-500"></i> ĐẠT MỐC 50% BIỂU QUYẾT`;
+                if (!state.hasFiredConfetti) {
+                    triggerCelebrationConfetti();
+                    state.hasFiredConfetti = true;
                 }
-                if (adminSummaryBadge) {
-                    adminSummaryBadge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30";
-                    adminSummaryBadge.innerText = "Đã đạt mốc 50%";
-                }
-
-                if (!window.hasTriggered50) {
-                    window.hasTriggered50 = true;
-                    window.triggerManualConfetti();
-                }
-            } else if (percent >= 30) {
-                if (statusBadge) {
-                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30 flex items-center gap-1.5";
-                    statusBadge.innerHTML = `<i class="fa-solid fa-square-check text-blue-500"></i> ĐẠT MỐC 30% TỔ CHỨC`;
-                }
-                if (adminSummaryBadge) {
-                    adminSummaryBadge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-700 dark:text-blue-300 border border-blue-500/30";
-                    adminSummaryBadge.innerText = "Đã đạt mốc 30%";
-                }
-
-                if (!window.hasTriggered30) {
-                    window.hasTriggered30 = true;
-                    window.triggerManualConfetti();
-                }
+            } else if (percentArea >= 30) {
+                statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/40 flex items-center gap-1.5 shadow-md";
+                statusBadge.innerHTML = `<i class="fa-solid fa-building-circle-check text-blue-600 dark:text-blue-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 30% TỔ CHỨC HNNCC THƯỜNG NIÊN`;
             } else {
-                if (statusBadge) {
-                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5";
-                    statusBadge.innerHTML = `<i class="fa-solid fa-hourglass-half text-amber-500"></i> Chưa đạt mốc 30% tổ chức`;
-                }
-                if (adminSummaryBadge) {
-                    adminSummaryBadge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30";
-                    adminSummaryBadge.innerText = "Chưa đạt 30%";
-                }
+                statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5";
+                statusBadge.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30% tổ chức`;
+                state.hasFiredConfetti = false;
             }
 
             renderTable();
-            if (window.isAdminLoggedIn) {
+            if (state.isAdminAuthenticated) {
+                renderAdminOverviewHeader();
                 renderAdminTable();
+                renderManualHistoryTable();
+                renderBuildingStats();
             }
         }
-        window.updateMetricsAndUI = updateMetricsAndUI;
 
         function renderTable() {
-            const tbody = document.getElementById("apartment-table-body");
-            if (!tbody) return;
+            const tbody = document.getElementById('apartment-table-body');
+            const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
+            const filterStatus = document.getElementById('filter-status').value;
 
-            const searchVal = (document.getElementById("search-input")?.value || "").toLowerCase().trim();
-            const filterStatus = document.getElementById("filter-status")?.value || "all";
+            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
 
-            let filtered = window.apartmentsData.filter(item => {
-                const matchesSearch = item.code.toLowerCase().includes(searchVal) || (item.block || "").toLowerCase().includes(searchVal);
+            const filtered = state.apartments.filter(apt => {
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
                 let matchesStatus = true;
-                if (filterStatus === "attended") matchesStatus = item.attended;
-                if (filterStatus === "absent") matchesStatus = !item.attended;
+                if (filterStatus === 'attended') matchesStatus = apt.attended;
+                if (filterStatus === 'absent') matchesStatus = !apt.attended;
                 return matchesSearch && matchesStatus;
             });
 
-            tbody.innerHTML = "";
+            document.getElementById('table-count-info').innerText = `Hiển thị ${filtered.length} / ${state.apartments.length} căn hộ`;
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="py-8 text-center text-slate-400 italic">
-                            Không tìm thấy dữ liệu căn hộ nào phù hợp.
+                        <td colspan="6" class="text-center py-8 text-slate-400 font-medium">
+                            Không tìm thấy căn hộ phù hợp với từ khóa tìm kiếm
                         </td>
                     </tr>
                 `;
-            } else {
-                filtered.forEach((item, idx) => {
-                    const ratio = ((item.area / window.TOTAL_PROJECT_AREA) * 100).toFixed(4);
-                    const tr = document.createElement("tr");
-                    tr.className = item.attended ? "bg-emerald-50/50 hover:bg-emerald-100/50 transition" : "hover:bg-slate-50 transition";
-                    
-                    tr.innerHTML = `
-                        <td class="py-3 px-4 font-mono font-semibold text-slate-500">${idx + 1}</td>
-                        <td class="py-3 px-4 font-black text-slate-900">${item.code}</td>
-                        <td class="py-3 px-4 font-medium text-slate-600">${item.block || "Tòa B"}</td>
-                        <td class="py-3 px-4 text-right font-mono font-extrabold text-slate-800">${formatNumber(item.area)}</td>
-                        <td class="py-3 px-4 text-right font-mono text-slate-500">${ratio}%</td>
-                        <td class="py-3 px-4 text-center">
-                            ${item.attended 
-                                ? `<span class="px-2.5 py-1 text-[11px] font-bold rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300 inline-flex items-center gap-1"><i class="fa-solid fa-circle-check"></i> Đã Đăng Ký</span>`
-                                : `<span class="px-2.5 py-1 text-[11px] font-medium rounded-full bg-slate-100 text-slate-500 border border-slate-300 inline-flex items-center gap-1"><i class="fa-regular fa-clock"></i> Chưa Đăng Ký</span>`
+                return;
+            }
+
+            tbody.innerHTML = filtered.map((apt, index) => {
+                const contribPercent = effectiveTotalArea > 0 ? (apt.area / effectiveTotalArea) * 100 : 0;
+                const blockKey = apt.id.split('-')[0]?.toUpperCase() || 'Khối B1';
+                const blockDisplayName = state.blockNames[blockKey] || `Khối ${blockKey}`;
+
+                return `
+                    <tr class="hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition border-b border-slate-200 dark:border-slate-800/80">
+                        <td class="py-2.5 px-4 font-mono text-slate-400 font-medium">${index + 1}</td>
+                        <td class="py-2.5 px-4 font-extrabold text-slate-900 dark:text-white">${apt.id}</td>
+                        <td class="py-2.5 px-4 text-slate-600 dark:text-slate-300 font-medium">${blockDisplayName}</td>
+                        <td class="py-2.5 px-4 text-right font-bold text-slate-800 dark:text-slate-200 font-mono">${formatNumber(apt.area)}</td>
+                        <td class="py-2.5 px-4 text-right font-mono text-slate-500 dark:text-slate-400">${contribPercent.toFixed(3)}%</td>
+                        <td class="py-2.5 px-4 text-center">
+                            ${apt.attended 
+                                ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm"><i class="fa-solid fa-check"></i> Đã tham dự</span>`
+                                : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Chưa tham dự</span>`
                             }
                         </td>
-                    `;
-                    tbody.appendChild(tr);
-                });
-            }
-
-            const countInfo = document.getElementById("table-count-info");
-            if (countInfo) countInfo.innerText = `Hiển thị ${filtered.length} / ${window.apartmentsData.length} căn hộ`;
-        }
-        window.renderTable = renderTable;
-
-        function renderAdminTable() {
-            const tbody = document.getElementById("admin-apartment-table-body");
-            if (!tbody) return;
-
-            const searchVal = (document.getElementById("admin-search-input")?.value || "").toLowerCase().trim();
-            const badge = document.getElementById("admin-unit-count-badge");
-            if (badge) badge.innerText = `${window.apartmentsData.length} Căn`;
-
-            tbody.innerHTML = "";
-
-            window.apartmentsData.forEach((item, index) => {
-                if (searchVal && !item.code.toLowerCase().includes(searchVal) && !(item.block || "").toLowerCase().includes(searchVal)) {
-                    return;
-                }
-
-                const ratio = ((item.area / window.TOTAL_PROJECT_AREA) * 100).toFixed(4);
-                const tr = document.createElement("tr");
-                tr.className = item.attended ? "bg-emerald-500/10 dark:bg-emerald-950/20" : "";
-
-                tr.innerHTML = `
-                    <td class="py-3 px-4 text-center">
-                        <input type="checkbox" ${item.attended ? 'checked' : ''} onchange="toggleAttendance('${item.code}')" class="w-4 h-4 text-emerald-500 rounded border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 focus:ring-emerald-500 cursor-pointer">
-                    </td>
-                    <td class="py-3 px-4 font-black text-slate-900 dark:text-white font-mono">${item.code}</td>
-                    <td class="py-3 px-4 text-slate-600 dark:text-slate-400 font-medium">${item.block || "Tòa B"}</td>
-                    <td class="py-3 px-4 text-right font-mono font-bold text-slate-800 dark:text-slate-200">${formatNumber(item.area)}</td>
-                    <td class="py-3 px-4 text-right font-mono text-slate-500 dark:text-slate-400">${ratio}%</td>
-                    <td class="py-3 px-4 text-center">
-                        ${item.attended 
-                            ? `<span class="px-2 py-0.5 text-[10px] font-bold rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">Đã Check-in</span>`
-                            : `<span class="px-2 py-0.5 text-[10px] font-medium rounded-full bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400">Vắng</span>`
-                        }
-                    </td>
-                    <td class="py-3 px-4 text-center">
-                        <div class="flex items-center justify-center gap-1.5">
-                            <button onclick="editApartment('${item.code}')" class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-500/10 rounded-lg transition" title="Sửa căn hộ">
-                                <i class="fa-solid fa-pen-to-square"></i>
-                            </button>
-                            <button onclick="deleteApartment('${item.code}')" class="p-1.5 text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 rounded-lg transition" title="Xóa căn hộ">
-                                <i class="fa-solid fa-trash-can"></i>
-                            </button>
-                        </div>
-                    </td>
+                    </tr>
                 `;
-                tbody.appendChild(tr);
-            });
+            }).join('');
         }
-        window.renderAdminTable = renderAdminTable;
-
-        async function toggleAttendance(code) {
-            if (!auth.currentUser || !window.isAdminLoggedIn) return;
-            const item = window.apartmentsData.find(a => a.code === code);
-            if (!item) return;
-
-            const cleanDocId = code.replace(/[^a-zA-Z0-9_-]/g, '_');
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId);
-
-            try {
-                await setDoc(docRef, { ...item, attended: !item.attended }, { merge: true });
-            } catch (e) {
-                console.error("Error toggling attendance in Firestore:", e);
-            }
-        }
-        window.toggleAttendance = toggleAttendance;
-
-        async function bulkSetAttendance(status) {
-            if (!auth.currentUser || !window.isAdminLoggedIn) return;
-            try {
-                for (const item of window.apartmentsData) {
-                    const cleanDocId = item.code.replace(/[^a-zA-Z0-9_-]/g, '_');
-                    const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId);
-                    await setDoc(docRef, { ...item, attended: status }, { merge: true });
-                }
-            } catch (e) {
-                console.error("Error bulk setting attendance:", e);
-            }
-        }
-        window.bulkSetAttendance = bulkSetAttendance;
-
-        function editApartment(code) {
-            const item = window.apartmentsData.find(a => a.code === code);
-            if (!item) return;
-
-            document.getElementById("modal-title").innerText = "Chỉnh Sửa Căn Hộ";
-            document.getElementById("modal-edit-code").value = code;
-            document.getElementById("modal-code-input").value = item.code;
-            document.getElementById("modal-block-input").value = item.block || "";
-            document.getElementById("modal-area-input").value = item.area;
-            document.getElementById("modal-attended-input").checked = !!item.attended;
-
-            toggleAddModal(true);
-        }
-        window.editApartment = editApartment;
-
-        async function deleteApartment(code) {
-            if (!auth.currentUser || !window.isAdminLoggedIn) return;
-            const item = window.apartmentsData.find(a => a.code === code);
-            if (!item) return;
-
-            // Custom UI dialog instead of alert/confirm
-            const cleanDocId = code.replace(/[^a-zA-Z0-9_-]/g, '_');
-            const docRef = doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId);
-            try {
-                await deleteDoc(docRef);
-            } catch (e) {
-                console.error("Error deleting apartment from Firestore:", e);
-            }
-        }
-        window.deleteApartment = deleteApartment;
-
-        function toggleAddModal(show) {
-            const modal = document.getElementById("apartment-modal");
-            if (!modal) return;
-            if (!show) {
-                modal.classList.add("hidden");
-                document.getElementById("modal-edit-code").value = "";
-                document.getElementById("modal-code-input").value = "";
-                document.getElementById("modal-block-input").value = "";
-                document.getElementById("modal-area-input").value = "";
-                document.getElementById("modal-attended-input").checked = false;
-            } else {
-                if (!document.getElementById("modal-edit-code").value) {
-                    document.getElementById("modal-title").innerText = "Thêm Căn Hộ Mới";
-                }
-                modal.classList.remove("hidden");
-            }
-        }
-        window.toggleAddModal = toggleAddModal;
-
-        async function handleSaveApartment(e) {
-            e.preventDefault();
-            if (!auth.currentUser || !window.isAdminLoggedIn) return;
-
-            const oldCode = document.getElementById("modal-edit-code").value;
-            const code = document.getElementById("modal-code-input").value.trim().toUpperCase();
-            const block = document.getElementById("modal-block-input").value.trim() || "Tòa B";
-            const area = parseFloat(document.getElementById("modal-area-input").value);
-            const attended = document.getElementById("modal-attended-input").checked;
-
-            if (!code || isNaN(area) || area <= 0) return;
-
-            const cleanDocId = code.replace(/[^a-zA-Z0-9_-]/g, '_');
-
-            try {
-                if (oldCode && oldCode !== code) {
-                    const oldCleanId = oldCode.replace(/[^a-zA-Z0-9_-]/g, '_');
-                    await deleteDoc(doc(db, 'artifacts', appId, 'public', 'data', 'apartments', oldCleanId));
-                }
-                await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId), { code, block, area, attended });
-            } catch (err) {
-                console.error("Error saving apartment to Firestore:", err);
-            }
-
-            toggleAddModal(false);
-        }
-        window.handleSaveApartment = handleSaveApartment;
-
-        function handleAdminLogin(e) {
-            e.preventDefault();
-            const inputPass = document.getElementById("admin-pass-input").value;
-            const errorMsg = document.getElementById("auth-error-msg");
-
-            if (inputPass === window.DEFAULT_ADMIN_PASS) {
-                window.isAdminLoggedIn = true;
-                if (errorMsg) errorMsg.classList.add("hidden");
-                
-                document.getElementById("admin-auth-view").classList.add("hidden");
-                document.getElementById("admin-panel-view").classList.remove("hidden");
-                document.getElementById("admin-logout-btn").classList.remove("hidden");
-
-                renderAdminTable();
-            } else {
-                if (errorMsg) errorMsg.classList.remove("hidden");
-            }
-        }
-        window.handleAdminLogin = handleAdminLogin;
-
-        function handleAdminLogout() {
-            window.isAdminLoggedIn = false;
-            document.getElementById("admin-pass-input").value = "";
-            document.getElementById("admin-auth-view").classList.remove("hidden");
-            document.getElementById("admin-panel-view").classList.add("hidden");
-            document.getElementById("admin-logout-btn").classList.add("hidden");
-        }
-        window.handleAdminLogout = handleAdminLogout;
-
-        function togglePasswordVisibility() {
-            const passInput = document.getElementById("admin-pass-input");
-            const icon = document.getElementById("toggle-pass-icon");
-            if (passInput && icon) {
-                if (passInput.type === "password") {
-                    passInput.type = "text";
-                    icon.className = "fa-solid fa-eye";
-                } else {
-                    passInput.type = "password";
-                    icon.className = "fa-solid fa-eye-slash";
-                }
-            }
-        }
-        window.togglePasswordVisibility = togglePasswordVisibility;
 
         function openAdminView() {
-            document.getElementById("public-view").classList.add("hidden");
-            document.getElementById("admin-page-view").classList.remove("hidden");
-            document.getElementById("admin-page-view").classList.add("flex");
+            const adminView = document.getElementById('admin-page-view');
+            const publicView = document.getElementById('public-view');
+            if (publicView) publicView.classList.add('hidden');
+            if (adminView) {
+                adminView.classList.remove('hidden');
+                adminView.classList.add('flex');
+            }
+            
+            if (sessionStorage.getItem('admin_authenticated') === 'true' || localStorage.getItem('admin_authenticated') === 'true') {
+                state.isAdminAuthenticated = true;
+            }
+
+            if (state.isAdminAuthenticated) {
+                document.getElementById('admin-auth-view')?.classList.add('hidden');
+                document.getElementById('admin-panel-view')?.classList.remove('hidden');
+                document.getElementById('admin-logout-btn')?.classList.remove('hidden');
+                renderAdminOverviewHeader();
+                renderAdminTable();
+                renderManualHistoryTable();
+                renderBuildingStats();
+            } else {
+                document.getElementById('admin-auth-view')?.classList.remove('hidden');
+                document.getElementById('admin-panel-view')?.classList.add('hidden');
+                document.getElementById('admin-logout-btn')?.classList.add('hidden');
+            }
         }
-        window.openAdminView = openAdminView;
 
         function closeAdminView() {
-            document.getElementById("admin-page-view").classList.add("hidden");
-            document.getElementById("admin-page-view").classList.remove("flex");
-            document.getElementById("public-view").classList.remove("hidden");
+            const adminView = document.getElementById('admin-page-view');
+            const publicView = document.getElementById('public-view');
+            if (adminView) {
+                adminView.classList.add('hidden');
+                adminView.classList.remove('flex');
+            }
+            if (publicView) publicView.classList.remove('hidden');
         }
-        window.closeAdminView = closeAdminView;
+
+        function handleAdminLogin(event) {
+            event.preventDefault();
+            const passInput = document.getElementById('admin-pass-input');
+            const errorMsg = document.getElementById('auth-error-msg');
+            const rememberChk = document.getElementById('remember-session-chk');
+
+            if (passInput.value.trim() === ADMIN_PASS) {
+                state.isAdminAuthenticated = true;
+                if (rememberChk && rememberChk.checked) {
+                    localStorage.setItem('admin_authenticated', 'true');
+                } else {
+                    sessionStorage.setItem('admin_authenticated', 'true');
+                }
+                
+                errorMsg.classList.add('hidden');
+                passInput.value = '';
+                showToast("Đăng nhập thành công!", "success");
+
+                document.getElementById('admin-auth-view')?.classList.add('hidden');
+                document.getElementById('admin-panel-view')?.classList.remove('hidden');
+                document.getElementById('admin-logout-btn')?.classList.remove('hidden');
+
+                renderAdminOverviewHeader();
+                renderAdminTable();
+                renderManualHistoryTable();
+                renderBuildingStats();
+            } else {
+                errorMsg.classList.remove('hidden');
+                showToast("Mật khẩu không đúng!", "error");
+            }
+        }
+
+        function handleAdminLogout() {
+            state.isAdminAuthenticated = false;
+            sessionStorage.removeItem('admin_authenticated');
+            localStorage.removeItem('admin_authenticated');
+
+            document.getElementById('admin-auth-view')?.classList.remove('hidden');
+            document.getElementById('admin-panel-view')?.classList.add('hidden');
+            document.getElementById('admin-logout-btn')?.classList.add('hidden');
+
+            showToast("Đã đăng xuất phiên Quản trị!", "info");
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('admin-pass-input');
+            const toggleIcon = document.getElementById('toggle-pass-icon');
+            if (passInput && toggleIcon) {
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    toggleIcon.className = 'fa-solid fa-eye';
+                } else {
+                    passInput.type = 'password';
+                    toggleIcon.className = 'fa-solid fa-eye-slash';
+                }
+            }
+        }
+
+        function renderAdminOverviewHeader() {
+            const badge = document.getElementById('admin-summary-badge');
+            const percentEl = document.getElementById('admin-summary-percent');
+            const areaEl = document.getElementById('admin-summary-area');
+
+            const effectiveTotal = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            let attendedApartmentArea = 0;
+            state.apartments.forEach(a => { if (a.attended) attendedApartmentArea += a.area; });
+            const manualAreaSum = (state.manualEntries || []).reduce((sum, item) => sum + (parseFloat(item.area) || 0), 0);
+            const totalAttended = attendedApartmentArea + manualAreaSum;
+            const percent = effectiveTotal > 0 ? (totalAttended / effectiveTotal) * 100 : 0;
+
+            if (percentEl) percentEl.innerText = `${percent.toFixed(2)}%`;
+            if (areaEl) areaEl.innerText = `(${formatNumber(totalAttended)} / ${formatNumber(effectiveTotal)} m²)`;
+
+            if (badge) {
+                if (percent >= 50) {
+                    badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/30";
+                    badge.innerHTML = `<i class="fa-solid fa-check-double mr-1"></i>Đã đạt 50% (Biểu quyết)`;
+                } else if (percent >= 30) {
+                    badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/30";
+                    badge.innerHTML = `<i class="fa-solid fa-check mr-1"></i>Đã đạt 30% (Tổ chức)`;
+                } else {
+                    badge.className = "px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30";
+                    badge.innerHTML = `Chưa đạt 30% tổ chức`;
+                }
+            }
+        }
+
+        function switchAdminTab(tabName) {
+            const tabs = ['import', 'manual-add', 'proxy', 'stats', 'manage'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const content = document.getElementById(`tab-content-${t}`);
+                if (btn && content) {
+                    if (t === tabName) {
+                        btn.className = "py-2.5 px-4 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-2 bg-emerald-500/10 rounded-xl";
+                        content.classList.remove('hidden');
+                    } else {
+                        btn.className = "py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition";
+                        content.classList.add('hidden');
+                    }
+                }
+            });
+
+            if (tabName === 'manage') renderAdminTable();
+            if (tabName === 'stats') renderBuildingStats();
+            if (tabName === 'manual-add') renderManualHistoryTable();
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async (e) => {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    let importedApts = [];
+
+                    for (const sheetName of workbook.SheetNames) {
+                        const sheet = workbook.Sheets[sheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(sheet, { header: 1, raw: false, defval: '' });
+                        if (!jsonData || jsonData.length === 0) continue;
+
+                        let codeColIndex = -1;
+                        let areaColIndex = -1;
+                        let attendedColIndex = -1;
+                        let headerRowIndex = -1;
+
+                        for (let r = 0; r < Math.min(jsonData.length, 25); r++) {
+                            const row = jsonData[r];
+                            if (!row || !Array.isArray(row)) continue;
+
+                            for (let c = 0; c < row.length; c++) {
+                                const cellVal = String(row[c] || '').trim().toLowerCase();
+                                
+                                if (codeColIndex === -1 && (
+                                    cellVal.includes('mã căn') || cellVal.includes('ma can') || 
+                                    cellVal.includes('căn hộ') || cellVal.includes('can ho') ||
+                                    cellVal.includes('số căn') || cellVal.includes('so can') ||
+                                    cellVal.includes('mã ch') || cellVal === 'căn' || cellVal === 'can' ||
+                                    cellVal.includes('mã số') || cellVal.includes('ký hiệu')
+                                )) {
+                                    codeColIndex = c;
+                                    headerRowIndex = r;
+                                }
+
+                                if (areaColIndex === -1 && (
+                                    cellVal.includes('diện tích') || cellVal.includes('dien tich') || 
+                                    cellVal.includes('dt') || cellVal.includes('m2') || cellVal.includes('m²') ||
+                                    cellVal.includes('d.tích') || cellVal.includes('s (m2)')
+                                )) {
+                                    areaColIndex = c;
+                                    if (headerRowIndex === -1) headerRowIndex = r;
+                                }
+
+                                if (attendedColIndex === -1 && (
+                                    cellVal.includes('tham dự') || cellVal.includes('tham du') ||
+                                    cellVal.includes('điểm danh') || cellVal.includes('diem danh') ||
+                                    cellVal.includes('có mặt') || cellVal.includes('trạng thái')
+                                )) {
+                                    attendedColIndex = c;
+                                }
+                            }
+
+                            if (codeColIndex !== -1 && areaColIndex !== -1) break;
+                        }
+
+                        if (codeColIndex === -1 || areaColIndex === -1) {
+                            let colStats = [];
+                            for (let r = Math.max(0, headerRowIndex + 1); r < jsonData.length; r++) {
+                                const row = jsonData[r];
+                                if (!row || !Array.isArray(row)) continue;
+
+                                for (let c = 0; c < row.length; c++) {
+                                    if (!colStats[c]) colStats[c] = { codeScore: 0, numScore: 0 };
+                                    const val = String(row[c] || '').trim();
+                                    
+                                    if (/^[A-Z0-9]{1,6}[-\/\.\s]?[0-9]{2,5}$/i.test(val) || /^NO\d/i.test(val) || /^B\d/i.test(val)) {
+                                        colStats[c].codeScore++;
+                                    }
+
+                                    const num = parseFloat(val.replace(',', '.').replace(/[^0-9\.]/g, ''));
+                                    if (!isNaN(num) && num >= 15 && num <= 500) {
+                                        colStats[c].numScore++;
+                                    }
+                                }
+                            }
+
+                            if (codeColIndex === -1) {
+                                let maxCode = 0;
+                                colStats.forEach((st, idx) => {
+                                    if (st && st.codeScore > maxCode) {
+                                        maxCode = st.codeScore;
+                                        codeColIndex = idx;
+                                    }
+                                });
+                            }
+
+                            if (areaColIndex === -1) {
+                                let maxNum = 0;
+                                colStats.forEach((st, idx) => {
+                                    if (st && idx !== codeColIndex && st.numScore > maxNum) {
+                                        maxNum = st.numScore;
+                                        areaColIndex = idx;
+                                    }
+                                });
+                            }
+                        }
+
+                        if (codeColIndex === -1) codeColIndex = 0;
+                        if (areaColIndex === -1) areaColIndex = codeColIndex === 0 ? 1 : 0;
+
+                        const startRow = headerRowIndex !== -1 ? headerRowIndex + 1 : 0;
+
+                        for (let r = startRow; r < jsonData.length; r++) {
+                            const row = jsonData[r];
+                            if (!row || !Array.isArray(row)) continue;
+
+                            let rawCode = String(row[codeColIndex] || '').trim();
+                            if (!rawCode) continue;
+
+                            const lowerCode = rawCode.toLowerCase();
+                            if (lowerCode.includes('tổng') || lowerCode.includes('tong') || 
+                                lowerCode.includes('căn hộ') || lowerCode.includes('mã căn') || 
+                                lowerCode.includes('stt') || lowerCode.includes('cộng')) {
+                                continue;
+                            }
+
+                            let formattedCode = sanitizeDocId(rawCode);
+                            let rawArea = String(row[areaColIndex] || '').replace(',', '.').replace(/[^0-9\.]/g, '');
+                            let areaNum = parseFloat(rawArea);
+
+                            if (isNaN(areaNum) || areaNum <= 0) {
+                                areaNum = 50.0;
+                            }
+
+                            let isAttended = false;
+                            if (attendedColIndex !== -1 && row[attendedColIndex]) {
+                                const attVal = String(row[attendedColIndex]).trim().toLowerCase();
+                                if (attVal === 'x' || attVal === '1' || attVal.includes('có') || attVal.includes('đã') || attVal.includes('tham dự')) {
+                                    isAttended = true;
+                                }
+                            }
+
+                            importedApts.push({
+                                id: formattedCode,
+                                area: Math.round(areaNum * 100) / 100,
+                                attended: isAttended
+                            });
+                        }
+
+                        if (importedApts.length > 0) break;
+                    }
+
+                    if (importedApts.length === 0) {
+                        showToast("Không tìm thấy dữ liệu căn hộ hợp lệ trong tệp Excel!", "error");
+                        return;
+                    }
+
+                    await saveBatchApartmentsToCloud(importedApts, true);
+                    showToast(`Đã nạp thành công ${importedApts.length} căn hộ từ tệp Excel!`, "success");
+                } catch (err) {
+                    console.error("Excel parse error:", err);
+                    showToast("Lỗi khi đọc tệp Excel/CSV! Vui lòng kiểm tra định dạng tệp.", "error");
+                }
+            };
+            reader.readAsArrayBuffer(file);
+            event.target.value = '';
+        }
+
+        async function handlePasteImport() {
+            const inputVal = document.getElementById('paste-import-input')?.value || '';
+            if (!inputVal.trim()) {
+                showToast("Vui lòng dán nội dung văn bản danh sách căn hộ!", "error");
+                return;
+            }
+
+            const lines = inputVal.split('\n');
+            let importedApts = [];
+
+            lines.forEach(line => {
+                if (!line.trim()) return;
+                const parts = line.split(/[,|\t]+/);
+                if (parts.length >= 2) {
+                    const idStr = sanitizeDocId(parts[0]);
+                    const areaNum = parseFloat(parts[1].trim().replace(',', '.'));
+                    if (idStr && !isNaN(areaNum) && areaNum > 0) {
+                        importedApts.push({
+                            id: idStr,
+                            area: areaNum,
+                            attended: false
+                        });
+                    }
+                }
+            });
+
+            if (importedApts.length === 0) {
+                showToast("Không phân tích được danh sách căn hộ! Kiểm tra lại định dạng.", "error");
+                return;
+            }
+
+            await saveBatchApartmentsToCloud(importedApts, false);
+            showToast(`Đã thêm thành công ${importedApts.length} căn hộ từ danh sách!`, "success");
+            document.getElementById('paste-import-input').value = '';
+        }
+
+        function onManualInputAreaChange() {
+            const areaInput = document.getElementById('manual-add-area');
+            const percentInput = document.getElementById('manual-add-percent');
+            if (!areaInput || !percentInput) return;
+
+            const areaVal = parseFloat(areaInput.value) || 0;
+            const effectiveTotal = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            if (effectiveTotal > 0 && areaVal > 0) {
+                percentInput.value = ((areaVal / effectiveTotal) * 100).toFixed(3);
+            } else {
+                percentInput.value = '';
+            }
+        }
+
+        function onManualInputPercentChange() {
+            const areaInput = document.getElementById('manual-add-area');
+            const percentInput = document.getElementById('manual-add-percent');
+            if (!areaInput || !percentInput) return;
+
+            const percentVal = parseFloat(percentInput.value) || 0;
+            const effectiveTotal = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            if (effectiveTotal > 0 && percentVal > 0) {
+                areaInput.value = ((percentVal * effectiveTotal) / 100).toFixed(2);
+            } else {
+                areaInput.value = '';
+            }
+        }
+
+        async function executeAddManualIncrement() {
+            const areaVal = parseFloat(document.getElementById('manual-add-area')?.value) || 0;
+            const percentVal = parseFloat(document.getElementById('manual-add-percent')?.value) || 0;
+            const noteVal = document.getElementById('manual-add-note')?.value.trim() || 'Cộng dồn thủ công';
+
+            if (areaVal <= 0) {
+                showToast("Vui lòng nhập diện tích hợp lệ!", "error");
+                return;
+            }
+
+            const newEntry = {
+                id: 'man_' + Date.now(),
+                area: areaVal,
+                percent: percentVal,
+                note: noteVal,
+                createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            const updated = [...(state.manualEntries || []), newEntry];
+            state.manualEntries = updated;
+
+            if (state.useCloudSync) {
+                try {
+                    await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
+                } catch (e) {
+                    console.warn("Cloud save failed, saved locally:", e);
+                }
+            }
+            saveToLocalStorage();
+            render();
+
+            document.getElementById('manual-add-area').value = '';
+            document.getElementById('manual-add-percent').value = '';
+            document.getElementById('manual-add-note').value = '';
+            showToast(`Đã thêm cộng dồn +${formatNumber(areaVal)} m² thành công!`, "success");
+        }
+
+        async function deleteManualIncrement(id) {
+            const updated = (state.manualEntries || []).filter(e => e.id !== id);
+            state.manualEntries = updated;
+            if (state.useCloudSync) {
+                try {
+                    await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
+                } catch (e) { console.warn("Cloud save failed, saved locally:", e); }
+            }
+            saveToLocalStorage();
+            render();
+            showToast("Đã xóa lượt cộng dồn!", "info");
+        }
+
+        async function clearAllManualIncrements() {
+            state.manualEntries = [];
+            if (state.useCloudSync) {
+                try {
+                    await setDoc(settingsDocRef, { manualEntries: [] }, { merge: true });
+                } catch (e) { console.warn("Cloud save failed, saved locally:", e); }
+            }
+            saveToLocalStorage();
+            render();
+            showToast("Đã xóa toàn bộ lịch sử cộng dồn!", "info");
+        }
+
+        function renderManualHistoryTable() {
+            const tbody = document.getElementById('manual-history-table-body');
+            if (!tbody) return;
+
+            const entries = state.manualEntries || [];
+            if (entries.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-slate-500">Chưa có lượt cộng dồn manual nào</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = entries.map(entry => `
+                <tr class="hover:bg-slate-100 dark:hover:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
+                    <td class="p-2.5 font-mono text-slate-500">${entry.createdAt}</td>
+                    <td class="p-2.5 text-right font-mono font-bold text-emerald-600 dark:text-emerald-400">+${formatNumber(entry.area)}</td>
+                    <td class="p-2.5 text-right font-mono text-indigo-600 dark:text-indigo-400">+${(entry.percent || 0).toFixed(3)}%</td>
+                    <td class="p-2.5 text-slate-700 dark:text-slate-300 font-medium">${entry.note}</td>
+                    <td class="p-2.5 text-center">
+                        <button onclick="deleteManualIncrement('${entry.id}')" class="text-rose-500 hover:text-rose-700 p-1">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function calculateProxySummary() {
+            const inputVal = document.getElementById('proxy-codes-input')?.value || '';
+            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => sanitizeDocId(c)).filter(c => c.length > 0 && c !== 'UNKNOWN');
+            const uniqueCodes = [...new Set(codes)];
+
+            const matched = [];
+            let totalArea = 0;
+
+            uniqueCodes.forEach(code => {
+                const found = state.apartments.find(a => sanitizeDocId(a.id) === code);
+                if (found) {
+                    matched.push(found);
+                    totalArea += found.area;
+                } else {
+                    matched.push({ id: code, area: 0, attended: false, isNotFound: true });
+                }
+            });
+
+            const effectiveTotal = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            const totalPercent = effectiveTotal > 0 ? (totalArea / effectiveTotal) * 100 : 0;
+
+            const countEl = document.getElementById('proxy-summary-count');
+            const areaEl = document.getElementById('proxy-summary-area');
+            const percentEl = document.getElementById('proxy-summary-percent');
+
+            if (countEl) countEl.innerText = matched.filter(m => !m.isNotFound).length;
+            if (areaEl) areaEl.innerText = formatNumber(totalArea);
+            if (percentEl) percentEl.innerText = `${totalPercent.toFixed(3)}%`;
+
+            const tbody = document.getElementById('proxy-matched-table-body');
+            if (tbody) {
+                if (matched.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500">Dán danh sách mã căn để kiểm tra</td></tr>`;
+                } else {
+                    tbody.innerHTML = matched.map(item => {
+                        if (item.isNotFound) {
+                            return `<tr class="bg-rose-500/10"><td class="p-2.5 font-bold text-rose-500">${item.id}</td><td class="p-2.5 text-right font-mono">--</td><td class="p-2.5 text-right font-mono">--</td><td class="p-2.5 text-center text-rose-500 font-semibold">Không tìm thấy mã</td></tr>`;
+                        }
+                        const contribPercent = effectiveTotal > 0 ? (item.area / effectiveTotal) * 100 : 0;
+                        return `<tr class="hover:bg-slate-100 dark:hover:bg-slate-900"><td class="p-2.5 font-extrabold text-slate-900 dark:text-white">${item.id}</td><td class="p-2.5 text-right font-mono font-bold">${formatNumber(item.area)}</td><td class="p-2.5 text-right font-mono">${contribPercent.toFixed(3)}%</td><td class="p-2.5 text-center">${item.attended ? '<span class="text-emerald-500 font-bold">Đã tham dự</span>' : '<span class="text-slate-400">Chưa tham dự</span>'}</td></tr>`;
+                    }).join('');
+                }
+            }
+        }
+
+        async function executeApplyProxyAttendance() {
+            const inputVal = document.getElementById('proxy-codes-input')?.value || '';
+            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => sanitizeDocId(c)).filter(c => c.length > 0 && c !== 'UNKNOWN');
+            const uniqueCodes = [...new Set(codes)];
+
+            const matchedApts = state.apartments.filter(a => uniqueCodes.includes(sanitizeDocId(a.id)));
+            if (matchedApts.length === 0) {
+                showToast("Không tìm thấy căn hộ hợp lệ nào trong danh sách!", "error");
+                return;
+            }
+
+            await saveBatchApartmentsToCloud(matchedApts.map(a => ({ ...a, attended: true })), false);
+            showToast(`Đã điểm danh thành công ${matchedApts.length} căn hộ ủy quyền!`, "success");
+            calculateProxySummary();
+        }
+
+        async function executeSaveProxyLog() {
+            const repName = document.getElementById('proxy-rep-name')?.value.trim() || 'Người đại diện';
+            const repNote = document.getElementById('proxy-rep-note')?.value.trim() || '';
+            const areaVal = parseFloat(document.getElementById('proxy-summary-area')?.innerText.replace(/\./g, '').replace(',', '.')) || 0;
+            const percentVal = parseFloat(document.getElementById('proxy-summary-percent')?.innerText) || 0;
+
+            if (areaVal <= 0) {
+                showToast("Không có diện tích ủy quyền để lưu!", "error");
+                return;
+            }
+
+            const note = `${repName} (${repNote ? repNote + ', ' : ''}Ủy quyền danh sách căn)`;
+            const newEntry = {
+                id: 'proxy_' + Date.now(),
+                area: areaVal,
+                percent: percentVal,
+                note: note,
+                createdAt: new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            const updated = [...(state.manualEntries || []), newEntry];
+            await setDoc(settingsDocRef, { manualEntries: updated }, { merge: true });
+            showToast(`Đã lưu nhật ký ủy quyền cho ${repName}!`, "success");
+        }
+
+        function renderBuildingStats() {
+            const renameContainer = document.getElementById('block-rename-inputs');
+            const statsGrid = document.getElementById('building-stats-grid');
+            if (!renameContainer || !statsGrid) return;
+
+            const blockKeys = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5'];
+
+            renameContainer.innerHTML = blockKeys.map(bKey => {
+                const currName = state.blockNames[bKey] || `Tòa ${bKey}`;
+                return `
+                    <div>
+                        <label class="block font-bold text-slate-600 dark:text-slate-400 text-[10px] uppercase">${bKey}:</label>
+                        <input type="text" id="rename-input-${bKey}" value="${currName}" 
+                            class="w-full px-2 py-1 bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-900 dark:text-white">
+                    </div>
+                `;
+            }).join('');
+
+            const effectiveTotal = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+
+            statsGrid.innerHTML = blockKeys.map(bKey => {
+                const displayName = state.blockNames[bKey] || `Tòa ${bKey}`;
+                const aptsInBlock = state.apartments.filter(a => {
+                    const idUpper = a.id.toUpperCase();
+                    const altKey = bKey.startsWith('NO') ? 'B' + bKey.replace('NO', '') : 'NO' + bKey.replace('B', '');
+                    return idUpper.startsWith(bKey) || idUpper.startsWith(altKey);
+                });
+                
+                const totalBlockUnits = aptsInBlock.length;
+                const attendedBlockUnits = aptsInBlock.filter(a => a.attended).length;
+                
+                const totalBlockArea = aptsInBlock.reduce((sum, a) => sum + a.area, 0);
+                const attendedBlockArea = aptsInBlock.filter(a => a.attended).reduce((sum, a) => sum + a.area, 0);
+
+                const blockContribPercent = effectiveTotal > 0 ? (attendedBlockArea / effectiveTotal) * 100 : 0;
+                const blockSelfPercent = totalBlockArea > 0 ? (attendedBlockArea / totalBlockArea) * 100 : 0;
+
+                return `
+                    <div class="glass-card rounded-2xl p-4 border border-slate-300 dark:border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2">
+                            <span class="font-extrabold text-sm text-slate-900 dark:text-white">${displayName}</span>
+                            <span class="text-xs font-mono font-bold text-indigo-600 dark:text-indigo-400">${blockContribPercent.toFixed(2)}% Tổng</span>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-2 text-xs">
+                            <div>
+                                <span class="block text-[11px] text-slate-500">Số căn tham dự:</span>
+                                <span class="font-bold text-slate-900 dark:text-white font-mono">${attendedBlockUnits} / ${totalBlockUnits}</span>
+                            </div>
+                            <div>
+                                <span class="block text-[11px] text-slate-500">Diện tích tham dự:</span>
+                                <span class="font-bold text-emerald-600 dark:text-emerald-400 font-mono">${formatNumber(attendedBlockArea)} m²</span>
+                            </div>
+                        </div>
+
+                        <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                            <div class="bg-indigo-500 h-full rounded-full transition-all duration-500" style="width: ${Math.min(blockSelfPercent, 100)}%"></div>
+                        </div>
+                        <div class="flex justify-between text-[10px] text-slate-500 font-medium">
+                            <span>Đạt ${blockSelfPercent.toFixed(1)}% của khối</span>
+                            <span>Tổng khối: ${formatNumber(totalBlockArea)} m²</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function toggleAttendance(aptId) {
+            const apt = state.apartments.find(a => a.id === aptId);
+            if (!apt) return;
+            const newStatus = !apt.attended;
+            
+            apt.attended = newStatus;
+            saveToLocalStorage();
+            render();
+
+            if (state.useCloudSync) {
+                try {
+                    const cleanId = sanitizeDocId(aptId);
+                    const docRef = doc(apartmentsColRef, cleanId);
+                    await setDoc(docRef, { area: apt.area, attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
+                } catch (e) {
+                    console.warn("Error toggling attendance on cloud, keeping local state:", e);
+                }
+            }
+            showToast(`Căn hộ ${aptId}: ${newStatus ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
+        }
+
+        async function deleteApartment(aptId) {
+            const cleanId = sanitizeDocId(aptId);
+            state.apartments = state.apartments.filter(a => sanitizeDocId(a.id) !== cleanId);
+            saveToLocalStorage();
+            render();
+
+            if (state.useCloudSync) {
+                try {
+                    const docRef = doc(apartmentsColRef, cleanId);
+                    await deleteDoc(docRef);
+                } catch (e) {
+                    console.warn("Error deleting apartment on cloud:", e);
+                }
+            }
+            showToast(`Đã xóa căn hộ ${aptId}`, 'info');
+        }
+
+        function renderAdminTable() {
+            const tbody = document.getElementById('admin-table-body');
+            if (!tbody) return;
+
+            const searchVal = (document.getElementById('admin-search-input')?.value || '').trim().toLowerCase();
+            const filterBuilding = document.getElementById('admin-filter-building')?.value || 'all';
+            const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
+
+            const filtered = state.apartments.filter(apt => {
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                let matchesBuilding = true;
+                if (filterBuilding !== 'all') {
+                    const idUpper = apt.id.toUpperCase();
+                    const altBuilding = filterBuilding.startsWith('NO') ? 'B' + filterBuilding.replace('NO', '') : 'NO' + filterBuilding.replace('B', '');
+                    matchesBuilding = idUpper.startsWith(filterBuilding) || idUpper.startsWith(altBuilding);
+                }
+                let matchesStatus = true;
+                if (filterStatus === 'attended') matchesStatus = apt.attended;
+                if (filterStatus === 'absent') matchesStatus = !apt.attended;
+
+                return matchesSearch && matchesBuilding && matchesStatus;
+            });
+
+            const countEl = document.getElementById('admin-table-count');
+            if (countEl) countEl.innerText = `(${filtered.length} / ${state.apartments.length} căn)`;
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Không tìm thấy căn hộ phù hợp</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(apt => `
+                <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80">
+                    <td class="p-3 font-extrabold text-slate-900 dark:text-white">${apt.id}</td>
+                    <td class="p-3 font-bold text-slate-700 dark:text-slate-300 font-mono">${formatNumber(apt.area)} m²</td>
+                    <td class="p-3 text-center">
+                        <button onclick="toggleAttendance('${apt.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto ${apt.attended ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700'}">
+                            <i class="fa-solid ${apt.attended ? 'fa-check' : 'fa-xmark'}"></i>
+                            <span>${apt.attended ? 'Đã tham dự' : 'Chưa tham dự'}</span>
+                        </button>
+                    </td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteApartment('${apt.id}')" class="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-500/10 transition" title="Xóa căn hộ">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function clearAdminSearch() {
+            const input = document.getElementById('admin-search-input');
+            if (input) {
+                input.value = '';
+                renderAdminTable();
+            }
+        }
+
+        function setAdminQuickFilter(building, status) {
+            const bSelect = document.getElementById('admin-filter-building');
+            const sSelect = document.getElementById('admin-filter-status');
+            if (bSelect) bSelect.value = building;
+            if (sSelect) sSelect.value = status;
+            renderAdminTable();
+        }
+
+        async function toggleAllVisibleAdmin(status) {
+            const searchVal = (document.getElementById('admin-search-input')?.value || '').trim().toLowerCase();
+            const filterBuilding = document.getElementById('admin-filter-building')?.value || 'all';
+            const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
+
+            const visibleApts = state.apartments.filter(apt => {
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                let matchesBuilding = true;
+                if (filterBuilding !== 'all') {
+                    const idUpper = apt.id.toUpperCase();
+                    const altBuilding = filterBuilding.startsWith('NO') ? 'B' + filterBuilding.replace('NO', '') : 'NO' + filterBuilding.replace('B', '');
+                    matchesBuilding = idUpper.startsWith(filterBuilding) || idUpper.startsWith(altBuilding);
+                }
+                let matchesStatus = true;
+                if (filterStatus === 'attended') matchesStatus = apt.attended;
+                if (filterStatus === 'absent') matchesStatus = !apt.attended;
+
+                return matchesSearch && matchesBuilding && matchesStatus;
+            });
+
+            if (visibleApts.length === 0) return;
+
+            await saveBatchApartmentsToCloud(visibleApts.map(a => ({ ...a, attended: status })), false);
+            showToast(`Đã ${status ? 'tích chọn' : 'bỏ chọn'} ${visibleApts.length} căn hộ!`, "success");
+        }
+
+        async function invertVisibleAdmin() {
+            const searchVal = (document.getElementById('admin-search-input')?.value || '').trim().toLowerCase();
+            const filterBuilding = document.getElementById('admin-filter-building')?.value || 'all';
+            const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
+
+            const visibleApts = state.apartments.filter(apt => {
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                let matchesBuilding = true;
+                if (filterBuilding !== 'all') {
+                    const idUpper = apt.id.toUpperCase();
+                    const altBuilding = filterBuilding.startsWith('NO') ? 'B' + filterBuilding.replace('NO', '') : 'NO' + filterBuilding.replace('B', '');
+                    matchesBuilding = idUpper.startsWith(filterBuilding) || idUpper.startsWith(altBuilding);
+                }
+                let matchesStatus = true;
+                if (filterStatus === 'attended') matchesStatus = apt.attended;
+                if (filterStatus === 'absent') matchesStatus = !apt.attended;
+
+                return matchesSearch && matchesBuilding && matchesStatus;
+            });
+
+            if (visibleApts.length === 0) return;
+
+            await saveBatchApartmentsToCloud(visibleApts.map(a => ({ ...a, attended: !a.attended })), false);
+            showToast(`Đã đảo chọn ${visibleApts.length} căn hộ!`, "success");
+        }
+
+        function requestClearAllData() {
+            const modal = document.getElementById('confirm-modal');
+            if (modal) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('opacity-100');
+            }
+        }
+
+        function closeConfirmModal() {
+            const modal = document.getElementById('confirm-modal');
+            if (modal) {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        async function executeClearAllData() {
+            closeConfirmModal();
+            await saveBatchApartmentsToCloud([], true);
+            await setDoc(settingsDocRef, { manualEntries: [], totalAreaOverride: DEFAULT_TOTAL_AREA }, { merge: true });
+            showToast("Đã xóa toàn bộ dữ liệu trên Cloud!", "info");
+        }
+
+        async function saveCustomBlockNames() {
+            const blockKeys = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5'];
+            const updatedNames = { ...state.blockNames };
+
+            blockKeys.forEach(key => {
+                const input = document.getElementById(`rename-input-${key}`);
+                if (input && input.value.trim()) {
+                    updatedNames[key] = input.value.trim();
+                    const altKey = 'B' + key.replace('NO', '');
+                    updatedNames[altKey] = input.value.trim();
+                }
+            });
+
+            state.blockNames = updatedNames;
+            await setDoc(settingsDocRef, { blockNames: updatedNames }, { merge: true });
+            showToast("Đã lưu tên khối tùy chỉnh lên Cloud!", "success");
+            renderBuildingStats();
+            renderTable();
+        }
 
         function exportApartmentsToExcel() {
-            try {
-                const exportData = window.apartmentsData.map((item, idx) => ({
-                    "STT": idx + 1,
-                    "Mã Căn Hộ": item.code,
-                    "Khối Tòa": item.block || "Tòa B",
-                    "Diện Tích (m2)": item.area,
-                    "Tỷ Lệ (%)": parseFloat(((item.area / window.TOTAL_PROJECT_AREA) * 100).toFixed(4)),
-                    "Trạng Thái": item.attended ? "Đã Tham Dự" : "Vắng"
-                }));
+            if (!state.apartments || state.apartments.length === 0) {
+                showToast("Không có dữ liệu căn hộ để xuất Excel!", "error");
+                return;
+            }
 
-                const worksheet = XLSX.utils.json_to_sheet(exportData);
-                const workbook = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(workbook, worksheet, "DiemDanh_Ecohome2026");
-                XLSX.writeFile(workbook, `DiemDanh_Ecohome_NhonBinh_2026.xlsx`);
-            } catch (err) {
-                console.error("Export error:", err);
+            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+
+            const dataRows = state.apartments.map((apt, index) => {
+                const contribPercent = effectiveTotalArea > 0 ? (apt.area / effectiveTotalArea) * 100 : 0;
+                const blockKey = apt.id.split('-')[0]?.toUpperCase() || 'NO1';
+                const blockName = state.blockNames[blockKey] || `Tòa ${blockKey}`;
+                return {
+                    'STT': index + 1,
+                    'Mã Căn Hộ': apt.id,
+                    'Khối Tòa': blockName,
+                    'Diện Tích (m²)': apt.area,
+                    'Tỷ Lệ Đóng Góp (%)': parseFloat(contribPercent.toFixed(4)),
+                    'Trạng Thái Tham Dự': apt.attended ? 'Đã tham dự' : 'Chưa tham dự'
+                };
+            });
+
+            const worksheet = XLSX.utils.json_to_sheet(dataRows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Danh Sach Can Ho");
+
+            XLSX.writeFile(workbook, `EcoHome_NhonBinh_DiemDanh_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast("Đã xuất file Excel thành công!", "success");
+        }
+
+        async function loadFullEcohomeDataset(userTriggered = false) {
+            const dataset = [];
+            const blocks = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5'];
+            const areas = [35.1, 52.5, 60.0, 68.5, 76.7];
+            let totalDatasetArea = 0;
+
+            blocks.forEach(b => {
+                for (let i = 1; i <= 276; i++) {
+                    const floor = Math.floor((i - 1) / 18) + 1;
+                    const room = ((i - 1) % 18) + 1;
+                    const floorStr = String(floor).padStart(2, '0');
+                    const roomStr = String(room).padStart(2, '0');
+                    const aptId = `${b}-${floorStr}${roomStr}`;
+                    const area = areas[(floor + room) % areas.length];
+                    totalDatasetArea += area;
+                    dataset.push({
+                        id: aptId,
+                        area: area,
+                        attended: false
+                    });
+                }
+            });
+
+            totalDatasetArea = Math.round(totalDatasetArea * 100) / 100;
+            state.totalAreaOverride = totalDatasetArea;
+
+            await saveBatchApartmentsToCloud(dataset, true);
+            await setDoc(settingsDocRef, { totalAreaOverride: totalDatasetArea, manualEntries: [] }, { merge: true });
+
+            if (userTriggered) {
+                showToast(`Đã nạp thành công 1.380 căn hộ chuẩn EcoHome Nhơn Bình (5 tòa NO1-NO5, Tổng: ${formatNumber(totalDatasetArea)} m²)!`, "success");
             }
         }
-        window.exportApartmentsToExcel = exportApartmentsToExcel;
 
-        function triggerManualConfetti() {
-            if (typeof confetti === 'function') {
-                confetti({
-                    particleCount: 100,
-                    spread: 70,
-                    origin: { y: 0.6 }
-                });
-            }
+        function updateLiveClock() {
+            const now = new Date();
+            const days = ['Chủ Nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'];
+            const dayName = days[now.getDay()];
+            const dateStr = `${dayName}, ${String(now.getDate()).padStart(2, '0')}/${String(now.getMonth() + 1).padStart(2, '0')}/${now.getFullYear()}`;
+            const timeStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}:${String(now.getSeconds()).padStart(2, '0')}`;
+
+            const dateEl = document.getElementById('live-clock-date');
+            const timeEl = document.getElementById('live-clock-time');
+
+            if (dateEl) dateEl.innerText = dateStr;
+            if (timeEl) timeEl.innerText = timeStr;
         }
-        window.triggerManualConfetti = triggerManualConfetti;
 
-        function toggleTheme() {
-            const html = document.documentElement;
-            const themeIcon = document.getElementById("theme-icon");
-            const themeText = document.getElementById("theme-text");
+        function formatNumber(num) {
+            if (typeof num !== 'number' || isNaN(num)) return '0,00';
+            return num.toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        }
 
-            if (html.classList.contains("dark")) {
-                html.classList.remove("dark");
-                if (themeIcon) themeIcon.className = "fa-solid fa-moon text-slate-700";
-                if (themeText) themeText.innerText = "Giao diện";
+        function showToast(msg, type = 'info') {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            if (!toast || !toastMsg) return;
+
+            toastMsg.innerText = msg;
+            if (type === 'success') {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-base";
+            } else if (type === 'error') {
+                toastIcon.className = "fa-solid fa-circle-xmark text-rose-400 text-base";
             } else {
-                html.classList.add("dark");
-                if (themeIcon) themeIcon.className = "fa-solid fa-sun text-amber-300";
-                if (themeText) themeText.innerText = "Giao diện";
+                toastIcon.className = "fa-solid fa-circle-info text-blue-400 text-base";
             }
-        }
-        window.toggleTheme = toggleTheme;
 
-        window.onload = function() {
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
+
+        window.toggleTheme = toggleTheme;
+        window.triggerCelebrationConfetti = triggerCelebrationConfetti;
+        window.triggerManualConfetti = triggerCelebrationConfetti;
+        window.openAdminView = openAdminView;
+        window.closeAdminView = closeAdminView;
+        window.handleAdminLogin = handleAdminLogin;
+        window.handleAdminLogout = handleAdminLogout;
+        window.renderAdminOverviewHeader = renderAdminOverviewHeader;
+        window.setAdminQuickFilter = setAdminQuickFilter;
+        window.togglePasswordVisibility = togglePasswordVisibility;
+        window.switchAdminTab = switchAdminTab;
+        window.handleFileUpload = handleFileUpload;
+        window.handlePasteImport = handlePasteImport;
+        window.onManualInputAreaChange = onManualInputAreaChange;
+        window.onManualInputPercentChange = onManualInputPercentChange;
+        window.executeAddManualIncrement = executeAddManualIncrement;
+        window.calculateProxySummary = calculateProxySummary;
+        window.executeApplyProxyAttendance = executeApplyProxyAttendance;
+        window.executeSaveProxyLog = executeSaveProxyLog;
+        window.clearAdminSearch = clearAdminSearch;
+        window.toggleAllVisibleAdmin = toggleAllVisibleAdmin;
+        window.invertVisibleAdmin = invertVisibleAdmin;
+        window.toggleAttendance = toggleAttendance;
+        window.deleteApartment = deleteApartment;
+        window.requestClearAllData = requestClearAllData;
+        window.closeConfirmModal = closeConfirmModal;
+        window.executeClearAllData = executeClearAllData;
+        window.loadFullEcohomeDataset = loadFullEcohomeDataset;
+        window.renderTable = renderTable;
+        window.saveCustomBlockNames = saveCustomBlockNames;
+        window.renderBuildingStats = renderBuildingStats;
+        window.deleteManualIncrement = deleteManualIncrement;
+        window.clearAllManualIncrements = clearAllManualIncrements;
+        window.exportApartmentsToExcel = exportApartmentsToExcel;
+        window.renderAdminTable = renderAdminTable;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            applyTheme(state.theme);
+            initFirebaseAndSync();
             updateLiveClock();
             setInterval(updateLiveClock, 1000);
-            initFirebaseSync();
-        };
+
+            if (window.location.hash === '#admin') {
+                openAdminView();
+            }
+        });
+
+        window.addEventListener('hashchange', () => {
+            if (window.location.hash === '#admin') {
+                openAdminView();
+            } else {
+                closeAdminView();
+            }
+        });
     </script>
 </body>
 </html>
