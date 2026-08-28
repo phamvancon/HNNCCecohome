@@ -38,20 +38,6 @@
                             800: '#065f46',
                             900: '#064e3b',
                         }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' },
-                            '50%': { opacity: '0.85', boxShadow: '0 0 35px rgba(16, 185, 129, 0.7)' },
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-6px)' },
-                        }
                     }
                 }
             }
@@ -67,7 +53,6 @@
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #64748b; border-radius: 4px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #10b981; }
         
-        /* Dark mode glassmorphism */
         .dark .glass-card {
             background: rgba(15, 23, 42, 0.85);
             backdrop-filter: blur(16px);
@@ -80,7 +65,6 @@
             border: 1px solid rgba(226, 232, 240, 0.8);
         }
 
-        /* Light mode styles */
         html:not(.dark) .glass-card {
             background: rgba(255, 255, 255, 0.9);
             backdrop-filter: blur(16px);
@@ -97,6 +81,7 @@
 </head>
 <body class="h-full flex flex-col text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 antialiased min-h-screen">
 
+    <!-- PUBLIC VIEW -->
     <div id="public-view" class="min-h-screen flex flex-col bg-slate-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-teal-950 dark:via-slate-950 dark:to-slate-950">
 
         <!-- Top Navigation Header -->
@@ -111,7 +96,7 @@
                             <div class="flex items-center space-x-2">
                                 <span class="px-2.5 py-0.5 rounded-full text-[11px] font-extrabold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/40 uppercase tracking-wider">Hội Nghị Nhà Chung Cư 2026</span>
                                 <span id="sync-status-badge" class="text-xs text-teal-700 dark:text-teal-300/80 font-medium">
-                                    <i class="fa-solid fa-cloud-arrow-up mr-1 animate-pulse"></i>PVC Cloud
+                                    <i class="fa-solid fa-cloud-arrow-up mr-1 animate-pulse"></i>Đang kết nối...
                                 </span>
                             </div>
                             <h1 class="text-lg md:text-xl font-black tracking-tight text-slate-900 dark:text-white mt-0.5 uppercase drop-shadow-sm">
@@ -147,7 +132,7 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
-                    <span class="tracking-wide">Tự động ghi nhận điểm danh thời gian thực</span>
+                    <span class="tracking-wide">Ghi nhận điểm danh Cloud thời gian thực</span>
                 </div>
 
                 <!-- Live Clock Display Box -->
@@ -376,7 +361,6 @@
 
         <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
-            <!-- ADMIN AUTHENTICATION FORM -->
             <div id="admin-auth-view" class="max-w-md mx-auto my-12 glass-card p-8 rounded-3xl border border-slate-300 dark:border-slate-800 shadow-2xl text-center space-y-5">
                 <div class="w-16 h-16 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-emerald-500/30 shadow-inner">
                     <i class="fa-solid fa-lock"></i>
@@ -410,7 +394,6 @@
                 </form>
             </div>
 
-            <!-- ADMIN PANEL WORKSPACE -->
             <div id="admin-panel-view" class="hidden space-y-6">
                 
                 <div id="admin-summary-overview" class="glass-card rounded-2xl p-5 shadow-xl border border-slate-300 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -854,6 +837,17 @@
             theme: localStorage.getItem('theme') || 'dark'
         };
 
+        /* Helper to sanitize ID for Firebase Doc Path */
+        function sanitizeDocId(rawId) {
+            if (!rawId) return 'UNKNOWN';
+            return String(rawId)
+                .trim()
+                .toUpperCase()
+                .replace(/\s+/g, '')
+                .replace(/\//g, '-') // Critical fix: Replace / with - so doc path doesn't split
+                .replace(/\\/g, '-');
+        }
+
         /* Confetti Celebration Trigger Function */
         function triggerCelebrationConfetti() {
             if (typeof confetti === 'function') {
@@ -869,7 +863,6 @@
             }
         }
 
-        /* Firebase Batch Write Helper */
         async function saveBatchApartmentsToCloud(dataset, clearExisting = false) {
             try {
                 if (clearExisting) {
@@ -895,7 +888,8 @@
                     const chunk = dataset.slice(i, i + chunkSize);
                     const batch = writeBatch(db);
                     chunk.forEach(apt => {
-                        const docRef = doc(apartmentsColRef, apt.id);
+                        const cleanId = sanitizeDocId(apt.id);
+                        const docRef = doc(apartmentsColRef, cleanId);
                         batch.set(docRef, {
                             area: apt.area,
                             attended: apt.attended || false,
@@ -1304,7 +1298,7 @@
                                     cellVal.includes('căn hộ') || cellVal.includes('can ho') ||
                                     cellVal.includes('số căn') || cellVal.includes('so can') ||
                                     cellVal.includes('mã ch') || cellVal === 'căn' || cellVal === 'can' ||
-                                    cellVal.includes('mã số') || (cellVal.includes('mã') && !cellVal.includes('chủ sở hữu'))
+                                    cellVal.includes('mã số') || cellVal.includes('ký hiệu')
                                 )) {
                                     codeColIndex = c;
                                     headerRowIndex = r;
@@ -1313,7 +1307,7 @@
                                 if (areaColIndex === -1 && (
                                     cellVal.includes('diện tích') || cellVal.includes('dien tich') || 
                                     cellVal.includes('dt') || cellVal.includes('m2') || cellVal.includes('m²') ||
-                                    cellVal.includes('d.tích') || cellVal.includes('d.tich')
+                                    cellVal.includes('d.tích') || cellVal.includes('s (m2)')
                                 )) {
                                     areaColIndex = c;
                                     if (headerRowIndex === -1) headerRowIndex = r;
@@ -1322,8 +1316,7 @@
                                 if (attendedColIndex === -1 && (
                                     cellVal.includes('tham dự') || cellVal.includes('tham du') ||
                                     cellVal.includes('điểm danh') || cellVal.includes('diem danh') ||
-                                    cellVal.includes('có mặt') || cellVal.includes('co mat') ||
-                                    cellVal.includes('trạng thái') || cellVal.includes('trang thai')
+                                    cellVal.includes('có mặt') || cellVal.includes('trạng thái')
                                 )) {
                                     attendedColIndex = c;
                                 }
@@ -1334,7 +1327,6 @@
 
                         if (codeColIndex === -1 || areaColIndex === -1) {
                             let colStats = [];
-                            
                             for (let r = Math.max(0, headerRowIndex + 1); r < jsonData.length; r++) {
                                 const row = jsonData[r];
                                 if (!row || !Array.isArray(row)) continue;
@@ -1390,12 +1382,11 @@
                             const lowerCode = rawCode.toLowerCase();
                             if (lowerCode.includes('tổng') || lowerCode.includes('tong') || 
                                 lowerCode.includes('căn hộ') || lowerCode.includes('mã căn') || 
-                                lowerCode.includes('stt') || lowerCode.includes('cộng') ||
-                                lowerCode.includes('bảng') || lowerCode.includes('danh sách')) {
+                                lowerCode.includes('stt') || lowerCode.includes('cộng')) {
                                 continue;
                             }
 
-                            let formattedCode = rawCode.toUpperCase().replace(/\s+/g, '');
+                            let formattedCode = sanitizeDocId(rawCode);
                             let rawArea = String(row[areaColIndex] || '').replace(',', '.').replace(/[^0-9\.]/g, '');
                             let areaNum = parseFloat(rawArea);
 
@@ -1451,7 +1442,7 @@
                 if (!line.trim()) return;
                 const parts = line.split(/[,|\t]+/);
                 if (parts.length >= 2) {
-                    const idStr = parts[0].trim().toUpperCase();
+                    const idStr = sanitizeDocId(parts[0]);
                     const areaNum = parseFloat(parts[1].trim().replace(',', '.'));
                     if (idStr && !isNaN(areaNum) && areaNum > 0) {
                         importedApts.push({
@@ -1566,14 +1557,14 @@
 
         function calculateProxySummary() {
             const inputVal = document.getElementById('proxy-codes-input')?.value || '';
-            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => c.trim().toUpperCase()).filter(c => c.length > 0);
+            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => sanitizeDocId(c)).filter(c => c.length > 0 && c !== 'UNKNOWN');
             const uniqueCodes = [...new Set(codes)];
 
             const matched = [];
             let totalArea = 0;
 
             uniqueCodes.forEach(code => {
-                const found = state.apartments.find(a => a.id.toUpperCase() === code);
+                const found = state.apartments.find(a => sanitizeDocId(a.id) === code);
                 if (found) {
                     matched.push(found);
                     totalArea += found.area;
@@ -1611,10 +1602,10 @@
 
         async function executeApplyProxyAttendance() {
             const inputVal = document.getElementById('proxy-codes-input')?.value || '';
-            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => c.trim().toUpperCase()).filter(c => c.length > 0);
+            const codes = inputVal.split(/[,|\n\t\s]+/).map(c => sanitizeDocId(c)).filter(c => c.length > 0 && c !== 'UNKNOWN');
             const uniqueCodes = [...new Set(codes)];
 
-            const matchedApts = state.apartments.filter(a => uniqueCodes.includes(a.id.toUpperCase()));
+            const matchedApts = state.apartments.filter(a => uniqueCodes.includes(sanitizeDocId(a.id)));
             if (matchedApts.length === 0) {
                 showToast("Không tìm thấy căn hộ hợp lệ nào trong danh sách!", "error");
                 return;
@@ -1726,7 +1717,8 @@
             render();
 
             try {
-                const docRef = doc(apartmentsColRef, aptId);
+                const cleanId = sanitizeDocId(aptId);
+                const docRef = doc(apartmentsColRef, cleanId);
                 await setDoc(docRef, { area: apt.area, attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
                 showToast(`Căn hộ ${aptId}: ${newStatus ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
             } catch (e) {
@@ -1739,7 +1731,8 @@
 
         async function deleteApartment(aptId) {
             try {
-                const docRef = doc(apartmentsColRef, aptId);
+                const cleanId = sanitizeDocId(aptId);
+                const docRef = doc(apartmentsColRef, cleanId);
                 await deleteDoc(docRef);
                 showToast(`Đã xóa căn hộ ${aptId}`, 'info');
             } catch (e) {
