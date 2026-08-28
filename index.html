@@ -555,6 +555,10 @@
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-nhon-binh-2026';
         let currentUser = null;
 
+        // Firestore path used by this deployment:
+        // /artifacts/ecohome-nhon-binh-2026/public/data/apartments/{apartmentId}
+        console.info("Firestore apartments path:", `artifacts/${appId}/public/data/apartments`);
+
         window.TOTAL_PROJECT_AREA = 27734.30;
         window.DEFAULT_ADMIN_PASS = "215151365";
         window.isAdminLoggedIn = false;
@@ -604,10 +608,21 @@
 
             onSnapshot(apartmentsColRef, async (snapshot) => {
                 if (snapshot.empty) {
-                    // Seed initial data to cloud if empty
-                    for (const item of initialApartments) {
-                        const cleanDocId = item.code.replace(/[^a-zA-Z0-9_-]/g, '_');
-                        await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId), item);
+                    // Firestore is readable but has no apartment documents yet.
+                    // Show the built-in sample data immediately so the dashboard never stays blank.
+                    window.apartmentsData = [...initialApartments];
+                    updateSyncBadge(true);
+                    updateMetricsAndUI();
+
+                    // Try to seed Firestore. If rules intentionally block client writes,
+                    // the public dashboard still continues to work with local fallback data.
+                    try {
+                        for (const item of initialApartments) {
+                            const cleanDocId = item.code.replace(/[^a-zA-Z0-9_-]/g, '_');
+                            await setDoc(doc(db, 'artifacts', appId, 'public', 'data', 'apartments', cleanDocId), item);
+                        }
+                    } catch (seedError) {
+                        console.warn("Firestore seed blocked; using local fallback data:", seedError);
                     }
                 } else {
                     const list = [];
@@ -621,7 +636,12 @@
                 }
             }, (error) => {
                 console.error("Firestore sync error:", error);
+
+                // IMPORTANT: A Firestore permission error must not leave the public
+                // dashboard at 0 apartments / 0 m². Use the embedded data as fallback.
+                window.apartmentsData = [...initialApartments];
                 updateSyncBadge(false);
+                updateMetricsAndUI();
             });
         }
 
@@ -837,7 +857,7 @@
         window.renderAdminTable = renderAdminTable;
 
         async function toggleAttendance(code) {
-            if (!auth.currentUser) return;
+            if (!auth.currentUser || !window.isAdminLoggedIn) return;
             const item = window.apartmentsData.find(a => a.code === code);
             if (!item) return;
 
@@ -853,7 +873,7 @@
         window.toggleAttendance = toggleAttendance;
 
         async function bulkSetAttendance(status) {
-            if (!auth.currentUser) return;
+            if (!auth.currentUser || !window.isAdminLoggedIn) return;
             try {
                 for (const item of window.apartmentsData) {
                     const cleanDocId = item.code.replace(/[^a-zA-Z0-9_-]/g, '_');
@@ -882,7 +902,7 @@
         window.editApartment = editApartment;
 
         async function deleteApartment(code) {
-            if (!auth.currentUser) return;
+            if (!auth.currentUser || !window.isAdminLoggedIn) return;
             const item = window.apartmentsData.find(a => a.code === code);
             if (!item) return;
 
@@ -918,7 +938,7 @@
 
         async function handleSaveApartment(e) {
             e.preventDefault();
-            if (!auth.currentUser) return;
+            if (!auth.currentUser || !window.isAdminLoggedIn) return;
 
             const oldCode = document.getElementById("modal-edit-code").value;
             const code = document.getElementById("modal-code-input").value.trim().toUpperCase();
