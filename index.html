@@ -538,15 +538,15 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-            apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
-            authDomain: "hnnccecohome.firebaseapp.com",
-            projectId: "hnnccecohome",
-            storageBucket: "hnnccecohome.firebasestorage.app",
-            messagingSenderId: "439144090149",
-            appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
-            measurementId: "G-MTWM4RJY1E"
-        };
+       const firebaseConfig = {
+  apiKey: "AIzaSyASuKMpFvZ_yzXGZDiS6R-wefd0sdWRp_Q",
+  authDomain: "hnnccecohome.firebaseapp.com",
+  projectId: "hnnccecohome",
+  storageBucket: "hnnccecohome.firebasestorage.app",
+  messagingSenderId: "439144090149",
+  appId: "1:439144090149:web:d57c7ff810b36d3a4b8dcc",
+  measurementId: "G-MTWM4RJY1E"
+};
 
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
