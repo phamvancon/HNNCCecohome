@@ -99,6 +99,7 @@
 
     <div id="public-view" class="min-h-screen flex flex-col bg-slate-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-teal-950 dark:via-slate-950 dark:to-slate-950">
 
+        <!-- Header -->
         <header class="glass-card sticky top-0 z-30 border-b border-slate-300 dark:border-emerald-500/20 shadow-lg">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
                 <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -139,6 +140,7 @@
             </div>
         </header>
 
+        <!-- Realtime Clock Subheader -->
         <div class="bg-slate-200/90 dark:bg-slate-900/90 border-b border-slate-300 dark:border-slate-800 py-2.5 px-4 shadow-md sticky top-[71px] z-20 backdrop-blur-md">
             <div class="max-w-7xl mx-auto flex flex-wrap items-center justify-between gap-2 text-xs sm:text-sm">
                 <div class="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 font-bold">
@@ -149,7 +151,6 @@
                     <span class="tracking-wide">Tự động ghi nhận điểm danh thời gian thực</span>
                 </div>
 
-                <!-- Live Clock Display Box -->
                 <div class="flex items-center gap-3 bg-white dark:bg-slate-950/80 px-4 py-1.5 rounded-xl border border-slate-300 dark:border-slate-800 shadow-inner ml-auto sm:ml-0">
                     <i class="fa-regular fa-clock text-amber-500 dark:text-amber-400 animate-pulse text-sm"></i>
                     <span id="live-clock-date" class="font-semibold text-slate-700 dark:text-slate-300 text-xs sm:text-sm">--</span>
@@ -159,6 +160,7 @@
             </div>
         </div>
 
+        <!-- Main Dashboard Container -->
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             
             <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden border border-slate-300 dark:border-emerald-500/20">
@@ -309,6 +311,7 @@
                             <tr>
                                 <th class="py-3 px-4">STT</th>
                                 <th class="py-3 px-4">Mã Căn Hộ</th>
+                                <th class="py-3 px-4">Chủ Sở Hữu</th>
                                 <th class="py-3 px-4">Khối Tòa</th>
                                 <th class="py-3 px-4 text-right">Diện Tích (m²)</th>
                                 <th class="py-3 px-4 text-right">Tỷ Lệ Đóng Góp (%)</th>
@@ -375,6 +378,7 @@
 
         <div class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 
+            <!-- ADMIN AUTHENTICATION FORM -->
             <div id="admin-auth-view" class="max-w-md mx-auto my-12 glass-card p-8 rounded-3xl border border-slate-300 dark:border-slate-800 shadow-2xl text-center space-y-5">
                 <div class="w-16 h-16 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-2xl flex items-center justify-center mx-auto text-2xl border border-emerald-500/30 shadow-inner">
                     <i class="fa-solid fa-lock"></i>
@@ -408,7 +412,6 @@
                 </form>
             </div>
 
-            <!-- ADMIN PANEL WORKSPACE -->
             <div id="admin-panel-view" class="hidden space-y-6">
                 
                 <div id="admin-summary-overview" class="glass-card rounded-2xl p-5 shadow-xl border border-slate-300 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -459,20 +462,21 @@
                     </button>
                 </div>
 
+                <!-- Tab 1: Excel / Paste Import -->
                 <div id="tab-content-import" class="glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
                     
                     <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-lg shadow-md">
-                                <i class="fa-solid fa-database"></i>
+                                <i class="fa-solid fa-file-excel"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Nạp Toàn Bộ 1.380 Căn Hộ EcoHome Nhơn Bình (5 Tòa NO1 - NO5)</h5>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tự động khởi tạo chuẩn xác 1.380 căn hộ thuộc 5 tòa NO1, NO2, NO3, NO4, NO5 với diện tích từ 35,1 m² - 76,7 m².</p>
+                                <h5 class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Nạp tệp "DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx"</h5>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tải lên tệp Excel thực tế để cập nhật danh sách căn hộ, tên chủ sở hữu và tổng diện tích chuẩn xác.</p>
                             </div>
                         </div>
-                        <button onclick="loadFullEcohomeDataset(true)" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition whitespace-nowrap">
-                            <i class="fa-solid fa-cloud-arrow-down mr-1.5"></i> Nạp Toàn Bộ (1.380 Căn)
+                        <button onclick="document.getElementById('excel-file-input').click()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition whitespace-nowrap">
+                            <i class="fa-solid fa-cloud-arrow-up mr-1.5"></i> Chọn file Excel nạp lên
                         </button>
                     </div>
 
@@ -482,9 +486,9 @@
                         <div class="w-12 h-12 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl group-hover:scale-110 transition border border-emerald-500/30">
                             <i class="fa-solid fa-file-excel"></i>
                         </div>
-                        <h5 class="font-bold text-slate-900 dark:text-white text-sm">Tải Lên File Excel (.xlsx, .csv)</h5>
+                        <h5 class="font-bold text-slate-900 dark:text-white text-sm">Tải Lên File Excel DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx</h5>
                         <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                            Tự động quét các cột: <strong class="text-emerald-600 dark:text-emerald-300">Mã Căn Hộ</strong> và <strong class="text-emerald-600 dark:text-emerald-300">Diện Tích</strong> từ file bảng tính.
+                            Tự động nhận diện các cột: <strong class="text-emerald-600 dark:text-emerald-300">Mã Căn Hộ</strong>, <strong class="text-emerald-600 dark:text-emerald-300">Chủ Sở Hữu</strong>, <strong class="text-emerald-600 dark:text-emerald-300">Diện Tích</strong> và <strong class="text-emerald-600 dark:text-emerald-300">Trạng Thái Check-in</strong>.
                         </p>
                         <span class="inline-block mt-3 px-3.5 py-1 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm">
                             Chọn tệp từ máy tính
@@ -512,6 +516,7 @@
                     </div>
                 </div>
 
+                <!-- Tab 2: Manual Increment -->
                 <div id="tab-content-manual-add" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
                     <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-500/30 rounded-2xl p-4 text-xs text-blue-900 dark:text-blue-200 space-y-1">
                         <div class="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300 text-sm">
@@ -568,6 +573,7 @@
                     </div>
                 </div>
 
+                <!-- Tab 3: Proxy Authorization calculation -->
                 <div id="tab-content-proxy" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
                     <div class="bg-purple-50 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-500/30 rounded-2xl p-4 text-xs text-purple-900 dark:text-purple-200 space-y-1">
                         <div class="font-bold flex items-center gap-1.5 text-purple-700 dark:text-purple-300 text-sm">
@@ -641,6 +647,7 @@
                     </div>
                 </div>
 
+                <!-- Tab 4: Block Statistics -->
                 <div id="tab-content-stats" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-300 dark:border-slate-800 pb-3">
                         <div>
@@ -672,6 +679,7 @@
                     </div>
                 </div>
 
+                <!-- Tab 5: Manage Apartments Table -->
                 <div id="tab-content-manage" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
                         <div class="flex items-center gap-2">
@@ -760,6 +768,7 @@
                             <thead class="bg-slate-100 dark:bg-slate-900 font-extrabold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
                                 <tr>
                                     <th class="p-3">Mã Căn</th>
+                                    <th class="p-3">Chủ Sở Hữu</th>
                                     <th class="p-3">Diện Tích (m²)</th>
                                     <th class="p-3 text-center">Trạng Thái Tham Dự</th>
                                     <th class="p-3 text-right">Thao Tác</th>
@@ -802,7 +811,7 @@
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getFirestore, doc, setDoc, updateDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        /* Master Password */
+        /* Master Password & Global Constants */
         const ADMIN_PASS = "215151365";
         const DEFAULT_TOTAL_AREA = 27734.30; /* 27.734,3 m² */
         
@@ -851,7 +860,7 @@
             theme: localStorage.getItem('theme') || 'dark'
         };
 
-        /* Confetti Celebration Trigger Function */
+        /* Confetti Trigger */
         function triggerCelebrationConfetti() {
             if (typeof confetti === 'function') {
                 confetti({
@@ -895,6 +904,7 @@
                         const docRef = doc(apartmentsColRef, apt.id);
                         batch.set(docRef, {
                             area: apt.area,
+                            ownerName: apt.ownerName || '',
                             attended: apt.attended || false,
                             updatedAt: new Date().toISOString()
                         }, { merge: true });
@@ -907,6 +917,7 @@
             }
         }
 
+        /* Theme Toggle Logic */
         function applyTheme(theme) {
             state.theme = theme;
             localStorage.setItem('theme', theme);
@@ -929,6 +940,103 @@
             const newTheme = state.theme === 'dark' ? 'light' : 'dark';
             applyTheme(newTheme);
             showToast(`Đã chuyển sang giao diện ${newTheme === 'dark' ? 'Tối' : 'Sáng'}`, "info");
+        }
+
+        /* Admin Page Controls */
+        function openAdminView() {
+            const adminView = document.getElementById('admin-page-view');
+            const publicView = document.getElementById('public-view');
+            if (publicView) publicView.classList.add('hidden');
+            if (adminView) {
+                adminView.classList.remove('hidden');
+                adminView.classList.add('flex');
+            }
+            
+            if (sessionStorage.getItem('admin_authenticated') === 'true' || localStorage.getItem('admin_authenticated') === 'true') {
+                state.isAdminAuthenticated = true;
+            }
+
+            if (state.isAdminAuthenticated) {
+                document.getElementById('admin-auth-view')?.classList.add('hidden');
+                document.getElementById('admin-panel-view')?.classList.remove('hidden');
+                document.getElementById('admin-logout-btn')?.classList.remove('hidden');
+                renderAdminOverviewHeader();
+                renderAdminTable();
+                renderManualHistoryTable();
+                renderBuildingStats();
+            } else {
+                document.getElementById('admin-auth-view')?.classList.remove('hidden');
+                document.getElementById('admin-panel-view')?.classList.add('hidden');
+                document.getElementById('admin-logout-btn')?.classList.add('hidden');
+            }
+        }
+
+        function closeAdminView() {
+            const adminView = document.getElementById('admin-page-view');
+            const publicView = document.getElementById('public-view');
+            if (adminView) {
+                adminView.classList.add('hidden');
+                adminView.classList.remove('flex');
+            }
+            if (publicView) publicView.classList.remove('hidden');
+        }
+
+        function handleAdminLogin(event) {
+            if (event) event.preventDefault();
+            const passInput = document.getElementById('admin-pass-input');
+            const errorMsg = document.getElementById('auth-error-msg');
+            const rememberChk = document.getElementById('remember-session-chk');
+
+            if (passInput && passInput.value.trim() === ADMIN_PASS) {
+                state.isAdminAuthenticated = true;
+                if (rememberChk && rememberChk.checked) {
+                    localStorage.setItem('admin_authenticated', 'true');
+                } else {
+                    sessionStorage.setItem('admin_authenticated', 'true');
+                }
+                
+                if (errorMsg) errorMsg.classList.add('hidden');
+                passInput.value = '';
+                showToast("Đăng nhập thành công!", "success");
+
+                document.getElementById('admin-auth-view')?.classList.add('hidden');
+                document.getElementById('admin-panel-view')?.classList.remove('hidden');
+                document.getElementById('admin-logout-btn')?.classList.remove('hidden');
+
+                renderAdminOverviewHeader();
+                renderAdminTable();
+                renderManualHistoryTable();
+                renderBuildingStats();
+            } else {
+                if (errorMsg) errorMsg.classList.remove('hidden');
+                showToast("Mật khẩu không chính xác!", "error");
+            }
+        }
+
+        function handleAdminLogout() {
+            state.isAdminAuthenticated = false;
+            sessionStorage.removeItem('admin_authenticated');
+            localStorage.removeItem('admin_authenticated');
+
+            document.getElementById('admin-auth-view')?.classList.remove('hidden');
+            document.getElementById('admin-panel-view')?.classList.add('hidden');
+            document.getElementById('admin-logout-btn')?.classList.add('hidden');
+
+            showToast("Đã đăng xuất phiên Quản trị!", "info");
+        }
+
+        function togglePasswordVisibility() {
+            const passInput = document.getElementById('admin-pass-input');
+            const toggleIcon = document.getElementById('toggle-pass-icon');
+            if (passInput && toggleIcon) {
+                if (passInput.type === 'password') {
+                    passInput.type = 'text';
+                    toggleIcon.className = 'fa-solid fa-eye';
+                } else {
+                    passInput.type = 'password';
+                    toggleIcon.className = 'fa-solid fa-eye-slash';
+                }
+            }
         }
 
         async function initFirebaseAndSync() {
@@ -971,15 +1079,10 @@
                     loadedList.push({
                         id: docSnap.id,
                         area: typeof data.area === 'number' ? data.area : parseFloat(data.area) || 0,
+                        ownerName: data.ownerName || '',
                         attended: !!data.attended
                     });
                 });
-
-                if (loadedList.length === 0 && !state.isInitialLoadDone) {
-                    state.isInitialLoadDone = true;
-                    loadFullEcohomeDataset(false);
-                    return;
-                }
 
                 state.isInitialLoadDone = true;
                 loadedList.sort((a, b) => a.id.localeCompare(b.id, undefined, { numeric: true, sensitivity: 'base' }));
@@ -1032,33 +1135,43 @@
             const percentUnits = totalUnits > 0 ? (attendedUnits / totalUnits) * 100 : 0;
             const missingArea = Math.max(0, effectiveTotalArea - totalAttendedArea);
 
-            document.getElementById('metric-total-area').innerText = formatNumber(effectiveTotalArea);
-            document.getElementById('metric-attended-area').innerText = formatNumber(totalAttendedArea);
-            document.getElementById('metric-missing-area').innerText = `${formatNumber(missingArea)} m²`;
-            document.getElementById('metric-total-units').innerText = totalUnits;
-            document.getElementById('metric-attended-units').innerText = attendedUnits;
-            document.getElementById('metric-units-percent').innerText = `${percentUnits.toFixed(1)}%`;
-            document.getElementById('metric-percent').innerText = `${percentArea.toFixed(2)}%`;
+            const metricTotal = document.getElementById('metric-total-area');
+            const metricAttended = document.getElementById('metric-attended-area');
+            const metricMissing = document.getElementById('metric-missing-area');
+            const metricTotalUnits = document.getElementById('metric-total-units');
+            const metricAttendedUnits = document.getElementById('metric-attended-units');
+            const metricUnitsPercent = document.getElementById('metric-units-percent');
+            const metricPercent = document.getElementById('metric-percent');
+
+            if (metricTotal) metricTotal.innerText = formatNumber(effectiveTotalArea);
+            if (metricAttended) metricAttended.innerText = formatNumber(totalAttendedArea);
+            if (metricMissing) metricMissing.innerText = `${formatNumber(missingArea)} m²`;
+            if (metricTotalUnits) metricTotalUnits.innerText = totalUnits;
+            if (metricAttendedUnits) metricAttendedUnits.innerText = attendedUnits;
+            if (metricUnitsPercent) metricUnitsPercent.innerText = `${percentUnits.toFixed(1)}%`;
+            if (metricPercent) metricPercent.innerText = `${percentArea.toFixed(2)}%`;
 
             const barFill = document.getElementById('progress-bar-fill');
-            barFill.style.width = `${Math.min(percentArea, 100)}%`;
+            if (barFill) barFill.style.width = `${Math.min(percentArea, 100)}%`;
 
             const statusBadge = document.getElementById('status-badge');
-            if (percentArea >= 50) {
-                statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 animate-bounce shadow-lg shadow-emerald-500/20";
-                statusBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 50% BIỂU QUYẾT`;
+            if (statusBadge) {
+                if (percentArea >= 50) {
+                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 animate-bounce shadow-lg shadow-emerald-500/20";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 50% BIỂU QUYẾT`;
 
-                if (!state.hasFiredConfetti) {
-                    triggerCelebrationConfetti();
-                    state.hasFiredConfetti = true;
+                    if (!state.hasFiredConfetti) {
+                        triggerCelebrationConfetti();
+                        state.hasFiredConfetti = true;
+                    }
+                } else if (percentArea >= 30) {
+                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/40 flex items-center gap-1.5 shadow-md";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-building-circle-check text-blue-600 dark:text-blue-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 30% TỔ CHỨC HNNCC THƯỜNG NIÊN`;
+                } else {
+                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30% tổ chức`;
+                    state.hasFiredConfetti = false;
                 }
-            } else if (percentArea >= 30) {
-                statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/40 flex items-center gap-1.5 shadow-md";
-                statusBadge.innerHTML = `<i class="fa-solid fa-building-circle-check text-blue-600 dark:text-blue-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 30% TỔ CHỨC HNNCC THƯỜNG NIÊN`;
-            } else {
-                statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5";
-                statusBadge.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30% tổ chức`;
-                state.hasFiredConfetti = false;
             }
 
             renderTable();
@@ -1072,26 +1185,31 @@
 
         function renderTable() {
             const tbody = document.getElementById('apartment-table-body');
-            const searchVal = document.getElementById('search-input').value.trim().toLowerCase();
-            const filterStatus = document.getElementById('filter-status').value;
+            if (!tbody) return;
+
+            const searchVal = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+            const filterStatus = document.getElementById('filter-status')?.value || 'all';
 
             const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
 
             const filtered = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesStatus = true;
                 if (filterStatus === 'attended') matchesStatus = apt.attended;
                 if (filterStatus === 'absent') matchesStatus = !apt.attended;
                 return matchesSearch && matchesStatus;
             });
 
-            document.getElementById('table-count-info').innerText = `Hiển thị ${filtered.length} / ${state.apartments.length} căn hộ`;
+            const countInfo = document.getElementById('table-count-info');
+            if (countInfo) countInfo.innerText = `Hiển thị ${filtered.length} / ${state.apartments.length} căn hộ`;
 
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="6" class="text-center py-8 text-slate-400 font-medium">
-                            Không tìm thấy căn hộ phù hợp với từ khóa tìm kiếm
+                        <td colspan="7" class="text-center py-8 text-slate-400 font-medium">
+                            ${state.apartments.length === 0 
+                                ? 'Chưa có dữ liệu căn hộ. Vui lòng vào <strong>Trang Quản Lý (Admin)</strong> để nạp tệp Excel <em>DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx</em>.' 
+                                : 'Không tìm thấy căn hộ phù hợp với từ khóa tìm kiếm.'}
                         </td>
                     </tr>
                 `;
@@ -1107,6 +1225,7 @@
                     <tr class="hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition border-b border-slate-200 dark:border-slate-800/80">
                         <td class="py-2.5 px-4 font-mono text-slate-400 font-medium">${index + 1}</td>
                         <td class="py-2.5 px-4 font-extrabold text-slate-900 dark:text-white">${apt.id}</td>
+                        <td class="py-2.5 px-4 font-semibold text-slate-800 dark:text-slate-200">${apt.ownerName || '<span class="text-slate-400 font-normal">--</span>'}</td>
                         <td class="py-2.5 px-4 text-slate-600 dark:text-slate-300 font-medium">${blockDisplayName}</td>
                         <td class="py-2.5 px-4 text-right font-bold text-slate-800 dark:text-slate-200 font-mono">${formatNumber(apt.area)}</td>
                         <td class="py-2.5 px-4 text-right font-mono text-slate-500 dark:text-slate-400">${contribPercent.toFixed(3)}%</td>
@@ -1119,102 +1238,6 @@
                     </tr>
                 `;
             }).join('');
-        }
-
-        function openAdminView() {
-            const adminView = document.getElementById('admin-page-view');
-            const publicView = document.getElementById('public-view');
-            if (publicView) publicView.classList.add('hidden');
-            if (adminView) {
-                adminView.classList.remove('hidden');
-                adminView.classList.add('flex');
-            }
-            
-            if (sessionStorage.getItem('admin_authenticated') === 'true' || localStorage.getItem('admin_authenticated') === 'true') {
-                state.isAdminAuthenticated = true;
-            }
-
-            if (state.isAdminAuthenticated) {
-                document.getElementById('admin-auth-view')?.classList.add('hidden');
-                document.getElementById('admin-panel-view')?.classList.remove('hidden');
-                document.getElementById('admin-logout-btn')?.classList.remove('hidden');
-                renderAdminOverviewHeader();
-                renderAdminTable();
-                renderManualHistoryTable();
-                renderBuildingStats();
-            } else {
-                document.getElementById('admin-auth-view')?.classList.remove('hidden');
-                document.getElementById('admin-panel-view')?.classList.add('hidden');
-                document.getElementById('admin-logout-btn')?.classList.add('hidden');
-            }
-        }
-
-        function closeAdminView() {
-            const adminView = document.getElementById('admin-page-view');
-            const publicView = document.getElementById('public-view');
-            if (adminView) {
-                adminView.classList.add('hidden');
-                adminView.classList.remove('flex');
-            }
-            if (publicView) publicView.classList.remove('hidden');
-        }
-
-        function handleAdminLogin(event) {
-            event.preventDefault();
-            const passInput = document.getElementById('admin-pass-input');
-            const errorMsg = document.getElementById('auth-error-msg');
-            const rememberChk = document.getElementById('remember-session-chk');
-
-            if (passInput.value.trim() === ADMIN_PASS) {
-                state.isAdminAuthenticated = true;
-                if (rememberChk && rememberChk.checked) {
-                    localStorage.setItem('admin_authenticated', 'true');
-                } else {
-                    sessionStorage.setItem('admin_authenticated', 'true');
-                }
-                
-                errorMsg.classList.add('hidden');
-                passInput.value = '';
-                showToast("Đăng nhập thành công!", "success");
-
-                document.getElementById('admin-auth-view')?.classList.add('hidden');
-                document.getElementById('admin-panel-view')?.classList.remove('hidden');
-                document.getElementById('admin-logout-btn')?.classList.remove('hidden');
-
-                renderAdminOverviewHeader();
-                renderAdminTable();
-                renderManualHistoryTable();
-                renderBuildingStats();
-            } else {
-                errorMsg.classList.remove('hidden');
-                showToast("Mật khẩu không đúng!", "error");
-            }
-        }
-
-        function handleAdminLogout() {
-            state.isAdminAuthenticated = false;
-            sessionStorage.removeItem('admin_authenticated');
-            localStorage.removeItem('admin_authenticated');
-
-            document.getElementById('admin-auth-view')?.classList.remove('hidden');
-            document.getElementById('admin-panel-view')?.classList.add('hidden');
-            document.getElementById('admin-logout-btn')?.classList.add('hidden');
-
-            showToast("Đã đăng xuất phiên Quản trị!", "info");
-        }
-
-        function togglePasswordVisibility() {
-            const passInput = document.getElementById('admin-pass-input');
-            const toggleIcon = document.getElementById('toggle-pass-icon');
-            if (passInput && toggleIcon) {
-                if (passInput.type === 'password') {
-                    passInput.type = 'text';
-                    toggleIcon.className = 'fa-solid fa-eye';
-                } else {
-                    passInput.type = 'password';
-                    toggleIcon.className = 'fa-solid fa-eye-slash';
-                }
-            }
         }
 
         function renderAdminOverviewHeader() {
@@ -1284,6 +1307,7 @@
                         if (!jsonData || jsonData.length === 0) continue;
 
                         let codeColIndex = -1;
+                        let ownerColIndex = -1;
                         let areaColIndex = -1;
                         let attendedColIndex = -1;
                         let headerRowIndex = -1;
@@ -1306,6 +1330,15 @@
                                     headerRowIndex = r;
                                 }
 
+                                if (ownerColIndex === -1 && (
+                                    cellVal.includes('chủ sở hữu') || cellVal.includes('chu so huu') ||
+                                    cellVal.includes('họ và tên') || cellVal.includes('ho va ten') ||
+                                    cellVal.includes('tên chủ') || cellVal.includes('chủ hộ') ||
+                                    cellVal.includes('người đại diện') || cellVal.includes('khách hàng')
+                                )) {
+                                    ownerColIndex = c;
+                                }
+
                                 if (areaColIndex === -1 && (
                                     cellVal.includes('diện tích') || cellVal.includes('dien tich') || 
                                     cellVal.includes('dt') || cellVal.includes('m2') || cellVal.includes('m²') ||
@@ -1316,10 +1349,10 @@
                                 }
 
                                 if (attendedColIndex === -1 && (
+                                    cellVal.includes('check in') || cellVal.includes('checkin') ||
                                     cellVal.includes('tham dự') || cellVal.includes('tham du') ||
                                     cellVal.includes('điểm danh') || cellVal.includes('diem danh') ||
-                                    cellVal.includes('có mặt') || cellVal.includes('co mat') ||
-                                    cellVal.includes('trạng thái') || cellVal.includes('trang thai')
+                                    cellVal.includes('có mặt') || cellVal.includes('trạng thái')
                                 )) {
                                     attendedColIndex = c;
                                 }
@@ -1330,7 +1363,6 @@
 
                         if (codeColIndex === -1 || areaColIndex === -1) {
                             let colStats = [];
-                            
                             for (let r = Math.max(0, headerRowIndex + 1); r < jsonData.length; r++) {
                                 const row = jsonData[r];
                                 if (!row || !Array.isArray(row)) continue;
@@ -1392,23 +1424,23 @@
                             }
 
                             let formattedCode = rawCode.toUpperCase().replace(/\s+/g, '');
+                            let ownerName = ownerColIndex !== -1 ? String(row[ownerColIndex] || '').trim() : '';
                             let rawArea = String(row[areaColIndex] || '').replace(',', '.').replace(/[^0-9\.]/g, '');
                             let areaNum = parseFloat(rawArea);
 
-                            if (isNaN(areaNum) || areaNum <= 0) {
-                                areaNum = 50.0;
-                            }
+                            if (isNaN(areaNum) || areaNum <= 0) continue;
 
                             let isAttended = false;
                             if (attendedColIndex !== -1 && row[attendedColIndex]) {
                                 const attVal = String(row[attendedColIndex]).trim().toLowerCase();
-                                if (attVal === 'x' || attVal === '1' || attVal.includes('có') || attVal.includes('đã') || attVal.includes('tham dự')) {
+                                if (attVal === 'x' || attVal === '1' || attVal.includes('có') || attVal.includes('đã') || attVal.includes('tham dự') || attVal.includes('check')) {
                                     isAttended = true;
                                 }
                             }
 
                             importedApts.push({
                                 id: formattedCode,
+                                ownerName: ownerName,
                                 area: Math.round(areaNum * 100) / 100,
                                 attended: isAttended
                             });
@@ -1422,8 +1454,13 @@
                         return;
                     }
 
+                    const calculatedTotalArea = Math.round(importedApts.reduce((sum, item) => sum + item.area, 0) * 100) / 100;
+                    state.totalAreaOverride = calculatedTotalArea;
+
                     await saveBatchApartmentsToCloud(importedApts, true);
-                    showToast(`Đã nạp thành công ${importedApts.length} căn hộ từ tệp Excel!`, "success");
+                    await setDoc(settingsDocRef, { totalAreaOverride: calculatedTotalArea, manualEntries: [] }, { merge: true });
+
+                    showToast(`Đã nạp thành công ${importedApts.length} căn hộ từ file Excel! (Tổng DT: ${formatNumber(calculatedTotalArea)} m²)`, "success");
                 } catch (err) {
                     console.error("Excel parse error:", err);
                     showToast("Lỗi khi đọc tệp Excel/CSV! Vui lòng kiểm tra định dạng tệp.", "error");
@@ -1452,6 +1489,7 @@
                     if (idStr && !isNaN(areaNum) && areaNum > 0) {
                         importedApts.push({
                             id: idStr,
+                            ownerName: parts[2] ? parts[2].trim() : '',
                             area: areaNum,
                             attended: false
                         });
@@ -1723,7 +1761,7 @@
 
             try {
                 const docRef = doc(apartmentsColRef, aptId);
-                await setDoc(docRef, { area: apt.area, attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
+                await setDoc(docRef, { area: apt.area, ownerName: apt.ownerName || '', attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
                 showToast(`Căn hộ ${aptId}: ${newStatus ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
             } catch (e) {
                 console.error("Error toggling attendance:", e);
@@ -1753,7 +1791,7 @@
             const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
 
             const filtered = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesBuilding = true;
                 if (filterBuilding !== 'all') {
                     const idUpper = apt.id.toUpperCase();
@@ -1771,13 +1809,14 @@
             if (countEl) countEl.innerText = `(${filtered.length} / ${state.apartments.length} căn)`;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="p-6 text-center text-slate-500">Không tìm thấy căn hộ phù hợp</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Không tìm thấy căn hộ phù hợp</td></tr>`;
                 return;
             }
 
             tbody.innerHTML = filtered.map(apt => `
                 <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80">
                     <td class="p-3 font-extrabold text-slate-900 dark:text-white">${apt.id}</td>
+                    <td class="p-3 font-semibold text-slate-800 dark:text-slate-200">${apt.ownerName || '<span class="text-slate-400 font-normal">--</span>'}</td>
                     <td class="p-3 font-bold text-slate-700 dark:text-slate-300 font-mono">${formatNumber(apt.area)} m²</td>
                     <td class="p-3 text-center">
                         <button onclick="toggleAttendance('${apt.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto ${apt.attended ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700'}">
@@ -1816,7 +1855,7 @@
             const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
 
             const visibleApts = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesBuilding = true;
                 if (filterBuilding !== 'all') {
                     const idUpper = apt.id.toUpperCase();
@@ -1842,7 +1881,7 @@
             const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
 
             const visibleApts = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal);
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesBuilding = true;
                 if (filterBuilding !== 'all') {
                     const idUpper = apt.id.toUpperCase();
@@ -1920,6 +1959,7 @@
                 return {
                     'STT': index + 1,
                     'Mã Căn Hộ': apt.id,
+                    'Chủ Sở Hữu': apt.ownerName || '',
                     'Khối Tòa': blockName,
                     'Diện Tích (m²)': apt.area,
                     'Tỷ Lệ Đóng Góp (%)': parseFloat(contribPercent.toFixed(4)),
@@ -1933,40 +1973,6 @@
 
             XLSX.writeFile(workbook, `EcoHome_NhonBinh_DiemDanh_${new Date().toISOString().slice(0,10)}.xlsx`);
             showToast("Đã xuất file Excel thành công!", "success");
-        }
-
-        async function loadFullEcohomeDataset(userTriggered = false) {
-            const dataset = [];
-            const blocks = ['NO1', 'NO2', 'NO3', 'NO4', 'NO5'];
-            const areas = [35.1, 52.5, 60.0, 68.5, 76.7];
-            let totalDatasetArea = 0;
-
-            blocks.forEach(b => {
-                for (let i = 1; i <= 276; i++) {
-                    const floor = Math.floor((i - 1) / 18) + 1;
-                    const room = ((i - 1) % 18) + 1;
-                    const floorStr = String(floor).padStart(2, '0');
-                    const roomStr = String(room).padStart(2, '0');
-                    const aptId = `${b}-${floorStr}${roomStr}`;
-                    const area = areas[(floor + room) % areas.length];
-                    totalDatasetArea += area;
-                    dataset.push({
-                        id: aptId,
-                        area: area,
-                        attended: false
-                    });
-                }
-            });
-
-            totalDatasetArea = Math.round(totalDatasetArea * 100) / 100;
-            state.totalAreaOverride = totalDatasetArea;
-
-            await saveBatchApartmentsToCloud(dataset, true);
-            await setDoc(settingsDocRef, { totalAreaOverride: totalDatasetArea, manualEntries: [] }, { merge: true });
-
-            if (userTriggered) {
-                showToast(`Đã nạp thành công 1.380 căn hộ chuẩn EcoHome Nhơn Bình (5 tòa NO1-NO5, Tổng: ${formatNumber(totalDatasetArea)} m²)!`, "success");
-            }
         }
 
         function updateLiveClock() {
@@ -2013,6 +2019,7 @@
             }, 3000);
         }
 
+        /* Bind all global handlers explicitly to window object */
         window.toggleTheme = toggleTheme;
         window.triggerCelebrationConfetti = triggerCelebrationConfetti;
         window.triggerManualConfetti = triggerCelebrationConfetti;
@@ -2040,7 +2047,6 @@
         window.requestClearAllData = requestClearAllData;
         window.closeConfirmModal = closeConfirmModal;
         window.executeClearAllData = executeClearAllData;
-        window.loadFullEcohomeDataset = loadFullEcohomeDataset;
         window.renderTable = renderTable;
         window.saveCustomBlockNames = saveCustomBlockNames;
         window.renderBuildingStats = renderBuildingStats;
@@ -2049,6 +2055,7 @@
         window.exportApartmentsToExcel = exportApartmentsToExcel;
         window.renderAdminTable = renderAdminTable;
 
+        /* Initialization */
         window.addEventListener('DOMContentLoaded', () => {
             applyTheme(state.theme);
             initFirebaseAndSync();
