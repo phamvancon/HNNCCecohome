@@ -105,6 +105,30 @@
         .star-btn:hover {
             transform: scale(1.2);
         }
+
+        /* Print / PDF Export Styles */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #pdf-report-printable, #pdf-report-printable * {
+                visibility: visible;
+            }
+            #pdf-report-printable {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                background: white !important;
+                color: #0f172a !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                box-shadow: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="h-full flex flex-col text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 antialiased min-h-screen">
@@ -323,18 +347,42 @@
                         </div>
 
                         <!-- Tổng Điểm Trung Bình Toàn Chung Cư -->
-                        <div class="flex items-center gap-4 bg-slate-100 dark:bg-slate-900/90 px-5 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-800 shrink-0 self-start md:self-auto">
-                            <div class="text-right">
-                                <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chỉ Số Hài Lòng Chung</span>
-                                <div class="flex items-baseline gap-1 justify-end mt-0.5">
-                                    <span id="eval-overall-score" class="text-3xl font-black text-amber-500 font-mono">0.0</span>
-                                    <span class="text-xs font-bold text-slate-400">/ 5.0</span>
+                        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 bg-slate-100 dark:bg-slate-900/90 px-4 py-3 rounded-2xl border border-slate-300 dark:border-slate-800 shrink-0 self-start md:self-auto">
+                            <div class="flex flex-col justify-center border-b sm:border-b-0 sm:border-r border-slate-300 dark:border-slate-800 pb-2 sm:pb-0 sm:pr-3">
+                                <label class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400 mb-1 flex items-center gap-1">
+                                    <i class="fa-regular fa-calendar-check"></i> Lọc Kỳ Phân Tích:
+                                </label>
+                                <div class="flex items-center gap-1.5">
+                                    <select id="public-eval-filter-year" onchange="render()" class="px-2 py-1 text-xs font-extrabold bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                                        <option value="ALL">Tất cả Năm</option>
+                                        <option value="2026" selected>Năm 2026</option>
+                                        <option value="2025">Năm 2025</option>
+                                        <option value="2027">Năm 2027</option>
+                                    </select>
+                                    <select id="public-eval-filter-quarter" onchange="render()" class="px-2 py-1 text-xs font-extrabold bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-amber-600 dark:text-amber-400 outline-none focus:ring-2 focus:ring-amber-500">
+                                        <option value="ALL">Tất cả các Quý</option>
+                                        <option value="Q1">Quý 1 (Q1)</option>
+                                        <option value="Q2">Quý 2 (Q2)</option>
+                                        <option value="Q3">Quý 3 (Q3)</option>
+                                        <option value="Q4">Quý 4 (Q4)</option>
+                                        <option value="YEAR">Tổng kết Cả Năm</option>
+                                    </select>
                                 </div>
-                                <span id="eval-total-count-badge" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">0 căn đã đánh giá</span>
                             </div>
-                            <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex flex-col items-center justify-center text-amber-500">
-                                <i class="fa-solid fa-star text-lg"></i>
-                                <span id="eval-satisfaction-percent" class="text-[10px] font-black font-mono">0%</span>
+
+                            <div class="flex items-center justify-between gap-3">
+                                <div class="text-right">
+                                    <span id="eval-active-period-label" class="block text-[10px] font-extrabold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chỉ Số Hài Lòng (Năm 2026)</span>
+                                    <div class="flex items-baseline gap-1 justify-end mt-0.5">
+                                        <span id="eval-overall-score" class="text-3xl font-black text-amber-500 font-mono">0.0</span>
+                                        <span class="text-xs font-bold text-slate-400">/ 5.0</span>
+                                    </div>
+                                    <span id="eval-total-count-badge" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">0 phiếu đánh giá</span>
+                                </div>
+                                <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex flex-col items-center justify-center text-amber-500">
+                                    <i class="fa-solid fa-star text-lg"></i>
+                                    <span id="eval-satisfaction-percent" class="text-[10px] font-black font-mono">0%</span>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -363,10 +411,13 @@
 
                                 <form onsubmit="handleVerifyResident(event)" class="space-y-3.5 pt-1">
                                     <div>
-                                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
-                                            <i class="fa-solid fa-door-open text-emerald-500 mr-1"></i> Mã Căn Hộ Của Bạn:
-                                        </label>
-                                        <input type="text" id="verify-apt-input" required placeholder="VD: B1-0205 hoặc NO1-0205..." oninput="previewNormalizedPhone()"
+                                        <div class="flex items-center justify-between mb-1.5">
+                                            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                                                <i class="fa-solid fa-door-open text-emerald-500 mr-1"></i> Mã Căn Hộ Của Bạn:
+                                            </label>
+                                            <span id="smart-apt-preview" class="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 hidden"></span>
+                                        </div>
+                                        <input type="text" id="verify-apt-input" required placeholder="VD: B10716, B1-0716 hoặc NO10716..." oninput="previewSmartVerifyInput()"
                                             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold uppercase bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition">
                                     </div>
 
@@ -377,8 +428,35 @@
                                             </label>
                                             <span id="normalized-phone-preview" class="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 hidden"></span>
                                         </div>
-                                        <input type="tel" id="verify-phone-input" required placeholder="VD: 0912345678 hoặc +84912345678..." oninput="previewNormalizedPhone()"
+                                        <input type="tel" id="verify-phone-input" required placeholder="VD: 0912345678 hoặc +84912345678..." oninput="previewSmartVerifyInput()"
                                             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition">
+                                    </div>
+
+                                    <!-- Chọn Kỳ Đánh Giá Theo Quý & Năm -->
+                                    <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                                        <label class="block text-xs font-extrabold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                                            <i class="fa-solid fa-calendar-days text-amber-500"></i> Chọn Kỳ Đánh Giá (Theo Quý & Năm):
+                                        </label>
+                                        <div class="grid grid-cols-2 gap-2">
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Chọn Quý / Kỳ:</span>
+                                                <select id="resident-eval-quarter" class="w-full px-3 py-2 text-xs font-extrabold bg-white dark:bg-slate-950 border border-amber-400/50 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                                                    <option value="Q1">Quý 1 (Tháng 1 - 3)</option>
+                                                    <option value="Q2">Quý 2 (Tháng 4 - 6)</option>
+                                                    <option value="Q3">Quý 3 (Tháng 7 - 9)</option>
+                                                    <option value="Q4">Quý 4 (Tháng 10 - 12)</option>
+                                                    <option value="YEAR">Đánh giá Cả Năm</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <span class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Chọn Năm:</span>
+                                                <select id="resident-eval-year" class="w-full px-3 py-2 text-xs font-extrabold bg-white dark:bg-slate-950 border border-amber-400/50 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                                                    <option value="2025">Năm 2025</option>
+                                                    <option value="2026" selected>Năm 2026</option>
+                                                    <option value="2027">Năm 2027</option>
+                                                </select>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     <div id="verify-error-box" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-xs text-rose-600 dark:text-rose-300 font-semibold flex items-start gap-2">
@@ -410,6 +488,27 @@
                                     <button type="button" onclick="resetResidentVerifyStep()" class="px-2.5 py-1 text-[11px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 rounded-lg transition">
                                         Đổi căn khác
                                     </button>
+                                </div>
+
+                                <!-- Thanh chuyển đổi nhanh Quý & Năm ngay trong bước chấm điểm -->
+                                <div class="flex flex-wrap items-center justify-between gap-2 bg-amber-500/10 border border-amber-500/30 px-3 py-2 rounded-xl text-xs">
+                                    <span class="font-bold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+                                        <i class="fa-solid fa-calendar-check text-amber-500"></i> Kỳ đang chấm điểm:
+                                    </span>
+                                    <div class="flex items-center gap-1.5">
+                                        <select id="step2-eval-quarter" onchange="onStep2PeriodChange()" class="px-2 py-1 text-xs font-extrabold bg-white dark:bg-slate-900 border border-amber-400/50 rounded-lg text-amber-600 dark:text-amber-300 outline-none">
+                                            <option value="Q1">Quý 1</option>
+                                            <option value="Q2">Quý 2</option>
+                                            <option value="Q3">Quý 3</option>
+                                            <option value="Q4">Quý 4</option>
+                                            <option value="YEAR">Cả Năm</option>
+                                        </select>
+                                        <select id="step2-eval-year" onchange="onStep2PeriodChange()" class="px-2 py-1 text-xs font-extrabold bg-white dark:bg-slate-900 border border-amber-400/50 rounded-lg text-slate-800 dark:text-white outline-none">
+                                            <option value="2025">Năm 2025</option>
+                                            <option value="2026">Năm 2026</option>
+                                            <option value="2027">Năm 2027</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <!-- Danh sách 6 hạng mục vận hành -->
@@ -470,6 +569,18 @@
                                         <span id="eval-rating-tier-summary" class="text-emerald-600 dark:text-emerald-400 font-mono">Chưa có dữ liệu</span>
                                     </div>
                                     <div class="grid grid-cols-5 gap-2 text-center text-[11px]" id="eval-star-distribution">
+                                    </div>
+                                </div>
+
+                                <!-- Thống Kê So Sánh Điểm Đánh Giá Theo Từng Quý & Năm -->
+                                <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                                    <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-solid fa-chart-line text-emerald-500"></i> Tổng Hợp Điểm Tín Nhiệm Theo Từng Quý & Năm
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-normal">Nhấn vào kỳ để lọc nhanh</span>
+                                    </div>
+                                    <div id="eval-period-comparison-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
                                     </div>
                                 </div>
                             </div>
@@ -651,10 +762,13 @@
 
                     <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
                         <button onclick="exportApartmentsToExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 border border-emerald-500/30 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-file-excel text-emerald-200"></i> Xuất Excel Căn Hộ & SĐT
+                            <i class="fa-solid fa-file-excel text-emerald-200"></i> Xuất Excel Căn Hộ
                         </button>
                         <button onclick="exportEvaluationsToExcel()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 border border-amber-500/30 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-star text-amber-200"></i> Xuất Excel Đánh Giá BQT
+                            <i class="fa-solid fa-star text-amber-200"></i> Xuất Excel Phân Tích Đánh Giá
+                        </button>
+                        <button onclick="openPdfReportModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-700 border border-rose-500/30 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-file-pdf text-rose-200"></i> Xuất Báo Cáo PDF Tổng Hợp
                         </button>
                     </div>
                 </div>
@@ -830,7 +944,7 @@
                                 <tr>
                                     <th class="p-3">Mã Căn</th>
                                     <th class="p-3">Chủ Sở Hữu</th>
-                                    <th class="p-3">Số Điện Thoại (Chuẩn 0...)</th>
+                                    <th class="p-3">Số Điện Thoại (Chuẩn 0)</th>
                                     <th class="p-3">Diện Tích (m²)</th>
                                     <th class="p-3 text-center">Trạng Thái Tham Dự</th>
                                     <th class="p-3 text-right">Thao Tác</th>
@@ -842,18 +956,114 @@
                     </div>
                 </div>
 
-                <!-- Tab 3: Manage Evaluations (Quản Lý Đánh Giá BQT) -->
-                <div id="tab-content-evaluations" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                <!-- Tab 3: Manage Evaluations (Quản Lý & Tùy Chỉnh Hạng Mục Đánh Giá BQT) -->
+                <div id="tab-content-evaluations" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-6">
+                    
+                    <!-- Cài đặt Kỳ Đánh Giá (Quý & Năm) Mặc Định Cho Toàn Dự Án -->
+                    <div class="bg-emerald-50/70 dark:bg-emerald-950/40 border border-emerald-300 dark:border-emerald-500/30 rounded-2xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h5 class="font-black text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-days text-emerald-500"></i> Thiết Lập Kỳ Đánh Giá Mặc Định (Theo Quý & Năm)
+                            </h5>
+                            <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                                Chọn Quý & Năm mặc định khi cư dân mở biểu mẫu đánh giá trên trang chính.
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select id="admin-default-quarter" class="px-3 py-2 text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none">
+                                <option value="Q1">Quý 1 (Q1)</option>
+                                <option value="Q2">Quý 2 (Q2)</option>
+                                <option value="Q3">Quý 3 (Q3)</option>
+                                <option value="Q4">Quý 4 (Q4)</option>
+                                <option value="YEAR">Đánh giá Cả Năm</option>
+                            </select>
+                            <select id="admin-default-year" class="px-3 py-2 text-xs font-extrabold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white outline-none">
+                                <option value="2025">Năm 2025</option>
+                                <option value="2026" selected>Năm 2026</option>
+                                <option value="2027">Năm 2027</option>
+                            </select>
+                            <button onclick="saveDefaultEvalPeriodToCloud()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-check"></i> Lưu Kỳ Mặc Định
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Trình Quản Lý Tùy Chỉnh Các Hạng Mục Đánh Giá Vận Hành -->
+                    <div class="bg-amber-50/70 dark:bg-slate-900/90 border border-amber-300 dark:border-amber-500/30 rounded-2xl p-5 space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200 dark:border-slate-800 pb-3">
+                            <div>
+                                <h5 class="font-black text-slate-900 dark:text-white text-sm flex items-center gap-2">
+                                    <i class="fa-solid fa-sliders text-amber-500"></i> Tùy Chỉnh Các Hạng Mục Đánh Giá Vận Hành & BQT
+                                </h5>
+                                <p class="text-xs text-slate-600 dark:text-slate-400 mt-0.5">
+                                    Thêm mới, đổi tên hoặc xóa các tiêu chí đánh giá. Mọi thay đổi sẽ tự động cập nhật trên biểu mẫu cư dân và bảng phân tích trang chính.
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-2 shrink-0">
+                                <button onclick="resetDefaultEvaluationCategories()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition">
+                                    <i class="fa-solid fa-rotate-left mr-1"></i> Mặc định
+                                </button>
+                                <button onclick="saveEvaluationCategoriesToCloud()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
+                                    <i class="fa-solid fa-floppy-disk"></i> Lưu Cấu Hình Hạng Mục
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Danh sách các hạng mục hiện tại có thể sửa / xóa -->
+                        <div id="admin-eval-categories-editor" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        </div>
+
+                        <!-- Thêm hạng mục đánh giá mới -->
+                        <div class="pt-2 border-t border-amber-200/70 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-2.5">
+                            <div class="w-full sm:w-44">
+                                <select id="new-eval-cat-icon" class="w-full px-3 py-2 text-xs font-bold bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl outline-none">
+                                    <option value="fa-shield-halved">🛡️ Icon An ninh / PCCC</option>
+                                    <option value="fa-leaf">🌿 Icon Vệ sinh / Cây xanh</option>
+                                    <option value="fa-screwdriver-wrench">🔧 Icon Kỹ thuật / Bảo trì</option>
+                                    <option value="fa-headset">🎧 Icon Dịch vụ / CSKH</option>
+                                    <option value="fa-coins">🪙 Icon Tài chính / Quỹ</option>
+                                    <option value="fa-users-gear">⚙️ Icon Ban Quản Trị</option>
+                                    <option value="fa-building-circle-check">🏢 Icon Tiện ích chung</option>
+                                    <option value="fa-car-side">🚗 Icon Nhà xe / Giao thông</option>
+                                    <option value="fa-bolt">⚡ Icon Điện / Nước / Chiếu sáng</option>
+                                </select>
+                            </div>
+                            <input type="text" id="new-eval-cat-name" placeholder="Nhập tên hạng mục đánh giá mới (VD: Quản lý bãi đỗ xe & hầm xe)..."
+                                class="flex-1 w-full px-3.5 py-2 text-xs font-semibold bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-amber-500">
+                            <button onclick="addNewEvaluationCategory()" class="w-full sm:w-auto px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl text-xs transition shadow flex items-center justify-center gap-1.5 shrink-0">
+                                <i class="fa-solid fa-plus"></i> Thêm Hạng Mục
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Bảng dữ liệu đánh giá của cư dân & Xuất báo cáo -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3 pt-2">
                         <div>
                             <h4 class="font-black text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2">
-                                <i class="fa-solid fa-award text-amber-500"></i> Danh Sách Chi Tiết Đánh Giá Đơn Vị Vận Hành & BQT
+                                <i class="fa-solid fa-award text-amber-500"></i> Danh Sách Chi Tiết Phiếu Đánh Giá Cư Dân Chính Chủ
                             </h4>
-                            <p class="text-xs text-slate-500 dark:text-slate-400">Xem toàn bộ điểm chấm từng hạng mục, SĐT chính chủ và ý kiến đóng góp của từng căn hộ</p>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Lọc theo Quý/Năm, xem điểm chấm từng hạng mục, SĐT chính chủ và ý kiến đóng góp thực tế</p>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <button onclick="exportEvaluationsToExcel()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo Đánh Giá
+                        <div class="flex flex-wrap items-center gap-2">
+                            <select id="admin-eval-filter-year" onchange="renderAdminEvaluationsTable()" class="px-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl">
+                                <option value="ALL">Tất cả Năm</option>
+                                <option value="2026">Năm 2026</option>
+                                <option value="2025">Năm 2025</option>
+                                <option value="2027">Năm 2027</option>
+                            </select>
+                            <select id="admin-eval-filter-quarter" onchange="renderAdminEvaluationsTable()" class="px-3 py-1.5 text-xs font-bold bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl">
+                                <option value="ALL">Tất cả Quý</option>
+                                <option value="Q1">Quý 1 (Q1)</option>
+                                <option value="Q2">Quý 2 (Q2)</option>
+                                <option value="Q3">Quý 3 (Q3)</option>
+                                <option value="Q4">Quý 4 (Q4)</option>
+                                <option value="YEAR">Cả Năm</option>
+                            </select>
+                            <button onclick="exportEvaluationsToExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-excel"></i> Xuất Excel Tổng Hợp Phân Tích
+                            </button>
+                            <button onclick="openPdfReportModal()" class="px-3.5 py-2 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-pdf"></i> Xuất Báo Cáo PDF / In Ấn
                             </button>
                         </div>
                     </div>
@@ -863,11 +1073,12 @@
                             <thead class="bg-slate-100 dark:bg-slate-900 font-extrabold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
                                 <tr>
                                     <th class="p-3">Thời Gian</th>
+                                    <th class="p-3">Kỳ (Quý/Năm)</th>
                                     <th class="p-3">Mã Căn</th>
                                     <th class="p-3">Chủ Hộ</th>
                                     <th class="p-3">SĐT Xác Thực</th>
                                     <th class="p-3 text-center">Điểm TB</th>
-                                    <th class="p-3">Ý Kiến Đóng Góp</th>
+                                    <th class="p-3">Chi Tiết Điểm & Ý Kiến Đóng Góp</th>
                                     <th class="p-3 text-right">Xóa</th>
                                 </tr>
                             </thead>
@@ -1070,6 +1281,38 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL XEM TRƯỚC & XUẤT BÁO CÁO PDF TỔNG HỢP ==================== -->
+    <div id="pdf-report-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-300 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden">
+            
+            <!-- Modal Toolbar (Không in khi xuất PDF) -->
+            <div class="no-print px-6 py-4 bg-slate-900 text-white flex flex-wrap items-center justify-between gap-3 border-b border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-rose-500/20 border border-rose-500/40 text-rose-400 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-file-pdf"></i>
+                    </div>
+                    <div>
+                        <h4 class="font-black text-sm sm:text-base">Báo Cáo Tổng Hợp Phân Tích Hội Nghị & Đánh Giá Vận Hành (PDF)</h4>
+                        <p class="text-[11px] text-slate-400">Nhấn "Tải File PDF / In Báo Cáo" và chọn "Save as PDF" (Lưu dưới dạng PDF) để lưu tệp chất lượng cao</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2.5">
+                    <button onclick="triggerPrintPdfReport()" class="px-4 py-2 bg-gradient-to-r from-rose-500 to-amber-600 hover:from-rose-600 hover:to-amber-700 text-white font-extrabold rounded-xl text-xs shadow-lg transition flex items-center gap-2">
+                        <i class="fa-solid fa-print"></i>
+                        <span>Tải File PDF / In Báo Cáo</span>
+                    </button>
+                    <button onclick="closePdfReportModal()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold rounded-xl text-xs transition">
+                        Đóng
+                    </button>
+                </div>
+            </div>
+
+            <!-- Nội dung trang in PDF -->
+            <div id="pdf-report-printable" class="flex-1 overflow-y-auto p-6 sm:p-10 space-y-6 bg-white text-slate-900 custom-scrollbar">
+            </div>
+        </div>
+    </div>
+
     <!-- MODAL XÁC NHẬN XÓA DỮ LIỆU -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="glass-card rounded-3xl shadow-2xl border border-slate-300 dark:border-slate-800 w-full max-w-sm p-6 text-center space-y-4 transform scale-95 transition-transform duration-300">
@@ -1107,8 +1350,8 @@
             'NO1': 'Khối B1', 'NO2': 'Khối B2', 'NO3': 'Khối B3', 'NO4': 'Khối B4', 'NO5': 'Khối B5'
         };
 
-        /* 6 Hạng Mục Đánh Giá Đơn Vị Vận Hành & Ban Quản Trị (BQT) */
-        const EVALUATION_CATEGORIES = [
+        /* Danh sách Mặc Định 6 Hạng Mục Đánh Giá Đơn Vị Vận Hành & Ban Quản Trị (BQT) */
+        const DEFAULT_EVALUATION_CATEGORIES = [
             { id: 'security', name: 'An ninh, Bảo vệ & Trật tự PCCC', icon: 'fa-shield-halved', color: 'text-blue-500' },
             { id: 'hygiene', name: 'Vệ sinh môi trường & Cảnh quan', icon: 'fa-leaf', color: 'text-emerald-500' },
             { id: 'technical', name: 'Kỹ thuật, Thang máy & Bảo trì', icon: 'fa-screwdriver-wrench', color: 'text-amber-500' },
@@ -1142,6 +1385,9 @@
             totalAreaOverride: DEFAULT_TOTAL_AREA,
             apartments: [],
             evaluations: [],
+            evaluationCategories: [...DEFAULT_EVALUATION_CATEGORIES],
+            defaultEvalQuarter: 'Q4',
+            defaultEvalYear: 2026,
             manualEntries: [],
             blockNames: { ...DEFAULT_BLOCK_NAMES },
             isAdminAuthenticated: false,
@@ -1149,15 +1395,44 @@
             isInitialLoadDone: false,
             theme: 'dark',
             verifiedApartment: null,
-            currentRatings: {
-                security: 5,
-                hygiene: 5,
-                technical: 5,
-                service: 5,
-                finance: 5,
-                bqt: 5
-            }
+            currentRatings: {},
+            selectedEvalQuarter: 'Q4',
+            selectedEvalYear: 2026
         };
+
+        const QUARTER_LABELS = {
+            'Q1': 'Quý 1',
+            'Q2': 'Quý 2',
+            'Q3': 'Quý 3',
+            'Q4': 'Quý 4',
+            'YEAR': 'Cả Năm'
+        };
+
+        function formatEvalPeriodBadge(quarter, year) {
+            const q = quarter || state.defaultEvalQuarter || 'Q4';
+            const y = year || state.defaultEvalYear || 2026;
+            const qLabel = QUARTER_LABELS[q] || q;
+            return `${qLabel}/${y}`;
+        }
+
+        function getFilteredPublicEvaluations() {
+            const yearFilter = document.getElementById('public-eval-filter-year')?.value || 'ALL';
+            const quarterFilter = document.getElementById('public-eval-filter-quarter')?.value || 'ALL';
+
+            return (state.evaluations || []).filter(ev => {
+                const evYear = String(ev.evalYear || state.defaultEvalYear || 2026);
+                const evQuarter = String(ev.evalQuarter || state.defaultEvalQuarter || 'Q4');
+                const matchYear = yearFilter === 'ALL' || evYear === yearFilter;
+                const matchQuarter = quarterFilter === 'ALL' || evQuarter === quarterFilter;
+                return matchYear && matchQuarter;
+            });
+        }
+
+        function getActiveEvaluationCategories() {
+            return (state.evaluationCategories && state.evaluationCategories.length > 0)
+                ? state.evaluationCategories
+                : DEFAULT_EVALUATION_CATEGORIES;
+        }
 
         /* ==================== HÀM MÃ HÓA & CHUẨN HÓA SỐ ĐIỆN THOẠI THÔNG MINH (+84 -> 0) ==================== */
         function smartNormalizePhone(rawInput) {
@@ -1201,37 +1476,78 @@
             return `<span class="font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${prefix}***${suffix}</span>`;
         }
 
-        function previewNormalizedPhone() {
-            const phoneInput = document.getElementById('verify-phone-input');
-            const previewEl = document.getElementById('normalized-phone-preview');
-            if (!phoneInput || !previewEl) return;
-
-            const raw = phoneInput.value.trim();
-            const norm = smartNormalizePhone(raw);
-            if (raw && norm) {
-                previewEl.classList.remove('hidden');
-                previewEl.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Chuẩn hóa: ${norm}`;
-            } else {
-                previewEl.classList.add('hidden');
-            }
-        }
-
-        /* ==================== XÁC THỰC CHÍNH CHỦ & ĐÁNH GIÁ VẬN HÀNH ==================== */
+        /* ==================== ĐỒNG BỘ XÁC THỰC MÃ CĂN HỘ CHO PHÉP VIẾT TẮT (VD: B10716 -> B1-0716) ==================== */
         function normalizeAptCode(code) {
             return String(code || '').trim().toUpperCase().replace(/\s+/g, '');
         }
 
+        function canonicalizeAptKey(code) {
+            // Loại bỏ mọi dấu gạch ngang, khoảng trắng, dấu chấm, gạch chéo để so sánh tương đương
+            // Ví dụ: "B1-0716", "B1 0716", "B1.0716", "B10716" -> đều thành "B10716"
+            let raw = String(code || '').trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+            // Đồng bộ tiền tố NO1..NO5 với B1..B5 để cư dân nhập NO10716 hay B10716 đều khớp
+            if (/^NO[1-9]/.test(raw)) {
+                raw = 'B' + raw.slice(2);
+            }
+            return raw;
+        }
+
+        function formatStandardAptCode(rawInput) {
+            // Chuyển mã viết tắt như "b10716" hoặc "B1 0716" thành chuẩn "B1-0716" khi thêm mới
+            let clean = String(rawInput || '').trim().toUpperCase().replace(/\s+/g, '');
+            const matchB = clean.match(/^(B\d)[-\.]?(\d{3,5}[A-Z]?)$/);
+            if (matchB) return `${matchB[1]}-${matchB[2]}`;
+            const matchNO = clean.match(/^(NO\d)[-\.]?(\d{3,5}[A-Z]?)$/);
+            if (matchNO) return `${matchNO[1]}-${matchNO[2]}`;
+            return clean;
+        }
+
         function findApartmentSmart(inputCode) {
-            const clean = normalizeAptCode(inputCode);
-            if (!clean) return null;
+            const targetKey = canonicalizeAptKey(inputCode);
+            if (!targetKey) return null;
 
             return state.apartments.find(apt => {
-                const aptUpper = normalizeAptCode(apt.id);
-                if (aptUpper === clean) return true;
-                // Cho phép khớp linh hoạt giữa B1-0101 và NO1-0101
-                const altApt = aptUpper.startsWith('NO') ? 'B' + aptUpper.slice(2) : (aptUpper.startsWith('B') ? 'NO' + aptUpper.slice(1) : aptUpper);
-                return altApt === clean;
+                return canonicalizeAptKey(apt.id) === targetKey;
             });
+        }
+
+        function previewSmartVerifyInput() {
+            const aptInput = document.getElementById('verify-apt-input');
+            const aptPreviewEl = document.getElementById('smart-apt-preview');
+            if (aptInput && aptPreviewEl) {
+                const rawApt = aptInput.value.trim();
+                if (rawApt) {
+                    const matchedApt = findApartmentSmart(rawApt);
+                    aptPreviewEl.classList.remove('hidden');
+                    if (matchedApt) {
+                        aptPreviewEl.className = "text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400";
+                        aptPreviewEl.innerHTML = `<i class="fa-solid fa-circle-check mr-1"></i>Khớp mã căn: ${matchedApt.id}`;
+                    } else {
+                        const formatted = formatStandardAptCode(rawApt);
+                        aptPreviewEl.className = "text-[11px] font-mono font-bold text-amber-600 dark:text-amber-400";
+                        aptPreviewEl.innerHTML = `Định dạng: ${formatted}`;
+                    }
+                } else {
+                    aptPreviewEl.classList.add('hidden');
+                }
+            }
+
+            const phoneInput = document.getElementById('verify-phone-input');
+            const previewEl = document.getElementById('normalized-phone-preview');
+            if (phoneInput && previewEl) {
+                const raw = phoneInput.value.trim();
+                const norm = smartNormalizePhone(raw);
+                if (raw && norm) {
+                    previewEl.classList.remove('hidden');
+                    previewEl.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Chuẩn hóa: ${norm}`;
+                } else {
+                    previewEl.classList.add('hidden');
+                }
+            }
+        }
+
+        function previewNormalizedPhone() {
+            previewSmartVerifyInput();
         }
 
         function handleVerifyResident(event) {
@@ -1246,7 +1562,7 @@
 
             if (!foundApt) {
                 if (errBox && errText) {
-                    errText.innerHTML = `Không tìm thấy mã căn hộ <strong>${aptInput.toUpperCase()}</strong> trong danh sách dự án!`;
+                    errText.innerHTML = `Không tìm thấy mã căn hộ <strong>${formatStandardAptCode(aptInput)}</strong> trong danh sách dự án!`;
                     errBox.classList.remove('hidden');
                 }
                 return;
@@ -1272,22 +1588,22 @@
 
             if (errBox) errBox.classList.add('hidden');
 
-            // Kiểm tra xem căn hộ đã có đánh giá trước đó chưa để nạp lại điểm cũ
-            const existingEval = state.evaluations.find(ev => ev.aptId === foundApt.id);
-            if (existingEval && existingEval.ratings) {
-                state.currentRatings = { ...existingEval.ratings };
-                const commentEl = document.getElementById('eval-comment-input');
-                if (commentEl) commentEl.value = existingEval.comment || '';
-            } else {
-                state.currentRatings = { security: 5, hygiene: 5, technical: 5, service: 5, finance: 5, bqt: 5 };
-                const commentEl = document.getElementById('eval-comment-input');
-                if (commentEl) commentEl.value = '';
-            }
+            const chosenQuarter = document.getElementById('resident-eval-quarter')?.value || state.defaultEvalQuarter || 'Q4';
+            const chosenYear = parseInt(document.getElementById('resident-eval-year')?.value) || state.defaultEvalYear || 2026;
+            state.selectedEvalQuarter = chosenQuarter;
+            state.selectedEvalYear = chosenYear;
+
+            const step2Q = document.getElementById('step2-eval-quarter');
+            const step2Y = document.getElementById('step2-eval-year');
+            if (step2Q) step2Q.value = chosenQuarter;
+            if (step2Y) step2Y.value = String(chosenYear);
 
             state.verifiedApartment = {
                 ...foundApt,
                 verifiedPhone: normPhone
             };
+
+            loadExistingEvaluationForSelectedPeriod();
 
             document.getElementById('resident-verify-step')?.classList.add('hidden');
             document.getElementById('resident-rating-step')?.classList.remove('hidden');
@@ -1298,7 +1614,44 @@
             }
 
             renderRatingCategoryInputs();
-            showToast(`Đã xác thực chính chủ căn hộ ${foundApt.id}!`, "success");
+            showToast(`Đã xác thực chính chủ căn hộ ${foundApt.id} (${formatEvalPeriodBadge(chosenQuarter, chosenYear)})!`, "success");
+        }
+
+        function loadExistingEvaluationForSelectedPeriod() {
+            if (!state.verifiedApartment) return;
+            const aptKey = canonicalizeAptKey(state.verifiedApartment.id);
+            const q = state.selectedEvalQuarter || 'Q4';
+            const y = Number(state.selectedEvalYear) || 2026;
+
+            const activeCats = getActiveEvaluationCategories();
+            const defaultScores = {};
+            activeCats.forEach(c => { defaultScores[c.id] = 5; });
+
+            const existingEval = state.evaluations.find(ev =>
+                canonicalizeAptKey(ev.aptId) === aptKey &&
+                (ev.evalQuarter || state.defaultEvalQuarter || 'Q4') === q &&
+                Number(ev.evalYear || state.defaultEvalYear || 2026) === y
+            );
+
+            if (existingEval && existingEval.ratings) {
+                state.currentRatings = { ...defaultScores, ...existingEval.ratings };
+                const commentEl = document.getElementById('eval-comment-input');
+                if (commentEl) commentEl.value = existingEval.comment || '';
+            } else {
+                state.currentRatings = { ...defaultScores };
+                const commentEl = document.getElementById('eval-comment-input');
+                if (commentEl) commentEl.value = '';
+            }
+        }
+
+        function onStep2PeriodChange() {
+            const step2Q = document.getElementById('step2-eval-quarter')?.value || 'Q4';
+            const step2Y = parseInt(document.getElementById('step2-eval-year')?.value) || 2026;
+            state.selectedEvalQuarter = step2Q;
+            state.selectedEvalYear = step2Y;
+            loadExistingEvaluationForSelectedPeriod();
+            renderRatingCategoryInputs();
+            showToast(`Đã chuyển sang kỳ đánh giá: ${formatEvalPeriodBadge(step2Q, step2Y)}`, "info");
         }
 
         function resetResidentVerifyStep() {
@@ -1324,7 +1677,9 @@
                 5: 'Rất hài lòng (5/5)'
             };
 
-            container.innerHTML = EVALUATION_CATEGORIES.map(cat => {
+            const activeCats = getActiveEvaluationCategories();
+
+            container.innerHTML = activeCats.map(cat => {
                 const currentScore = state.currentRatings[cat.id] || 5;
                 let starsHtml = '';
                 for (let s = 1; s <= 5; s++) {
@@ -1339,8 +1694,8 @@
                 return `
                     <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                         <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-lg bg-slate-200/70 dark:bg-slate-900 flex items-center justify-center ${cat.color} shrink-0">
-                                <i class="fa-solid ${cat.icon} text-sm"></i>
+                            <div class="w-8 h-8 rounded-lg bg-slate-200/70 dark:bg-slate-900 flex items-center justify-center ${cat.color || 'text-emerald-500'} shrink-0">
+                                <i class="fa-solid ${cat.icon || 'fa-star'} text-sm"></i>
                             </div>
                             <div>
                                 <div class="text-xs font-extrabold text-slate-800 dark:text-slate-200">${cat.name}</div>
@@ -1365,15 +1720,30 @@
             const comment = (document.getElementById('eval-comment-input')?.value || '').trim();
             const autoCheckin = document.getElementById('eval-auto-checkin-chk')?.checked;
 
-            const scores = Object.values(state.currentRatings);
-            const avgScore = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
+            const activeCats = getActiveEvaluationCategories();
+            const ratingsPayload = {};
+            let sumScore = 0;
+
+            activeCats.forEach(cat => {
+                const sc = parseFloat(state.currentRatings[cat.id]) || 5;
+                ratingsPayload[cat.id] = sc;
+                sumScore += sc;
+            });
+
+            const avgScore = activeCats.length > 0 ? Math.round((sumScore / activeCats.length) * 100) / 100 : 5;
+            const evalQuarter = document.getElementById('step2-eval-quarter')?.value || state.selectedEvalQuarter || state.defaultEvalQuarter || 'Q4';
+            const evalYear = parseInt(document.getElementById('step2-eval-year')?.value) || state.selectedEvalYear || state.defaultEvalYear || 2026;
+            const evalDocId = `${apt.id}_${evalYear}_${evalQuarter}`;
 
             const evalDocData = {
                 aptId: apt.id,
                 ownerName: apt.ownerName || 'Chủ sở hữu',
                 phone: apt.verifiedPhone,
                 area: apt.area || 0,
-                ratings: { ...state.currentRatings },
+                evalQuarter: evalQuarter,
+                evalYear: evalYear,
+                periodLabel: formatEvalPeriodBadge(evalQuarter, evalYear),
+                ratings: ratingsPayload,
                 avgScore: avgScore,
                 comment: comment,
                 submittedAt: new Date().toISOString(),
@@ -1381,10 +1751,8 @@
             };
 
             try {
-                // 1. Lưu phiếu đánh giá vào bộ sưu tập evaluations (mỗi căn hộ 1 phiếu chính chủ)
-                await setDoc(doc(evaluationsColRef, apt.id), evalDocData, { merge: true });
+                await setDoc(doc(evaluationsColRef, evalDocId), evalDocData, { merge: true });
 
-                // 2. Cập nhật SĐT chuẩn hóa (nếu căn hộ chưa có SĐT) và tự động điểm danh nếu tích chọn
                 const aptUpdate = {
                     phone: apt.verifiedPhone,
                     updatedAt: new Date().toISOString()
@@ -1394,9 +1762,14 @@
                 }
                 await setDoc(doc(apartmentsColRef, apt.id), aptUpdate, { merge: true });
 
-                // 3. Kích hoạt pháo hoa & Modal chúc mừng
+                // Tự động chuyển bộ lọc công khai sang đúng kỳ vừa gửi để cư dân thấy ngay kết quả
+                const pubYearSel = document.getElementById('public-eval-filter-year');
+                const pubQuarterSel = document.getElementById('public-eval-filter-quarter');
+                if (pubYearSel && pubYearSel.value !== 'ALL') pubYearSel.value = String(evalYear);
+                if (pubQuarterSel && pubQuarterSel.value !== 'ALL') pubQuarterSel.value = evalQuarter;
+
                 triggerCelebrationConfetti();
-                openEvalSuccessModal(apt.id, avgScore);
+                openEvalSuccessModal(apt.id, avgScore, formatEvalPeriodBadge(evalQuarter, evalYear));
                 resetResidentVerifyStep();
             } catch (err) {
                 console.error("Error submitting evaluation:", err);
@@ -1404,11 +1777,11 @@
             }
         }
 
-        function openEvalSuccessModal(aptId, avgScore) {
+        function openEvalSuccessModal(aptId, avgScore, periodLabel = '') {
             const modal = document.getElementById('eval-success-modal');
             const infoEl = document.getElementById('eval-success-apt-info');
             if (infoEl) {
-                infoEl.innerText = `Căn hộ ${aptId} • Điểm trung bình: ${avgScore.toFixed(1)} / 5.0 Sao`;
+                infoEl.innerText = `Căn hộ ${aptId} (${periodLabel || 'Năm 2026'}) • Điểm TB: ${avgScore.toFixed(1)} / 5.0 Sao`;
             }
             if (modal) {
                 modal.classList.remove('opacity-0', 'pointer-events-none');
@@ -1426,8 +1799,18 @@
 
         /* ==================== RENDER BẢNG PHÂN TÍCH ĐÁNH GIÁ TRÊN TRANG CHÍNH ==================== */
         function renderEvaluationAnalytics() {
-            const evals = state.evaluations || [];
+            const evals = getFilteredPublicEvaluations();
             const totalEvals = evals.length;
+            const activeCats = getActiveEvaluationCategories();
+
+            const yearFilter = document.getElementById('public-eval-filter-year')?.value || 'ALL';
+            const quarterFilter = document.getElementById('public-eval-filter-quarter')?.value || 'ALL';
+            const activePeriodLabelEl = document.getElementById('eval-active-period-label');
+            if (activePeriodLabelEl) {
+                const yTxt = yearFilter === 'ALL' ? 'Tất cả Năm' : `Năm ${yearFilter}`;
+                const qTxt = quarterFilter === 'ALL' ? 'Các Quý' : (QUARTER_LABELS[quarterFilter] || quarterFilter);
+                activePeriodLabelEl.innerText = `Chỉ Số Hài Lòng (${qTxt} • ${yTxt})`;
+            }
 
             const overallScoreEl = document.getElementById('eval-overall-score');
             const totalCountBadge = document.getElementById('eval-total-count-badge');
@@ -1436,44 +1819,49 @@
             const breakdownContainer = document.getElementById('eval-category-breakdown');
             const distContainer = document.getElementById('eval-star-distribution');
             const tierSummaryEl = document.getElementById('eval-rating-tier-summary');
+            const periodGridEl = document.getElementById('eval-period-comparison-grid');
             const recentListEl = document.getElementById('public-recent-evaluations');
 
             let overallSum = 0;
             let evaluatedAreaSum = 0;
-            const catSums = { security: 0, hygiene: 0, technical: 0, service: 0, finance: 0, bqt: 0 };
+            const catSums = {};
+            activeCats.forEach(c => { catSums[c.id] = 0; });
             const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
 
             evals.forEach(ev => {
-                const avg = parseFloat(ev.avgScore) || 5;
+                let evCatSum = 0;
+                activeCats.forEach(c => {
+                    const val = parseFloat(ev.ratings?.[c.id] ?? ev.avgScore ?? 5) || 5;
+                    catSums[c.id] += val;
+                    evCatSum += val;
+                });
+
+                const avg = activeCats.length > 0 ? (evCatSum / activeCats.length) : (parseFloat(ev.avgScore) || 5);
                 overallSum += avg;
                 evaluatedAreaSum += parseFloat(ev.area) || 0;
 
                 const roundedStar = Math.min(5, Math.max(1, Math.round(avg)));
                 starCounts[roundedStar] = (starCounts[roundedStar] || 0) + 1;
-
-                EVALUATION_CATEGORIES.forEach(c => {
-                    catSums[c.id] += parseFloat(ev.ratings?.[c.id]) || 5;
-                });
             });
 
             const overallAvg = totalEvals > 0 ? (overallSum / totalEvals) : 0;
             const satPercent = totalEvals > 0 ? Math.round((overallAvg / 5) * 100) : 0;
 
             if (overallScoreEl) overallScoreEl.innerText = overallAvg.toFixed(2);
-            if (totalCountBadge) totalCountBadge.innerText = `${totalEvals} căn hộ đã đánh giá`;
+            if (totalCountBadge) totalCountBadge.innerText = `${totalEvals} phiếu đánh giá`;
             if (satPercentEl) satPercentEl.innerText = `${satPercent}%`;
             if (areaWeightBadge) areaWeightBadge.innerText = `DT tham gia đánh giá: ${formatNumber(evaluatedAreaSum)} m²`;
 
-            // 1. Render 6 hạng mục
+            // 1. Render các hạng mục động
             if (breakdownContainer) {
-                breakdownContainer.innerHTML = EVALUATION_CATEGORIES.map(cat => {
+                breakdownContainer.innerHTML = activeCats.map(cat => {
                     const avg = totalEvals > 0 ? (catSums[cat.id] / totalEvals) : 0;
                     const pct = Math.round((avg / 5) * 100);
                     return `
                         <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-2">
-                            <div class="flex items-center justify-between text-xs">
-                                <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate">
-                                    <i class="fa-solid ${cat.icon} ${cat.color}"></i>
+                            <div class="flex items-center justify-between text-xs gap-2">
+                                <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate" title="${cat.name}">
+                                    <i class="fa-solid ${cat.icon || 'fa-star'} ${cat.color || 'text-emerald-500'}"></i>
                                     <span class="truncate">${cat.name}</span>
                                 </span>
                                 <span class="font-mono font-black text-amber-500 shrink-0">${avg.toFixed(2)} <i class="fa-solid fa-star text-[10px]"></i></span>
@@ -1506,9 +1894,36 @@
                             <div class="font-black text-amber-500 flex items-center justify-center gap-0.5">
                                 <span>${star}</span><i class="fa-solid fa-star text-[10px]"></i>
                             </div>
-                            <div class="font-mono font-bold text-slate-800 dark:text-white text-xs mt-0.5">${count} căn</div>
+                            <div class="font-mono font-bold text-slate-800 dark:text-white text-xs mt-0.5">${count} phiếu</div>
                             <div class="text-[10px] text-slate-400 font-mono">${pct}%</div>
                         </div>
+                    `;
+                }).join('');
+            }
+
+            // 2b. Render Bảng So Sánh Theo Từng Quý & Năm (Q1, Q2, Q3, Q4, Cả Năm)
+            if (periodGridEl) {
+                const targetYear = yearFilter === 'ALL' ? String(state.defaultEvalYear || 2026) : yearFilter;
+                const periods = ['Q1', 'Q2', 'Q3', 'Q4', 'YEAR'];
+
+                periodGridEl.innerHTML = periods.map(qKey => {
+                    const matching = (state.evaluations || []).filter(ev => {
+                        const y = String(ev.evalYear || state.defaultEvalYear || 2026);
+                        const q = String(ev.evalQuarter || state.defaultEvalQuarter || 'Q4');
+                        return y === targetYear && q === qKey;
+                    });
+                    const cnt = matching.length;
+                    const sum = matching.reduce((acc, item) => acc + (parseFloat(item.avgScore) || 5), 0);
+                    const pAvg = cnt > 0 ? (sum / cnt).toFixed(2) : '--';
+                    const isSelected = quarterFilter === qKey && (yearFilter === targetYear || yearFilter === 'ALL');
+
+                    return `
+                        <button type="button" onclick="quickFilterPublicEvalPeriod('${qKey}', '${targetYear}')"
+                            class="p-2 rounded-xl border transition text-center ${isSelected ? 'bg-amber-500/20 border-amber-500 text-amber-700 dark:text-amber-300 shadow-sm' : 'bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 hover:border-amber-400'}">
+                            <div class="text-[11px] font-extrabold text-slate-700 dark:text-slate-200">${QUARTER_LABELS[qKey]}/${targetYear}</div>
+                            <div class="font-mono font-black text-amber-500 text-xs mt-0.5">${pAvg} <i class="fa-solid fa-star text-[9px]"></i></div>
+                            <div class="text-[10px] text-slate-400 font-mono">${cnt} phiếu</div>
+                        </button>
                     `;
                 }).join('');
             }
@@ -1516,29 +1931,47 @@
             // 3. Render danh sách phản hồi công khai mới nhất
             if (recentListEl) {
                 if (totalEvals === 0) {
-                    recentListEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào. Hãy là cư dân đầu tiên xác thực mã căn & SĐT để gửi đánh giá!</div>`;
+                    recentListEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào trong kỳ này. Hãy là cư dân đầu tiên xác thực mã căn & SĐT để gửi đánh giá!</div>`;
                 } else {
                     const sortedEvals = [...evals].sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
-                    recentListEl.innerHTML = sortedEvals.map(ev => `
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                            <div class="space-y-1">
-                                <div class="flex flex-wrap items-center gap-2">
-                                    <span class="font-black text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${ev.aptId}</span>
-                                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${ev.ownerName || 'Chủ sở hữu'}</span>
-                                    ${maskPhoneForPublic(ev.phone)}
-                                    <span class="text-[10px] text-slate-400 font-mono">${ev.displayTime || ''}</span>
+                    recentListEl.innerHTML = sortedEvals.map(ev => {
+                        const periodBadge = formatEvalPeriodBadge(ev.evalQuarter, ev.evalYear);
+                        return `
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                                <div class="space-y-1">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="font-black text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${ev.aptId}</span>
+                                        <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-extrabold">${periodBadge}</span>
+                                        <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${ev.ownerName || 'Chủ sở hữu'}</span>
+                                        ${maskPhoneForPublic(ev.phone)}
+                                        <span class="text-[10px] text-slate-400 font-mono">${ev.displayTime || ''}</span>
+                                    </div>
+                                    <p class="text-xs text-slate-600 dark:text-slate-300 italic">
+                                        ${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Đã chấm điểm tín nhiệm các hạng mục vận hành & BQT.</span>'}
+                                    </p>
                                 </div>
-                                <p class="text-xs text-slate-600 dark:text-slate-300 italic">
-                                    ${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Đã chấm điểm tín nhiệm các hạng mục vận hành & BQT.</span>'}
-                                </p>
+                                <div class="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-xl shrink-0 self-start sm:self-center">
+                                    <i class="fa-solid fa-star text-amber-500 text-xs"></i>
+                                    <span class="font-mono font-black text-xs text-amber-600 dark:text-amber-300">${Number(ev.avgScore || 5).toFixed(1)}</span>
+                                </div>
                             </div>
-                            <div class="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-xl shrink-0 self-start sm:self-center">
-                                <i class="fa-solid fa-star text-amber-500 text-xs"></i>
-                                <span class="font-mono font-black text-xs text-amber-600 dark:text-amber-300">${Number(ev.avgScore || 5).toFixed(1)}</span>
-                            </div>
-                        </div>
-                    `).join('');
+                        `;
+                    }).join('');
                 }
+            }
+        }
+
+        function quickFilterPublicEvalPeriod(quarterKey, yearVal) {
+            const qSel = document.getElementById('public-eval-filter-quarter');
+            const ySel = document.getElementById('public-eval-filter-year');
+            if (qSel && ySel) {
+                if (qSel.value === quarterKey && ySel.value === String(yearVal)) {
+                    qSel.value = 'ALL';
+                } else {
+                    qSel.value = quarterKey;
+                    ySel.value = String(yearVal);
+                }
+                render();
             }
         }
 
@@ -1797,6 +2230,18 @@
                     if (data && data.blockNames && typeof data.blockNames === 'object') {
                         state.blockNames = { ...DEFAULT_BLOCK_NAMES, ...data.blockNames };
                     }
+                    if (data && Array.isArray(data.evaluationCategories) && data.evaluationCategories.length > 0) {
+                        state.evaluationCategories = data.evaluationCategories;
+                    } else {
+                        state.evaluationCategories = [...DEFAULT_EVALUATION_CATEGORIES];
+                    }
+                    if (data && data.defaultEvalQuarter) {
+                        state.defaultEvalQuarter = data.defaultEvalQuarter;
+                    }
+                    if (data && data.defaultEvalYear) {
+                        state.defaultEvalYear = Number(data.defaultEvalYear);
+                    }
+                    syncDefaultPeriodSelects();
                     render();
                 }
             }, (error) => {
@@ -1804,74 +2249,33 @@
             });
         }
 
-        function render() {
-            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
-            
-            let attendedApartmentArea = 0;
-            let attendedUnits = 0;
+        function syncDefaultPeriodSelects() {
+            const resQ = document.getElementById('resident-eval-quarter');
+            const resY = document.getElementById('resident-eval-year');
+            if (resQ && !state.verifiedApartment) resQ.value = state.defaultEvalQuarter || 'Q4';
+            if (resY && !state.verifiedApartment) resY.value = String(state.defaultEvalYear || 2026);
 
-            state.apartments.forEach(apt => {
-                if (apt.attended) {
-                    attendedApartmentArea += apt.area;
-                    attendedUnits++;
-                }
-            });
+            const admQ = document.getElementById('admin-default-quarter');
+            const admY = document.getElementById('admin-default-year');
+            if (admQ) admQ.value = state.defaultEvalQuarter || 'Q4';
+            if (admY) admY.value = String(state.defaultEvalYear || 2026);
+        }
 
-            const manualAreaSum = (state.manualEntries || []).reduce((sum, item) => sum + (parseFloat(item.area) || 0), 0);
-            const totalAttendedArea = attendedApartmentArea + manualAreaSum;
-
-            const totalUnits = state.apartments.length;
-            const percentArea = effectiveTotalArea > 0 ? (totalAttendedArea / effectiveTotalArea) * 100 : 0;
-            const percentUnits = totalUnits > 0 ? (attendedUnits / totalUnits) * 100 : 0;
-            const missingArea = Math.max(0, effectiveTotalArea - totalAttendedArea);
-
-            const metricTotal = document.getElementById('metric-total-area');
-            const metricAttended = document.getElementById('metric-attended-area');
-            const metricMissing = document.getElementById('metric-missing-area');
-            const metricTotalUnits = document.getElementById('metric-total-units');
-            const metricAttendedUnits = document.getElementById('metric-attended-units');
-            const metricUnitsPercent = document.getElementById('metric-units-percent');
-            const metricPercent = document.getElementById('metric-percent');
-
-            if (metricTotal) metricTotal.innerText = formatNumber(effectiveTotalArea);
-            if (metricAttended) metricAttended.innerText = formatNumber(totalAttendedArea);
-            if (metricMissing) metricMissing.innerText = `${formatNumber(missingArea)} m²`;
-            if (metricTotalUnits) metricTotalUnits.innerText = totalUnits;
-            if (metricAttendedUnits) metricAttendedUnits.innerText = attendedUnits;
-            if (metricUnitsPercent) metricUnitsPercent.innerText = `${percentUnits.toFixed(1)}%`;
-            if (metricPercent) metricPercent.innerText = `${percentArea.toFixed(2)}%`;
-
-            const barFill = document.getElementById('progress-bar-fill');
-            if (barFill) barFill.style.width = `${Math.min(percentArea, 100)}%`;
-
-            const statusBadge = document.getElementById('status-badge');
-            if (statusBadge) {
-                if (percentArea >= 50) {
-                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 animate-bounce shadow-lg shadow-emerald-500/20";
-                    statusBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 50% BIỂU QUYẾT`;
-
-                    if (!state.hasFiredConfetti) {
-                        triggerCelebrationConfetti();
-                        state.hasFiredConfetti = true;
-                    }
-                } else if (percentArea >= 30) {
-                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/40 flex items-center gap-1.5 shadow-md";
-                    statusBadge.innerHTML = `<i class="fa-solid fa-building-circle-check text-blue-600 dark:text-blue-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 30% TỔ CHỨC HNNCC THƯỜNG NIÊN`;
-                } else {
-                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5";
-                    statusBadge.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30% tổ chức`;
-                    state.hasFiredConfetti = false;
-                }
-            }
-
-            renderEvaluationAnalytics();
-            renderTable();
-            if (state.isAdminAuthenticated) {
-                renderAdminOverviewHeader();
-                renderAdminTable();
-                renderAdminEvaluationsTable();
-                renderManualHistoryTable();
-                renderBuildingStats();
+        async function saveDefaultEvalPeriodToCloud() {
+            const admQ = document.getElementById('admin-default-quarter')?.value || 'Q4';
+            const admY = parseInt(document.getElementById('admin-default-year')?.value) || 2026;
+            try {
+                state.defaultEvalQuarter = admQ;
+                state.defaultEvalYear = admY;
+                await setDoc(settingsDocRef, {
+                    defaultEvalQuarter: admQ,
+                    defaultEvalYear: admY
+                }, { merge: true });
+                syncDefaultPeriodSelects();
+                showToast(`Đã lưu kỳ đánh giá mặc định: ${formatEvalPeriodBadge(admQ, admY)}!`, "success");
+            } catch (e) {
+                console.error("Save default period error:", e);
+                showToast("Lỗi khi lưu kỳ đánh giá mặc định!", "error");
             }
         }
 
@@ -1879,14 +2283,18 @@
             const tbody = document.getElementById('apartment-table-body');
             if (!tbody) return;
 
-            const searchVal = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
+            const rawSearch = (document.getElementById('search-input')?.value || '').trim();
+            const searchVal = rawSearch.toLowerCase();
+            const searchKey = canonicalizeAptKey(rawSearch);
             const filterStatus = document.getElementById('filter-status')?.value || 'all';
 
             const evalMap = new Map();
             (state.evaluations || []).forEach(ev => evalMap.set(ev.aptId, ev));
 
             const filtered = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || 
+                const matchesSearch = !rawSearch ||
+                                      apt.id.toLowerCase().includes(searchVal) || 
+                                      (searchKey && canonicalizeAptKey(apt.id).includes(searchKey)) ||
                                       (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesStatus = true;
                 if (filterStatus === 'attended') matchesStatus = apt.attended;
@@ -1998,9 +2406,108 @@
             });
 
             if (tabName === 'manage') renderAdminTable();
-            if (tabName === 'evaluations') renderAdminEvaluationsTable();
+            if (tabName === 'evaluations') {
+                renderAdminEvaluationCategoriesEditor();
+                renderAdminEvaluationsTable();
+            }
             if (tabName === 'stats') renderBuildingStats();
             if (tabName === 'manual-add') renderManualHistoryTable();
+        }
+
+        /* ==================== QUẢN LÝ TÙY CHỈNH HẠNG MỤC ĐÁNH GIÁ VẬN HÀNH (ADMIN) ==================== */
+        function renderAdminEvaluationCategoriesEditor() {
+            const container = document.getElementById('admin-eval-categories-editor');
+            if (!container) return;
+
+            const cats = getActiveEvaluationCategories();
+            container.innerHTML = cats.map((cat, idx) => `
+                <div class="flex items-center gap-2 bg-white dark:bg-slate-950 p-2.5 rounded-xl border border-slate-300 dark:border-slate-800 shadow-sm">
+                    <div class="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-900 flex items-center justify-center ${cat.color || 'text-amber-500'} shrink-0">
+                        <i class="fa-solid ${cat.icon || 'fa-star'} text-sm"></i>
+                    </div>
+                    <input type="text" data-cat-idx="${idx}" value="${cat.name}"
+                        onchange="updateEvaluationCategoryName(${idx}, this.value)"
+                        class="flex-1 px-2.5 py-1.5 text-xs font-bold bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg text-slate-900 dark:text-white outline-none focus:ring-2 focus:ring-amber-500">
+                    <button type="button" onclick="removeEvaluationCategory(${idx})" class="p-1.5 text-rose-500 hover:bg-rose-500/10 rounded-lg transition" title="Xóa hạng mục này">
+                        <i class="fa-solid fa-trash-can text-xs"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function updateEvaluationCategoryName(idx, newName) {
+            const trimmed = String(newName || '').trim();
+            if (!trimmed) return;
+            const cats = [...getActiveEvaluationCategories()];
+            if (cats[idx]) {
+                cats[idx] = { ...cats[idx], name: trimmed };
+                state.evaluationCategories = cats;
+            }
+        }
+
+        async function addNewEvaluationCategory() {
+            const nameInput = document.getElementById('new-eval-cat-name');
+            const iconSelect = document.getElementById('new-eval-cat-icon');
+            const nameVal = (nameInput?.value || '').trim();
+            if (!nameVal) {
+                showToast("Vui lòng nhập tên hạng mục đánh giá mới!", "error");
+                return;
+            }
+
+            const colors = ['text-blue-500', 'text-emerald-500', 'text-amber-500', 'text-purple-500', 'text-teal-500', 'text-rose-500', 'text-indigo-500'];
+            const cats = [...getActiveEvaluationCategories()];
+            const newId = 'cat_' + Date.now();
+            cats.push({
+                id: newId,
+                name: nameVal,
+                icon: iconSelect?.value || 'fa-star',
+                color: colors[cats.length % colors.length]
+            });
+
+            state.evaluationCategories = cats;
+            if (nameInput) nameInput.value = '';
+            renderAdminEvaluationCategoriesEditor();
+            await saveEvaluationCategoriesToCloud();
+        }
+
+        async function removeEvaluationCategory(idx) {
+            const cats = [...getActiveEvaluationCategories()];
+            if (cats.length <= 1) {
+                showToast("Cần giữ lại ít nhất 1 hạng mục đánh giá!", "error");
+                return;
+            }
+            cats.splice(idx, 1);
+            state.evaluationCategories = cats;
+            renderAdminEvaluationCategoriesEditor();
+            await saveEvaluationCategoriesToCloud();
+        }
+
+        async function saveEvaluationCategoriesToCloud() {
+            try {
+                const inputs = document.querySelectorAll('#admin-eval-categories-editor input[data-cat-idx]');
+                const cats = [...getActiveEvaluationCategories()];
+                inputs.forEach(inp => {
+                    const i = parseInt(inp.getAttribute('data-cat-idx'));
+                    if (cats[i] && inp.value.trim()) {
+                        cats[i].name = inp.value.trim();
+                    }
+                });
+                state.evaluationCategories = cats;
+                await setDoc(settingsDocRef, { evaluationCategories: cats }, { merge: true });
+                showToast("Đã lưu cấu hình các hạng mục đánh giá lên Cloud!", "success");
+                render();
+            } catch (e) {
+                console.error("Save categories error:", e);
+                showToast("Lỗi khi lưu cấu hình hạng mục!", "error");
+            }
+        }
+
+        async function resetDefaultEvaluationCategories() {
+            state.evaluationCategories = [...DEFAULT_EVALUATION_CATEGORIES];
+            await setDoc(settingsDocRef, { evaluationCategories: state.evaluationCategories }, { merge: true });
+            renderAdminEvaluationCategoriesEditor();
+            render();
+            showToast("Đã khôi phục 6 hạng mục đánh giá mặc định!", "info");
         }
 
         /* ==================== NẠP FILE EXCEL & CHUẨN HÓA SỐ ĐIỆN THOẠI THÔNG MINH ==================== */
@@ -2193,13 +2700,11 @@
                 if (!line.trim()) return;
                 const parts = line.split(/[,|\t]+/).map(p => p.trim());
                 if (parts.length >= 2) {
-                    const idStr = parts[0].toUpperCase().replace(/\s+/g, '');
+                    const matchedExisting = findApartmentSmart(parts[0]);
+                    const idStr = matchedExisting ? matchedExisting.id : formatStandardAptCode(parts[0]);
                     const secondPart = parts[1];
 
-                    // Hỗ trợ cả 2 kiểu:
-                    // Kiểu 1: MãCăn, DiệnTích, ChủHộ, SĐT
-                    // Kiểu 2: MãCăn, SĐT (chỉ cập nhật SĐT cho căn đã có)
-                    const existingApt = state.apartments.find(a => a.id === idStr);
+                    const existingApt = matchedExisting || state.apartments.find(a => a.id === idStr);
                     const looksLikePhone = /^(\+?84|0)[35789]/.test(secondPart.replace(/[\s\.\-]/g, '')) || secondPart.replace(/[^0-9]/g, '').length >= 9;
 
                     if (parts.length === 2 && looksLikePhone) {
@@ -2248,13 +2753,14 @@
             const phoneInput = document.getElementById('quick-apt-phone');
             const areaInput = document.getElementById('quick-apt-area');
 
-            const aptId = normalizeAptCode(idInput?.value || '');
-            if (!aptId) {
+            const rawAptCode = idInput?.value || '';
+            if (!rawAptCode.trim()) {
                 showToast("Vui lòng nhập Mã Căn Hộ!", "error");
                 return;
             }
 
-            const existing = state.apartments.find(a => a.id === aptId);
+            const existing = findApartmentSmart(rawAptCode);
+            const aptId = existing ? existing.id : formatStandardAptCode(rawAptCode);
             const ownerName = (ownerInput?.value || '').trim() || (existing ? existing.ownerName : '');
             const normPhone = smartNormalizePhone(phoneInput?.value || '') || (existing ? existing.phone : '');
             const areaVal = parseFloat(areaInput?.value) || (existing ? existing.area : 65.0);
@@ -2311,71 +2817,350 @@
             const tbody = document.getElementById('admin-evaluations-table-body');
             if (!tbody) return;
 
-            const evals = [...(state.evaluations || [])].sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+            const activeCats = getActiveEvaluationCategories();
+            const filterYear = document.getElementById('admin-eval-filter-year')?.value || 'ALL';
+            const filterQuarter = document.getElementById('admin-eval-filter-quarter')?.value || 'ALL';
+
+            const evals = [...(state.evaluations || [])]
+                .filter(ev => {
+                    const y = String(ev.evalYear || state.defaultEvalYear || 2026);
+                    const q = String(ev.evalQuarter || state.defaultEvalQuarter || 'Q4');
+                    const mY = filterYear === 'ALL' || y === filterYear;
+                    const mQ = filterQuarter === 'ALL' || q === filterQuarter;
+                    return mY && mQ;
+                })
+                .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+
             if (evals.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Chưa có phiếu đánh giá nào từ cư dân</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="8" class="p-6 text-center text-slate-500">Chưa có phiếu đánh giá nào phù hợp với bộ lọc Quý/Năm</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = evals.map(ev => `
-                <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80">
-                    <td class="p-3 font-mono text-slate-500">${ev.displayTime || '--'}</td>
-                    <td class="p-3 font-extrabold text-slate-900 dark:text-white">${ev.aptId}</td>
-                    <td class="p-3 font-semibold">${ev.ownerName || '--'}</td>
-                    <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">${ev.phone || '--'}</td>
-                    <td class="p-3 text-center">
-                        <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-300 font-mono font-black">
-                            ${Number(ev.avgScore || 5).toFixed(2)} ★
-                        </span>
-                    </td>
-                    <td class="p-3 max-w-xs truncate" title="${ev.comment || ''}">${ev.comment || '<span class="text-slate-400">--</span>'}</td>
-                    <td class="p-3 text-right">
-                        <button onclick="deleteEvaluation('${ev.aptId}')" class="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-500/10 transition" title="Xóa phiếu đánh giá">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
-                    </td>
-                </tr>
-            `).join('');
+            tbody.innerHTML = evals.map(ev => {
+                const docId = ev.id || `${ev.aptId}_${ev.evalYear || 2026}_${ev.evalQuarter || 'Q4'}`;
+                const periodBadge = formatEvalPeriodBadge(ev.evalQuarter, ev.evalYear);
+                const catBadges = activeCats.map(cat => {
+                    const sc = ev.ratings?.[cat.id] ?? ev.avgScore ?? 5;
+                    return `<span class="inline-block px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-[10px] font-mono mr-1 mb-1" title="${cat.name}">${cat.name.split(',')[0]}: <strong>${sc}★</strong></span>`;
+                }).join('');
+
+                return `
+                    <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80">
+                        <td class="p-3 font-mono text-slate-500 whitespace-nowrap">${ev.displayTime || '--'}</td>
+                        <td class="p-3 whitespace-nowrap">
+                            <span class="px-2 py-0.5 rounded-lg bg-indigo-500/15 text-indigo-700 dark:text-indigo-300 border border-indigo-500/30 font-extrabold text-[11px]">${periodBadge}</span>
+                        </td>
+                        <td class="p-3 font-extrabold text-slate-900 dark:text-white whitespace-nowrap">${ev.aptId}</td>
+                        <td class="p-3 font-semibold">${ev.ownerName || '--'}</td>
+                        <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400 whitespace-nowrap">${ev.phone || '--'}</td>
+                        <td class="p-3 text-center whitespace-nowrap">
+                            <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-300 font-mono font-black">
+                                ${Number(ev.avgScore || 5).toFixed(2)} ★
+                            </span>
+                        </td>
+                        <td class="p-3 max-w-md">
+                            <div class="mb-1">${catBadges}</div>
+                            <div class="text-xs italic text-slate-600 dark:text-slate-300">${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Không có nhận xét thêm</span>'}</div>
+                        </td>
+                        <td class="p-3 text-right">
+                            <button onclick="deleteEvaluation('${docId}')" class="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-500/10 transition" title="Xóa phiếu đánh giá">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        async function deleteEvaluation(aptId) {
+        async function deleteEvaluation(evalDocId) {
             try {
-                await deleteDoc(doc(evaluationsColRef, aptId));
-                showToast(`Đã xóa phiếu đánh giá của căn ${aptId}`, "info");
+                await deleteDoc(doc(evaluationsColRef, evalDocId));
+                showToast(`Đã xóa phiếu đánh giá (${evalDocId})`, "info");
             } catch (e) {
                 console.error("Delete evaluation error:", e);
                 showToast("Lỗi khi xóa đánh giá!", "error");
             }
         }
 
+        /* ==================== XUẤT FILE EXCEL PHÂN TÍCH TỔNG HỢP (3 SHEET THEO QUÝ & NĂM) & BÁO CÁO PDF ==================== */
         function exportEvaluationsToExcel() {
-            if (!state.evaluations || state.evaluations.length === 0) {
-                showToast("Chưa có dữ liệu đánh giá BQT để xuất Excel!", "error");
-                return;
-            }
+            const activeCats = getActiveEvaluationCategories();
+            const evals = state.evaluations || [];
 
-            const rows = state.evaluations.map((ev, idx) => ({
-                'STT': idx + 1,
-                'Thời Gian': ev.displayTime || '',
-                'Mã Căn Hộ': ev.aptId,
-                'Chủ Sở Hữu': ev.ownerName || '',
-                'SĐT Chính Chủ (Chuẩn 0)': smartNormalizePhone(ev.phone || ''),
-                'Diện Tích (m²)': ev.area || 0,
-                'Điểm Trung Bình (/5)': ev.avgScore || 5,
-                '1. An Ninh & PCCC': ev.ratings?.security || 5,
-                '2. Vệ Sinh & Cảnh Quan': ev.ratings?.hygiene || 5,
-                '3. Kỹ Thuật & Bảo Trì': ev.ratings?.technical || 5,
-                '4. Dịch Vụ CSKH': ev.ratings?.service || 5,
-                '5. Minh Bạch Tài Chính': ev.ratings?.finance || 5,
-                '6. Hoạt Động BQT': ev.ratings?.bqt || 5,
-                'Ý Kiến Đóng Góp': ev.comment || ''
-            }));
+            // Sheet 1: Tổng hợp phân tích theo từng hạng mục
+            const totalEvals = evals.length;
+            const summaryRows = activeCats.map((cat, idx) => {
+                let sum = 0;
+                let count5 = 0, count4 = 0, count3 = 0, count12 = 0;
+                evals.forEach(ev => {
+                    const sc = parseFloat(ev.ratings?.[cat.id] ?? ev.avgScore ?? 5) || 5;
+                    sum += sc;
+                    const r = Math.round(sc);
+                    if (r === 5) count5++;
+                    else if (r === 4) count4++;
+                    else if (r === 3) count3++;
+                    else count12++;
+                });
+                const avg = totalEvals > 0 ? Number((sum / totalEvals).toFixed(2)) : 0;
+                const satPct = totalEvals > 0 ? Number(((avg / 5) * 100).toFixed(1)) : 0;
 
-            const worksheet = XLSX.utils.json_to_sheet(rows);
+                return {
+                    'STT': idx + 1,
+                    'Hạng Mục Đánh Giá Vận Hành & BQT': cat.name,
+                    'Tổng Số Phiếu': totalEvals,
+                    'Điểm Trung Bình (/5.0)': avg,
+                    'Mức Độ Hài Lòng (%)': `${satPct}%`,
+                    'Số Phiếu 5 Sao': count5,
+                    'Số Phiếu 4 Sao': count4,
+                    'Số Phiếu 3 Sao': count3,
+                    'Số Phiếu 1-2 Sao': count12
+                };
+            });
+
+            // Sheet 2: Tổng hợp theo từng Quý & Năm
+            const periodMap = new Map();
+            evals.forEach(ev => {
+                const q = ev.evalQuarter || state.defaultEvalQuarter || 'Q4';
+                const y = ev.evalYear || state.defaultEvalYear || 2026;
+                const key = `${y}_${q}`;
+                if (!periodMap.has(key)) {
+                    periodMap.set(key, { quarter: q, year: y, items: [] });
+                }
+                periodMap.get(key).items.push(ev);
+            });
+
+            const periodSummaryRows = Array.from(periodMap.values()).map((grp, idx) => {
+                const cnt = grp.items.length;
+                const totalScore = grp.items.reduce((s, item) => s + (parseFloat(item.avgScore) || 5), 0);
+                const totalArea = grp.items.reduce((s, item) => s + (parseFloat(item.area) || 0), 0);
+                const avg = cnt > 0 ? Number((totalScore / cnt).toFixed(2)) : 0;
+                const row = {
+                    'STT': idx + 1,
+                    'Kỳ Đánh Giá': formatEvalPeriodBadge(grp.quarter, grp.year),
+                    'Quý': QUARTER_LABELS[grp.quarter] || grp.quarter,
+                    'Năm': grp.year,
+                    'Số Phiếu Đánh Giá': cnt,
+                    'Tổng Diện Tích Tham Gia (m²)': Number(totalArea.toFixed(2)),
+                    'Điểm Trung Bình Chung (/5.0)': avg,
+                    'Tỷ Lệ Hài Lòng (%)': `${Math.round((avg / 5) * 100)}%`
+                };
+                activeCats.forEach((cat, cIdx) => {
+                    const cSum = grp.items.reduce((s, item) => s + (parseFloat(item.ratings?.[cat.id] ?? item.avgScore ?? 5) || 5), 0);
+                    row[`ĐTB ${cIdx + 1}. ${cat.name}`] = cnt > 0 ? Number((cSum / cnt).toFixed(2)) : 0;
+                });
+                return row;
+            });
+
+            // Sheet 3: Chi tiết từng phiếu đánh giá của cư dân
+            const detailRows = evals.map((ev, idx) => {
+                const q = ev.evalQuarter || state.defaultEvalQuarter || 'Q4';
+                const y = ev.evalYear || state.defaultEvalYear || 2026;
+                const rowObj = {
+                    'STT': idx + 1,
+                    'Thời Gian Gửi': ev.displayTime || '',
+                    'Kỳ Đánh Giá (Quý/Năm)': formatEvalPeriodBadge(q, y),
+                    'Quý': QUARTER_LABELS[q] || q,
+                    'Năm': y,
+                    'Mã Căn Hộ': ev.aptId,
+                    'Chủ Sở Hữu': ev.ownerName || '',
+                    'SĐT Chính Chủ (Chuẩn 0)': smartNormalizePhone(ev.phone || ''),
+                    'Diện Tích (m²)': ev.area || 0,
+                    'Điểm Trung Bình (/5.0)': Number(ev.avgScore || 5)
+                };
+                activeCats.forEach((cat, cIdx) => {
+                    rowObj[`${cIdx + 1}. ${cat.name}`] = ev.ratings?.[cat.id] ?? ev.avgScore ?? 5;
+                });
+                rowObj['Ý Kiến Đóng Góp / Kiến Nghị'] = ev.comment || '';
+                return rowObj;
+            });
+
             const workbook = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(workbook, worksheet, "Danh Gia BQT Van Hanh");
-            XLSX.writeFile(workbook, `EcoHome_DanhGia_VanHanh_BQT_${new Date().toISOString().slice(0,10)}.xlsx`);
-            showToast("Đã xuất file Excel Báo Cáo Đánh Giá BQT!", "success");
+            const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
+            XLSX.utils.book_append_sheet(workbook, wsSummary, "Tong Hop Hang Muc");
+
+            const wsPeriods = XLSX.utils.json_to_sheet(periodSummaryRows.length > 0 ? periodSummaryRows : [{ 'Thông báo': 'Chưa có dữ liệu theo Quý/Năm' }]);
+            XLSX.utils.book_append_sheet(workbook, wsPeriods, "Thong Ke Theo Quy Nam");
+
+            const wsDetails = XLSX.utils.json_to_sheet(detailRows.length > 0 ? detailRows : [{ 'Thông báo': 'Chưa có dữ liệu phiếu đánh giá' }]);
+            XLSX.utils.book_append_sheet(workbook, wsDetails, "Chi Tiet Phieu Danh Gia");
+
+            XLSX.writeFile(workbook, `EcoHome_BaoCao_PhanTich_QuyNam_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast("Đã xuất file Excel Tổng Hợp Phân Tích Đánh Giá (3 Sheet kèm Quý/Năm)!", "success");
+        }
+
+        function openPdfReportModal() {
+            const modal = document.getElementById('pdf-report-modal');
+            const printable = document.getElementById('pdf-report-printable');
+            if (!modal || !printable) return;
+
+            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            let attendedArea = 0;
+            let attendedUnits = 0;
+            state.apartments.forEach(a => {
+                if (a.attended) {
+                    attendedArea += a.area;
+                    attendedUnits++;
+                }
+            });
+            const manualAreaSum = (state.manualEntries || []).reduce((s, item) => s + (parseFloat(item.area) || 0), 0);
+            const totalAttendedArea = attendedArea + manualAreaSum;
+            const percentArea = effectiveTotalArea > 0 ? (totalAttendedArea / effectiveTotalArea) * 100 : 0;
+
+            const evals = getFilteredPublicEvaluations();
+            const totalEvals = evals.length;
+            const activeCats = getActiveEvaluationCategories();
+            let overallSum = 0;
+            let evalAreaSum = 0;
+            const catSums = {};
+            activeCats.forEach(c => { catSums[c.id] = 0; });
+
+            evals.forEach(ev => {
+                let cSum = 0;
+                activeCats.forEach(c => {
+                    const val = parseFloat(ev.ratings?.[c.id] ?? ev.avgScore ?? 5) || 5;
+                    catSums[c.id] += val;
+                    cSum += val;
+                });
+                overallSum += activeCats.length > 0 ? (cSum / activeCats.length) : 5;
+                evalAreaSum += parseFloat(ev.area) || 0;
+            });
+
+            const overallAvg = totalEvals > 0 ? (overallSum / totalEvals) : 0;
+            const nowStr = new Date().toLocaleString('vi-VN');
+
+            const catRowsHtml = activeCats.map((cat, idx) => {
+                const avg = totalEvals > 0 ? (catSums[cat.id] / totalEvals) : 0;
+                const pct = Math.round((avg / 5) * 100);
+                return `
+                    <tr class="border-b border-slate-200">
+                        <td class="py-2.5 px-3 font-mono text-center">${idx + 1}</td>
+                        <td class="py-2.5 px-3 font-bold text-slate-800">${cat.name}</td>
+                        <td class="py-2.5 px-3 text-center font-mono font-bold text-amber-600">${avg.toFixed(2)} / 5.0</td>
+                        <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-700">${pct}%</td>
+                        <td class="py-2.5 px-3 text-center font-mono">${totalEvals} phiếu</td>
+                    </tr>
+                `;
+            }).join('');
+
+            const evalDetailRowsHtml = evals.length === 0
+                ? `<tr><td colspan="7" class="py-4 text-center text-slate-400">Chưa có phiếu đánh giá nào</td></tr>`
+                : evals.map((ev, idx) => `
+                    <tr class="border-b border-slate-200">
+                        <td class="py-2 px-2.5 font-mono text-center">${idx + 1}</td>
+                        <td class="py-2 px-2.5 font-bold text-indigo-700">${formatEvalPeriodBadge(ev.evalQuarter, ev.evalYear)}</td>
+                        <td class="py-2 px-2.5 font-bold">${ev.aptId}</td>
+                        <td class="py-2 px-2.5">${ev.ownerName || '--'}</td>
+                        <td class="py-2 px-2.5 font-mono">${smartNormalizePhone(ev.phone || '')}</td>
+                        <td class="py-2 px-2.5 text-center font-mono font-bold">${Number(ev.avgScore || 5).toFixed(2)} ★</td>
+                        <td class="py-2 px-2.5">${ev.comment || '--'}</td>
+                    </tr>
+                `).join('');
+
+            printable.innerHTML = `
+                <div class="border-b-2 border-slate-900 pb-4 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                        <p class="text-xs font-extrabold uppercase tracking-wider text-emerald-700">Hội Nghị Nhà Chung Cư Thường Niên 2026</p>
+                        <h1 class="text-xl sm:text-2xl font-black uppercase text-slate-900">BÁO CÁO TỔNG HỢP ĐIỂM DANH & PHÂN TÍCH ĐÁNH GIÁ VẬN HÀNH</h1>
+                        <p class="text-xs font-semibold text-slate-600">Dự án: Nhà Chung Cư Ecohome Nhơn Bình • Thời điểm trích xuất: ${nowStr}</p>
+                    </div>
+                    <div class="text-left sm:text-right bg-slate-100 px-4 py-2.5 rounded-xl border border-slate-300">
+                        <span class="block text-[10px] font-bold uppercase text-slate-500">Tỷ lệ diện tích tham dự</span>
+                        <span class="text-2xl font-black font-mono text-emerald-700">${percentArea.toFixed(2)}%</span>
+                    </div>
+                </div>
+
+                <!-- Phần I: Thống kê diện tích tham dự -->
+                <div class="space-y-2">
+                    <h2 class="text-sm font-black uppercase tracking-wider text-slate-900">I. Tổng Hợp Kết Quả Điểm Danh Diện Tích Tham Dự Hội Nghị</h2>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                        <div class="p-3 rounded-xl border border-slate-300 bg-slate-50">
+                            <span class="block text-slate-500 font-semibold">Tổng Diện Tích Dự Án</span>
+                            <span class="text-base font-black font-mono text-slate-900">${formatNumber(effectiveTotalArea)} m²</span>
+                        </div>
+                        <div class="p-3 rounded-xl border border-slate-300 bg-slate-50">
+                            <span class="block text-slate-500 font-semibold">Diện Tích Đã Tham Dự</span>
+                            <span class="text-base font-black font-mono text-emerald-700">${formatNumber(totalAttendedArea)} m²</span>
+                        </div>
+                        <div class="p-3 rounded-xl border border-slate-300 bg-slate-50">
+                            <span class="block text-slate-500 font-semibold">Số Căn Hộ Đã Check-in</span>
+                            <span class="text-base font-black font-mono text-slate-900">${attendedUnits} / ${state.apartments.length} căn</span>
+                        </div>
+                        <div class="p-3 rounded-xl border border-slate-300 bg-slate-50">
+                            <span class="block text-slate-500 font-semibold">Trạng Thái Pháp Lý</span>
+                            <span class="text-xs font-black text-emerald-700">${percentArea >= 50 ? 'Đủ ĐK Biểu Quyết (>=50%)' : (percentArea >= 30 ? 'Đủ ĐK Tổ Chức (>=30%)' : 'Chưa đủ 30%')}</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Phần II: Phân tích đánh giá vận hành & BQT -->
+                <div class="space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-black uppercase tracking-wider text-slate-900">II. Phân Tích Đánh Giá Đơn Vị Vận Hành & Ban Quản Trị (BQT)</h2>
+                        <span class="text-xs font-bold text-slate-700">Điểm Hài Lòng Chung: <strong>${overallAvg.toFixed(2)} / 5.0</strong> (${totalEvals} phiếu • ${formatNumber(evalAreaSum)} m²)</span>
+                    </div>
+                    <table class="w-full text-xs text-left border border-slate-300 rounded-xl overflow-hidden">
+                        <thead class="bg-slate-100 font-extrabold text-slate-700 border-b border-slate-300">
+                            <tr>
+                                <th class="py-2.5 px-3 text-center w-12">STT</th>
+                                <th class="py-2.5 px-3">Hạng Mục Đánh Giá</th>
+                                <th class="py-2.5 px-3 text-center">Điểm Trung Bình</th>
+                                <th class="py-2.5 px-3 text-center">Tỷ Lệ Hài Lòng</th>
+                                <th class="py-2.5 px-3 text-center">Số Lượng Phiếu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${catRowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Phần III: Danh sách chi tiết phiếu đánh giá & kiến nghị -->
+                <div class="space-y-2">
+                    <h2 class="text-sm font-black uppercase tracking-wider text-slate-900">III. Chi Tiết Phiếu Đánh Giá Theo Quý/Năm & Ý Kiến Đóng Góp Của Cư Dân</h2>
+                    <table class="w-full text-xs text-left border border-slate-300">
+                        <thead class="bg-slate-100 font-extrabold text-slate-700 border-b border-slate-300">
+                            <tr>
+                                <th class="py-2 px-2.5 text-center w-10">STT</th>
+                                <th class="py-2 px-2.5">Kỳ (Quý/Năm)</th>
+                                <th class="py-2 px-2.5">Mã Căn</th>
+                                <th class="py-2 px-2.5">Chủ Sở Hữu</th>
+                                <th class="py-2 px-2.5">SĐT Xác Thực</th>
+                                <th class="py-2 px-2.5 text-center">Điểm TB</th>
+                                <th class="py-2 px-2.5">Ý Kiến / Kiến Nghị</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${evalDetailRowsHtml}
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="pt-6 flex justify-between text-xs font-bold text-slate-700">
+                    <div>
+                        <p>ĐẠI DIỆN ĐƠN VỊ VẬN HÀNH</p>
+                        <p class="text-[11px] font-normal text-slate-400 mt-10">(Ký và ghi rõ họ tên)</p>
+                    </div>
+                    <div class="text-right">
+                        <p>TM. BAN QUẢN TRỊ CHUNG CƯ ECOHOME NHƠN BÌNH</p>
+                        <p class="text-[11px] font-normal text-slate-400 mt-10">(Ký, đóng dấu và ghi rõ họ tên)</p>
+                    </div>
+                </div>
+            `;
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function closePdfReportModal() {
+            const modal = document.getElementById('pdf-report-modal');
+            if (modal) {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        function triggerPrintPdfReport() {
+            window.print();
         }
 
         function onManualInputAreaChange() {
@@ -2478,7 +3263,7 @@
             let totalArea = 0;
 
             uniqueCodes.forEach(code => {
-                const found = state.apartments.find(a => a.id.toUpperCase() === code);
+                const found = findApartmentSmart(code);
                 if (found) {
                     matched.push(found);
                     totalArea += found.area;
@@ -2517,9 +3302,9 @@
         async function executeApplyProxyAttendance() {
             const inputVal = document.getElementById('proxy-codes-input')?.value || '';
             const codes = inputVal.split(/[,|\n\t\s]+/).map(c => c.trim().toUpperCase()).filter(c => c.length > 0);
-            const uniqueCodes = [...new Set(codes)];
+            const uniqueKeys = new Set(codes.map(c => canonicalizeAptKey(c)));
 
-            const matchedApts = state.apartments.filter(a => uniqueCodes.includes(a.id.toUpperCase()));
+            const matchedApts = state.apartments.filter(a => uniqueKeys.has(canonicalizeAptKey(a.id)));
             if (matchedApts.length === 0) {
                 showToast("Không tìm thấy căn hộ hợp lệ nào trong danh sách!", "error");
                 return;
@@ -2663,12 +3448,16 @@
             const tbody = document.getElementById('admin-table-body');
             if (!tbody) return;
 
-            const searchVal = (document.getElementById('admin-search-input')?.value || '').trim().toLowerCase();
+            const rawSearch = (document.getElementById('admin-search-input')?.value || '').trim();
+            const searchVal = rawSearch.toLowerCase();
+            const searchKey = canonicalizeAptKey(rawSearch);
             const filterBuilding = document.getElementById('admin-filter-building')?.value || 'all';
             const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
 
             const filtered = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || 
+                const matchesSearch = !rawSearch ||
+                                      apt.id.toLowerCase().includes(searchVal) || 
+                                      (searchKey && canonicalizeAptKey(apt.id).includes(searchKey)) ||
                                       (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal)) ||
                                       (apt.phone && apt.phone.includes(searchVal));
                 let matchesBuilding = true;
@@ -2952,8 +3741,20 @@
         window.submitResidentEvaluation = submitResidentEvaluation;
         window.closeEvalSuccessModal = closeEvalSuccessModal;
         window.previewNormalizedPhone = previewNormalizedPhone;
+        window.previewSmartVerifyInput = previewSmartVerifyInput;
         window.quickSelectAptForEvaluation = quickSelectAptForEvaluation;
         window.deleteEvaluation = deleteEvaluation;
+        window.updateEvaluationCategoryName = updateEvaluationCategoryName;
+        window.addNewEvaluationCategory = addNewEvaluationCategory;
+        window.removeEvaluationCategory = removeEvaluationCategory;
+        window.saveEvaluationCategoriesToCloud = saveEvaluationCategoriesToCloud;
+        window.resetDefaultEvaluationCategories = resetDefaultEvaluationCategories;
+        window.openPdfReportModal = openPdfReportModal;
+        window.closePdfReportModal = closePdfReportModal;
+        window.triggerPrintPdfReport = triggerPrintPdfReport;
+        window.onStep2PeriodChange = onStep2PeriodChange;
+        window.quickFilterPublicEvalPeriod = quickFilterPublicEvalPeriod;
+        window.saveDefaultEvalPeriodToCloud = saveDefaultEvalPeriodToCloud;
 
         /* Initialization */
         window.addEventListener('DOMContentLoaded', () => {
