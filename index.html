@@ -432,11 +432,16 @@
                                             class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition">
                                     </div>
 
-                                    <!-- Chọn Kỳ Đánh Giá Theo Quý & Năm -->
+                                    <!-- Chọn Kỳ Đánh Giá Theo Quý & Năm (Đồng bộ thời gian thực) -->
                                     <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
-                                        <label class="block text-xs font-extrabold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
-                                            <i class="fa-solid fa-calendar-days text-amber-500"></i> Chọn Kỳ Đánh Giá (Theo Quý & Năm):
-                                        </label>
+                                        <div class="flex items-center justify-between">
+                                            <label class="block text-xs font-extrabold text-amber-700 dark:text-amber-300 flex items-center gap-1.5">
+                                                <i class="fa-solid fa-calendar-days text-amber-500"></i> Kỳ Đánh Giá (Quý & Năm):
+                                            </label>
+                                            <button type="button" onclick="syncFormWithCurrentSystemTime()" class="text-[10px] font-extrabold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center gap-1" title="Đồng bộ theo Quý/Năm của thời gian thực hiện tại">
+                                                <i class="fa-solid fa-clock-rotate-left"></i> Theo kỳ hiện tại
+                                            </button>
+                                        </div>
                                         <div class="grid grid-cols-2 gap-2">
                                             <div>
                                                 <span class="block text-[10px] font-bold text-slate-500 dark:text-slate-400 mb-0.5">Chọn Quý / Kỳ:</span>
@@ -470,9 +475,19 @@
                                     </button>
                                 </form>
 
-                                <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2.5">
-                                    <i class="fa-solid fa-lock text-amber-500 text-sm shrink-0"></i>
-                                    <span>Số điện thoại cư dân được mã hóa bảo mật trên bảng công khai (VD: <strong class="font-mono text-slate-700 dark:text-slate-300">0912***678</strong>).</span>
+                                <!-- Trạng thái đồng bộ thời gian thực -->
+                                <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80 text-[11px] text-slate-500 dark:text-slate-400 space-y-1.5">
+                                    <div class="flex items-center justify-between">
+                                        <span class="font-bold text-emerald-600 dark:text-emerald-400 flex items-center gap-1.5">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                                            Đồng bộ Cloud Realtime
+                                        </span>
+                                        <span id="last-eval-sync-time" class="font-mono text-[10px] text-slate-400">Đang đồng bộ...</span>
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <i class="fa-solid fa-lock text-amber-500 text-xs shrink-0"></i>
+                                        <span>SĐT cư dân được mã hóa bảo mật công khai (VD: <strong class="font-mono text-slate-700 dark:text-slate-300">0912***678</strong>).</span>
+                                    </div>
                                 </div>
                             </div>
 
@@ -542,6 +557,36 @@
                         <!-- CỘT PHẢI (7/12): BẢNG PHÂN TÍCH ĐÁNH GIÁ THÔNG MINH TRÊN TRANG CHÍNH -->
                         <div class="lg:col-span-7 flex flex-col justify-between space-y-5">
                             
+                            <!-- 4 CHỈ SỐ PHÂN TÍCH THÔNG MINH REALTIME -->
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                                <div class="p-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Điểm Gia Quyền DT</span>
+                                    <div class="flex items-baseline gap-1 mt-0.5">
+                                        <span id="eval-area-weighted-score" class="text-lg sm:text-xl font-black font-mono text-emerald-600 dark:text-emerald-400">0.00</span>
+                                        <span class="text-[10px] text-slate-400 font-bold">/ 5.0</span>
+                                    </div>
+                                    <span id="eval-area-participation-pct" class="text-[10px] font-semibold text-slate-500">0.0% tổng DT dự án</span>
+                                </div>
+
+                                <div class="p-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Hạng Mục Cao Nhất</span>
+                                    <div id="eval-best-cat-name" class="text-xs font-black text-slate-800 dark:text-white truncate mt-1">--</div>
+                                    <span id="eval-best-cat-score" class="text-[11px] font-mono font-bold text-amber-500">0.00 ★</span>
+                                </div>
+
+                                <div class="p-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Cần Cải Thiện Nhất</span>
+                                    <div id="eval-lowest-cat-name" class="text-xs font-black text-slate-800 dark:text-white truncate mt-1">--</div>
+                                    <span id="eval-lowest-cat-score" class="text-[11px] font-mono font-bold text-rose-500">0.00 ★</span>
+                                </div>
+
+                                <div class="p-3 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm">
+                                    <span class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400 block">Cập Nhật Gần Nhất</span>
+                                    <div id="eval-last-activity-ago" class="text-xs font-black text-indigo-600 dark:text-indigo-400 truncate mt-1">Chưa có</div>
+                                    <span id="eval-unique-apts-count" class="text-[10px] font-semibold text-slate-500">0 căn hộ tham gia</span>
+                                </div>
+                            </div>
+
                             <!-- Thống Kê Điểm Chi Tiết Theo 6 Hạng Mục Vận Hành -->
                             <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-4">
                                 <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
@@ -576,25 +621,58 @@
                                 <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
                                     <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
                                         <span class="flex items-center gap-1.5">
-                                            <i class="fa-solid fa-chart-line text-emerald-500"></i> Tổng Hợp Điểm Tín Nhiệm Theo Từng Quý & Năm
+                                            <i class="fa-solid fa-chart-line text-emerald-500"></i> Xu Hướng Điểm Tín Nhiệm Theo Dòng Thời Gian (Quý & Năm)
                                         </span>
-                                        <span class="text-[10px] text-slate-400 font-normal">Nhấn vào kỳ để lọc nhanh</span>
+                                        <button type="button" onclick="toggleMatrixHeatmapView()" class="text-[11px] font-extrabold text-amber-600 dark:text-amber-400 hover:underline flex items-center gap-1">
+                                            <i class="fa-solid fa-table-cells"></i> <span id="toggle-matrix-btn-text">Xem Ma Trận Hạng Mục × Quý</span>
+                                        </button>
                                     </div>
                                     <div id="eval-period-comparison-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
+                                    </div>
+
+                                    <!-- Ma trận nhiệt (Heatmap) Hạng mục theo từng Quý -->
+                                    <div id="eval-category-quarter-matrix" class="hidden mt-3 pt-3 border-t border-slate-200/70 dark:border-slate-800 overflow-x-auto">
+                                    </div>
+                                </div>
+
+                                <!-- Phân Tích Điểm Hài Lòng Theo Từng Khối Tòa Nhà (Khối B1 - B5) -->
+                                <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                                    <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
+                                        <span class="flex items-center gap-1.5">
+                                            <i class="fa-solid fa-building-circle-check text-indigo-500"></i> Chỉ Số Hài Lòng & Tỷ Lệ Đánh Giá Theo Khối Tòa (B1 - B5)
+                                        </span>
+                                        <span class="text-[10px] text-slate-400 font-normal">Đồng bộ theo từng tòa</span>
+                                    </div>
+                                    <div id="eval-block-satisfaction-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-2 text-center text-xs">
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- Luồng Ý Kiến & Đánh Giá Mới Nhất Của Cư Dân -->
+                            <!-- Luồng Ý Kiến & Đánh Giá Mới Nhất Của Cư Dân (Realtime Timeline Feed) -->
                             <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-3 flex-1">
-                                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
-                                    <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
-                                        <i class="fa-solid fa-comments text-emerald-500"></i> Phản Hồi & Đánh Giá Thực Tế Từ Cư Dân Chính Chủ
-                                    </h4>
-                                    <span class="text-[11px] font-bold text-slate-400">Hiển thị công khai • Bảo mật SĐT</span>
+                                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2.5">
+                                    <div>
+                                        <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                            <i class="fa-solid fa-comments text-emerald-500"></i> Dòng Thời Gian Phản Hồi & Chi Tiết Điểm Cư Dân
+                                        </h4>
+                                        <p class="text-[10px] text-slate-400">Hiển thị công khai chi tiết 6 tiêu chí • Bảo mật SĐT chính chủ</p>
+                                    </div>
+                                    <div class="flex items-center gap-1.5">
+                                        <div class="relative">
+                                            <i class="fa-solid fa-magnifying-glass absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 text-[10px]"></i>
+                                            <input type="text" id="public-feed-search" oninput="renderEvaluationAnalytics()" placeholder="Lọc mã căn, ý kiến..."
+                                                class="pl-7 pr-2.5 py-1 text-[11px] bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-800 dark:text-white outline-none focus:ring-1 focus:ring-emerald-500 w-36 sm:w-44">
+                                        </div>
+                                        <select id="public-feed-star-filter" onchange="renderEvaluationAnalytics()" class="px-2 py-1 text-[11px] font-bold bg-slate-100 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg text-slate-700 dark:text-slate-300 outline-none">
+                                            <option value="ALL">Mọi số ★</option>
+                                            <option value="5">5 Sao ★</option>
+                                            <option value="4">4 Sao ★</option>
+                                            <option value="3">1-3 Sao ★</option>
+                                        </select>
+                                    </div>
                                 </div>
 
-                                <div id="public-recent-evaluations" class="space-y-2.5 max-h-[210px] overflow-y-auto pr-1 custom-scrollbar">
+                                <div id="public-recent-evaluations" class="space-y-2.5 max-h-[280px] overflow-y-auto pr-1 custom-scrollbar">
                                     <div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào. Hãy là cư dân đầu tiên gửi đánh giá!</div>
                                 </div>
                             </div>
@@ -1281,6 +1359,34 @@
         </div>
     </div>
 
+    <!-- ==================== MODAL TRA CỨU LỊCH SỬ ĐÁNH GIÁ THEO THỜI GIAN CỦA CĂN HỘ ==================== -->
+    <div id="apt-eval-history-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card rounded-3xl shadow-2xl border border-amber-500/40 w-full max-w-2xl max-h-[88vh] flex flex-col overflow-hidden">
+            <div class="p-5 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 text-amber-500 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-clock-rotate-left"></i>
+                    </div>
+                    <div>
+                        <span class="text-[10px] font-extrabold uppercase tracking-wider text-amber-600 dark:text-amber-400">Hồ Sơ Tín Nhiệm Theo Thời Gian</span>
+                        <h4 id="apt-history-modal-title" class="font-black text-slate-900 dark:text-white text-base">Lịch Sử Đánh Giá Căn Hộ</h4>
+                    </div>
+                </div>
+                <button onclick="closeAptEvalHistoryModal()" class="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-xs font-bold transition">
+                    Đóng
+                </button>
+            </div>
+            <div id="apt-history-modal-body" class="p-5 overflow-y-auto space-y-4 custom-scrollbar">
+            </div>
+            <div class="p-4 bg-slate-100 dark:bg-slate-900/90 border-t border-slate-200 dark:border-slate-800 flex items-center justify-between text-xs">
+                <span class="text-slate-500">Dữ liệu đồng bộ thời gian thực trên Cloud</span>
+                <button id="apt-history-new-eval-btn" onclick="" class="px-4 py-2 bg-gradient-to-r from-amber-500 to-emerald-600 text-white font-bold rounded-xl text-xs shadow transition">
+                    <i class="fa-solid fa-pen-to-square mr-1"></i> Cập Nhật / Đánh Giá Kỳ Mới
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ==================== MODAL XEM TRƯỚC & XUẤT BÁO CÁO PDF TỔNG HỢP ==================== -->
     <div id="pdf-report-modal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-3 sm:p-6 opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="bg-white text-slate-900 rounded-3xl shadow-2xl border border-slate-300 w-full max-w-5xl max-h-[92vh] flex flex-col overflow-hidden">
@@ -1380,14 +1486,25 @@
         const evaluationsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'evaluations');
         const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
 
+        /* Tự động tính toán Quý & Năm hiện tại theo đồng hồ thời gian thực */
+        function detectCurrentSystemPeriod() {
+            const now = new Date();
+            const month = now.getMonth() + 1;
+            const q = 'Q' + Math.ceil(month / 3);
+            const y = now.getFullYear();
+            return { quarter: q, year: (y >= 2025 && y <= 2027) ? y : 2026 };
+        }
+
+        const initialSystemPeriod = detectCurrentSystemPeriod();
+
         /* Application Global State */
         let state = {
             totalAreaOverride: DEFAULT_TOTAL_AREA,
             apartments: [],
             evaluations: [],
             evaluationCategories: [...DEFAULT_EVALUATION_CATEGORIES],
-            defaultEvalQuarter: 'Q4',
-            defaultEvalYear: 2026,
+            defaultEvalQuarter: initialSystemPeriod.quarter,
+            defaultEvalYear: initialSystemPeriod.year,
             manualEntries: [],
             blockNames: { ...DEFAULT_BLOCK_NAMES },
             isAdminAuthenticated: false,
@@ -1396,8 +1513,10 @@
             theme: 'dark',
             verifiedApartment: null,
             currentRatings: {},
-            selectedEvalQuarter: 'Q4',
-            selectedEvalYear: 2026
+            selectedEvalQuarter: initialSystemPeriod.quarter,
+            selectedEvalYear: initialSystemPeriod.year,
+            showMatrixHeatmap: false,
+            lastEvaluationSyncTime: null
         };
 
         const QUARTER_LABELS = {
@@ -1407,6 +1526,49 @@
             'Q4': 'Quý 4',
             'YEAR': 'Cả Năm'
         };
+
+        /* Định dạng khoảng thời gian tương đối thông minh (VD: Vừa xong, 5 phút trước...) */
+        function formatRelativeTimeAgo(isoString) {
+            if (!isoString) return 'Chưa rõ';
+            const past = new Date(isoString).getTime();
+            if (isNaN(past)) return 'Chưa rõ';
+            const diffSec = Math.max(0, Math.floor((Date.now() - past) / 1000));
+            if (diffSec < 45) return 'Vừa xong';
+            const diffMin = Math.floor(diffSec / 60);
+            if (diffMin < 60) return `${diffMin} phút trước`;
+            const diffHour = Math.floor(diffMin / 60);
+            if (diffHour < 24) return `${diffHour} giờ trước`;
+            const diffDay = Math.floor(diffHour / 24);
+            if (diffDay < 30) return `${diffDay} ngày trước`;
+            return new Date(isoString).toLocaleDateString('vi-VN');
+        }
+
+        function syncFormWithCurrentSystemTime() {
+            const sys = detectCurrentSystemPeriod();
+            const resQ = document.getElementById('resident-eval-quarter');
+            const resY = document.getElementById('resident-eval-year');
+            if (resQ) resQ.value = sys.quarter;
+            if (resY) resY.value = String(sys.year);
+            state.selectedEvalQuarter = sys.quarter;
+            state.selectedEvalYear = sys.year;
+            showToast(`Đã đồng bộ kỳ đánh giá theo thời gian thực: ${formatEvalPeriodBadge(sys.quarter, sys.year)}`, "info");
+        }
+
+        function toggleMatrixHeatmapView() {
+            state.showMatrixHeatmap = !state.showMatrixHeatmap;
+            const matrixEl = document.getElementById('eval-category-quarter-matrix');
+            const btnTxt = document.getElementById('toggle-matrix-btn-text');
+            if (matrixEl) {
+                if (state.showMatrixHeatmap) {
+                    matrixEl.classList.remove('hidden');
+                    if (btnTxt) btnTxt.innerText = 'Ẩn Ma Trận Hạng Mục × Quý';
+                } else {
+                    matrixEl.classList.add('hidden');
+                    if (btnTxt) btnTxt.innerText = 'Xem Ma Trận Hạng Mục × Quý';
+                }
+            }
+            renderEvaluationAnalytics();
+        }
 
         function formatEvalPeriodBadge(quarter, year) {
             const q = quarter || state.defaultEvalQuarter || 'Q4';
@@ -1802,6 +1964,7 @@
             const evals = getFilteredPublicEvaluations();
             const totalEvals = evals.length;
             const activeCats = getActiveEvaluationCategories();
+            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
 
             const yearFilter = document.getElementById('public-eval-filter-year')?.value || 'ALL';
             const quarterFilter = document.getElementById('public-eval-filter-quarter')?.value || 'ALL';
@@ -1820,13 +1983,19 @@
             const distContainer = document.getElementById('eval-star-distribution');
             const tierSummaryEl = document.getElementById('eval-rating-tier-summary');
             const periodGridEl = document.getElementById('eval-period-comparison-grid');
+            const matrixEl = document.getElementById('eval-category-quarter-matrix');
+            const blockSatGridEl = document.getElementById('eval-block-satisfaction-grid');
             const recentListEl = document.getElementById('public-recent-evaluations');
 
             let overallSum = 0;
             let evaluatedAreaSum = 0;
+            let weightedAreaScoreSum = 0;
+            const uniqueAptSet = new Set();
             const catSums = {};
             activeCats.forEach(c => { catSums[c.id] = 0; });
             const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+            let latestSubmittedIso = null;
 
             evals.forEach(ev => {
                 let evCatSum = 0;
@@ -1837,20 +2006,61 @@
                 });
 
                 const avg = activeCats.length > 0 ? (evCatSum / activeCats.length) : (parseFloat(ev.avgScore) || 5);
+                const aptArea = parseFloat(ev.area) || 60;
                 overallSum += avg;
-                evaluatedAreaSum += parseFloat(ev.area) || 0;
+                if (!uniqueAptSet.has(ev.aptId)) {
+                    uniqueAptSet.add(ev.aptId);
+                    evaluatedAreaSum += aptArea;
+                }
+                weightedAreaScoreSum += (avg * aptArea);
 
                 const roundedStar = Math.min(5, Math.max(1, Math.round(avg)));
                 starCounts[roundedStar] = (starCounts[roundedStar] || 0) + 1;
+
+                if (ev.submittedAt && (!latestSubmittedIso || ev.submittedAt > latestSubmittedIso)) {
+                    latestSubmittedIso = ev.submittedAt;
+                }
             });
 
             const overallAvg = totalEvals > 0 ? (overallSum / totalEvals) : 0;
+            const totalWeightArea = evals.reduce((s, e) => s + (parseFloat(e.area) || 60), 0);
+            const areaWeightedAvg = totalWeightArea > 0 ? (weightedAreaScoreSum / totalWeightArea) : 0;
             const satPercent = totalEvals > 0 ? Math.round((overallAvg / 5) * 100) : 0;
+            const areaPartPct = effectiveTotalArea > 0 ? ((evaluatedAreaSum / effectiveTotalArea) * 100).toFixed(1) : '0.0';
 
             if (overallScoreEl) overallScoreEl.innerText = overallAvg.toFixed(2);
-            if (totalCountBadge) totalCountBadge.innerText = `${totalEvals} phiếu đánh giá`;
+            if (totalCountBadge) totalCountBadge.innerText = `${totalEvals} phiếu (${uniqueAptSet.size} căn)`;
             if (satPercentEl) satPercentEl.innerText = `${satPercent}%`;
-            if (areaWeightBadge) areaWeightBadge.innerText = `DT tham gia đánh giá: ${formatNumber(evaluatedAreaSum)} m²`;
+            if (areaWeightBadge) areaWeightBadge.innerText = `DT tham gia đánh giá: ${formatNumber(evaluatedAreaSum)} m² (${areaPartPct}%)`;
+
+            // Render 4 KPI Insight Cards phía trên
+            const areaWeightedEl = document.getElementById('eval-area-weighted-score');
+            const areaPartPctEl = document.getElementById('eval-area-participation-pct');
+            const bestCatNameEl = document.getElementById('eval-best-cat-name');
+            const bestCatScoreEl = document.getElementById('eval-best-cat-score');
+            const lowestCatNameEl = document.getElementById('eval-lowest-cat-name');
+            const lowestCatScoreEl = document.getElementById('eval-lowest-cat-score');
+            const lastActivityAgoEl = document.getElementById('eval-last-activity-ago');
+            const uniqueAptsCountEl = document.getElementById('eval-unique-apts-count');
+
+            if (areaWeightedEl) areaWeightedEl.innerText = areaWeightedAvg.toFixed(2);
+            if (areaPartPctEl) areaPartPctEl.innerText = `${areaPartPct}% tổng DT dự án`;
+            if (lastActivityAgoEl) lastActivityAgoEl.innerText = latestSubmittedIso ? formatRelativeTimeAgo(latestSubmittedIso) : 'Chưa có';
+            if (uniqueAptsCountEl) uniqueAptsCountEl.innerText = `${uniqueAptSet.size} / ${state.apartments.length || 0} căn hộ`;
+
+            let bestCat = null;
+            let lowestCat = null;
+            if (totalEvals > 0 && activeCats.length > 0) {
+                activeCats.forEach(cat => {
+                    const avg = catSums[cat.id] / totalEvals;
+                    if (!bestCat || avg > bestCat.avg) bestCat = { name: cat.name, avg };
+                    if (!lowestCat || avg < lowestCat.avg) lowestCat = { name: cat.name, avg };
+                });
+            }
+            if (bestCatNameEl) bestCatNameEl.innerText = bestCat ? bestCat.name : '--';
+            if (bestCatScoreEl) bestCatScoreEl.innerText = bestCat ? `${bestCat.avg.toFixed(2)} ★ (Tốt nhất)` : '0.00 ★';
+            if (lowestCatNameEl) lowestCatNameEl.innerText = lowestCat ? lowestCat.name : '--';
+            if (lowestCatScoreEl) lowestCatScoreEl.innerText = lowestCat ? `${lowestCat.avg.toFixed(2)} ★` : '0.00 ★';
 
             // 1. Render các hạng mục động
             if (breakdownContainer) {
@@ -1858,7 +2068,7 @@
                     const avg = totalEvals > 0 ? (catSums[cat.id] / totalEvals) : 0;
                     const pct = Math.round((avg / 5) * 100);
                     return `
-                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-2">
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-2 hover:border-amber-500/40 transition">
                             <div class="flex items-center justify-between text-xs gap-2">
                                 <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate" title="${cat.name}">
                                     <i class="fa-solid ${cat.icon || 'fa-star'} ${cat.color || 'text-emerald-500'}"></i>
@@ -1901,11 +2111,11 @@
                 }).join('');
             }
 
-            // 2b. Render Bảng So Sánh Theo Từng Quý & Năm (Q1, Q2, Q3, Q4, Cả Năm)
-            if (periodGridEl) {
-                const targetYear = yearFilter === 'ALL' ? String(state.defaultEvalYear || 2026) : yearFilter;
-                const periods = ['Q1', 'Q2', 'Q3', 'Q4', 'YEAR'];
+            // 2b. Render Bảng So Sánh Theo Từng Quý & Năm (Q1, Q2, Q3, Q4, Cả Năm) + Ma trận Heatmap
+            const targetYear = yearFilter === 'ALL' ? String(state.defaultEvalYear || 2026) : yearFilter;
+            const periods = ['Q1', 'Q2', 'Q3', 'Q4', 'YEAR'];
 
+            if (periodGridEl) {
                 periodGridEl.innerHTML = periods.map(qKey => {
                     const matching = (state.evaluations || []).filter(ev => {
                         const y = String(ev.evalYear || state.defaultEvalYear || 2026);
@@ -1928,32 +2138,127 @@
                 }).join('');
             }
 
-            // 3. Render danh sách phản hồi công khai mới nhất
+            if (matrixEl && state.showMatrixHeatmap) {
+                const headerCols = periods.map(qKey => `<th class="p-2 text-center font-extrabold text-slate-600 dark:text-slate-300">${QUARTER_LABELS[qKey]}/${targetYear}</th>`).join('');
+                const bodyRows = activeCats.map(cat => {
+                    const cells = periods.map(qKey => {
+                        const matching = (state.evaluations || []).filter(ev => {
+                            const y = String(ev.evalYear || state.defaultEvalYear || 2026);
+                            const q = String(ev.evalQuarter || state.defaultEvalQuarter || 'Q4');
+                            return y === targetYear && q === qKey;
+                        });
+                        if (matching.length === 0) {
+                            return `<td class="p-2 text-center font-mono text-slate-400">--</td>`;
+                        }
+                        const sum = matching.reduce((s, ev) => s + (parseFloat(ev.ratings?.[cat.id] ?? ev.avgScore ?? 5) || 5), 0);
+                        const avg = sum / matching.length;
+                        const badgeClass = avg >= 4.5
+                            ? 'bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                            : (avg >= 3.5 ? 'bg-amber-500/20 text-amber-700 dark:text-amber-300 border-amber-500/30' : 'bg-rose-500/20 text-rose-700 dark:text-rose-300 border-rose-500/30');
+                        return `<td class="p-1.5 text-center"><span class="inline-block px-2 py-0.5 rounded-lg border font-mono font-bold text-[11px] ${badgeClass}">${avg.toFixed(2)}★</span></td>`;
+                    }).join('');
+                    return `
+                        <tr class="border-t border-slate-200 dark:border-slate-800">
+                            <td class="p-2 font-bold text-slate-800 dark:text-slate-200 whitespace-nowrap">${cat.name}</td>
+                            ${cells}
+                        </tr>
+                    `;
+                }).join('');
+
+                matrixEl.innerHTML = `
+                    <table class="w-full text-[11px] text-left">
+                        <thead class="bg-slate-100 dark:bg-slate-950">
+                            <tr>
+                                <th class="p-2 font-extrabold text-slate-600 dark:text-slate-300">Hạng Mục Vận Hành</th>
+                                ${headerCols}
+                            </tr>
+                        </thead>
+                        <tbody>${bodyRows}</tbody>
+                    </table>
+                `;
+            }
+
+            // 2c. Render Thống kê Hài lòng theo từng Khối Tòa (Khối B1 - B5)
+            if (blockSatGridEl) {
+                const blockKeys = ['B1', 'B2', 'B3', 'B4', 'B5'];
+                blockSatGridEl.innerHTML = blockKeys.map(bKey => {
+                    const altKey = 'NO' + bKey.slice(1);
+                    const blockEvals = evals.filter(ev => {
+                        const code = String(ev.aptId || '').toUpperCase();
+                        return code.startsWith(bKey) || code.startsWith(altKey);
+                    });
+                    const bCnt = blockEvals.length;
+                    const bSum = blockEvals.reduce((s, item) => s + (parseFloat(item.avgScore) || 5), 0);
+                    const bAvg = bCnt > 0 ? (bSum / bCnt).toFixed(2) : '--';
+                    const bDisplayName = state.blockNames[bKey] || `Khối ${bKey}`;
+
+                    return `
+                        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                            <div class="text-[11px] font-extrabold text-indigo-600 dark:text-indigo-400 truncate">${bDisplayName}</div>
+                            <div class="font-mono font-black text-slate-900 dark:text-white text-xs mt-0.5">${bAvg} <i class="fa-solid fa-star text-amber-500 text-[9px]"></i></div>
+                            <div class="text-[10px] text-slate-400 font-mono">${bCnt} phiếu</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 3. Render danh sách phản hồi công khai mới nhất (Kèm bộ lọc & điểm từng tiêu chí)
             if (recentListEl) {
-                if (totalEvals === 0) {
-                    recentListEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào trong kỳ này. Hãy là cư dân đầu tiên xác thực mã căn & SĐT để gửi đánh giá!</div>`;
+                const feedSearch = (document.getElementById('public-feed-search')?.value || '').trim().toLowerCase();
+                const feedStarFilter = document.getElementById('public-feed-star-filter')?.value || 'ALL';
+
+                const filteredFeed = [...evals]
+                    .filter(ev => {
+                        const matchText = !feedSearch ||
+                            String(ev.aptId || '').toLowerCase().includes(feedSearch) ||
+                            String(ev.ownerName || '').toLowerCase().includes(feedSearch) ||
+                            String(ev.comment || '').toLowerCase().includes(feedSearch);
+                        let matchStar = true;
+                        const rounded = Math.round(parseFloat(ev.avgScore) || 5);
+                        if (feedStarFilter === '5') matchStar = rounded === 5;
+                        else if (feedStarFilter === '4') matchStar = rounded === 4;
+                        else if (feedStarFilter === '3') matchStar = rounded <= 3;
+                        return matchText && matchStar;
+                    })
+                    .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+
+                if (filteredFeed.length === 0) {
+                    recentListEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào phù hợp trong kỳ này.</div>`;
                 } else {
-                    const sortedEvals = [...evals].sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
-                    recentListEl.innerHTML = sortedEvals.map(ev => {
+                    recentListEl.innerHTML = filteredFeed.map(ev => {
                         const periodBadge = formatEvalPeriodBadge(ev.evalQuarter, ev.evalYear);
+                        const relativeAgo = ev.submittedAt ? formatRelativeTimeAgo(ev.submittedAt) : (ev.displayTime || '');
+                        const miniCatTags = activeCats.map(cat => {
+                            const sc = ev.ratings?.[cat.id] ?? ev.avgScore ?? 5;
+                            const shortName = cat.name.split(/[,&]/)[0].trim();
+                            return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded bg-slate-200/70 dark:bg-slate-900 text-[10px] font-mono text-slate-600 dark:text-slate-400">${shortName}: <strong class="text-amber-600 dark:text-amber-400">${sc}★</strong></span>`;
+                        }).join('');
+
                         return `
-                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                                <div class="space-y-1">
-                                    <div class="flex flex-wrap items-center gap-2">
-                                        <span class="font-black text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${ev.aptId}</span>
+                            <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 space-y-2 hover:border-emerald-500/40 transition">
+                                <div class="flex flex-wrap items-center justify-between gap-2">
+                                    <div class="flex flex-wrap items-center gap-1.5">
+                                        <button type="button" onclick="openAptEvalHistoryModal('${ev.aptId}')" class="font-black text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 hover:bg-emerald-500/20 px-2 py-0.5 rounded border border-emerald-500/20 transition" title="Xem lịch sử đánh giá của căn ${ev.aptId}">
+                                            ${ev.aptId} <i class="fa-solid fa-clock-rotate-left text-[9px] ml-0.5"></i>
+                                        </button>
                                         <span class="px-2 py-0.5 rounded bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30 text-[10px] font-extrabold">${periodBadge}</span>
                                         <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${ev.ownerName || 'Chủ sở hữu'}</span>
                                         ${maskPhoneForPublic(ev.phone)}
-                                        <span class="text-[10px] text-slate-400 font-mono">${ev.displayTime || ''}</span>
                                     </div>
-                                    <p class="text-xs text-slate-600 dark:text-slate-300 italic">
-                                        ${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Đã chấm điểm tín nhiệm các hạng mục vận hành & BQT.</span>'}
-                                    </p>
+                                    <div class="flex items-center gap-2">
+                                        <span class="text-[10px] text-emerald-600 dark:text-emerald-400 font-semibold flex items-center gap-1" title="${ev.displayTime || ''}">
+                                            <i class="fa-regular fa-clock"></i> ${relativeAgo}
+                                        </span>
+                                        <div class="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-2 py-0.5 rounded-lg">
+                                            <i class="fa-solid fa-star text-amber-500 text-[10px]"></i>
+                                            <span class="font-mono font-black text-xs text-amber-600 dark:text-amber-300">${Number(ev.avgScore || 5).toFixed(2)}</span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-xl shrink-0 self-start sm:self-center">
-                                    <i class="fa-solid fa-star text-amber-500 text-xs"></i>
-                                    <span class="font-mono font-black text-xs text-amber-600 dark:text-amber-300">${Number(ev.avgScore || 5).toFixed(1)}</span>
-                                </div>
+                                <div class="flex flex-wrap gap-1">${miniCatTags}</div>
+                                <p class="text-xs text-slate-600 dark:text-slate-300 italic">
+                                    ${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Đã chấm điểm tín nhiệm các hạng mục vận hành & BQT.</span>'}
+                                </p>
                             </div>
                         `;
                     }).join('');
@@ -2210,35 +2515,18 @@
                     });
                 });
                 state.evaluations = evalList;
+                state.lastEvaluationSyncTime = new Date().toISOString();
+                const syncTimeEl = document.getElementById('last-eval-sync-time');
+                if (syncTimeEl) {
+                    syncTimeEl.innerText = `Đồng bộ lúc ${new Date().toLocaleTimeString('vi-VN')}`;
+                }
                 render();
             }, (error) => {
                 console.error("Evaluations listener error:", error);
             });
 
             // 3. Settings listener
-            onSnapshot(settingsDocRef, (docSnap) => {
-                if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    if (data && typeof data.totalAreaOverride === 'number' && data.totalAreaOverride > 0) {
-                        state.totalAreaOverride = data.totalAreaOverride;
-                    }
-                    if (data && Array.isArray(data.manualEntries)) {
-                        state.manualEntries = data.manualEntries;
-                    } else {
-                        state.manualEntries = [];
-                    }
-                    if (data && data.blockNames && typeof data.blockNames === 'object') {
-                        state.blockNames = { ...DEFAULT_BLOCK_NAMES, ...data.blockNames };
-                    }
-                    if (data && Array.isArray(data.evaluationCategories) && data.evaluationCategories.length > 0) {
-                        state.evaluationCategories = data.evaluationCategories;
-                    } else {
-                        state.evaluationCategories = [...DEFAULT_EVALUATION_CATEGORIES];
-                    }
-                    if (data && data.defaultEvalQuarter) {
-                        state.defaultEvalQuarter = data.defaultEvalQuarter;
-                    }
-                    if (data && data.defaultEvalYear) {
+                    data && data.defaultEvalYear) {
                         state.defaultEvalYear = Number(data.defaultEvalYear);
                     }
                     syncDefaultPeriodSelects();
@@ -2247,6 +2535,156 @@
             }, (error) => {
                 console.error("Settings listener error:", error);
             });
+        }
+
+        /* ==================== HÀM RENDER TỔNG HỢP TOÀN TRANG REALTIME ==================== */
+        function render() {
+            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            
+            let attendedApartmentArea = 0;
+            let attendedUnits = 0;
+
+            state.apartments.forEach(apt => {
+                if (apt.attended) {
+                    attendedApartmentArea += apt.area;
+                    attendedUnits++;
+                }
+            });
+
+            const manualAreaSum = (state.manualEntries || []).reduce((sum, item) => sum + (parseFloat(item.area) || 0), 0);
+            const totalAttendedArea = attendedApartmentArea + manualAreaSum;
+
+            const totalUnits = state.apartments.length;
+            const percentArea = effectiveTotalArea > 0 ? (totalAttendedArea / effectiveTotalArea) * 100 : 0;
+            const percentUnits = totalUnits > 0 ? (attendedUnits / totalUnits) * 100 : 0;
+            const missingArea = Math.max(0, effectiveTotalArea - totalAttendedArea);
+
+            const metricTotal = document.getElementById('metric-total-area');
+            const metricAttended = document.getElementById('metric-attended-area');
+            const metricMissing = document.getElementById('metric-missing-area');
+            const metricTotalUnits = document.getElementById('metric-total-units');
+            const metricAttendedUnits = document.getElementById('metric-attended-units');
+            const metricUnitsPercent = document.getElementById('metric-units-percent');
+            const metricPercent = document.getElementById('metric-percent');
+
+            if (metricTotal) metricTotal.innerText = formatNumber(effectiveTotalArea);
+            if (metricAttended) metricAttended.innerText = formatNumber(totalAttendedArea);
+            if (metricMissing) metricMissing.innerText = `${formatNumber(missingArea)} m²`;
+            if (metricTotalUnits) metricTotalUnits.innerText = totalUnits;
+            if (metricAttendedUnits) metricAttendedUnits.innerText = attendedUnits;
+            if (metricUnitsPercent) metricUnitsPercent.innerText = `${percentUnits.toFixed(1)}%`;
+            if (metricPercent) metricPercent.innerText = `${percentArea.toFixed(2)}%`;
+
+            const barFill = document.getElementById('progress-bar-fill');
+            if (barFill) barFill.style.width = `${Math.min(percentArea, 100)}%`;
+
+            const statusBadge = document.getElementById('status-badge');
+            if (statusBadge) {
+                if (percentArea >= 50) {
+                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-emerald-500/20 text-emerald-800 dark:text-emerald-300 border border-emerald-500/40 flex items-center gap-1.5 animate-bounce shadow-lg shadow-emerald-500/20";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600 dark:text-emerald-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 50% BIỂU QUYẾT`;
+
+                    if (!state.hasFiredConfetti) {
+                        triggerCelebrationConfetti();
+                        state.hasFiredConfetti = true;
+                    }
+                } else if (percentArea >= 30) {
+                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-blue-500/20 text-blue-800 dark:text-blue-300 border border-blue-500/40 flex items-center gap-1.5 shadow-md";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-building-circle-check text-blue-600 dark:text-blue-400"></i> ĐÃ ĐỦ ĐIỀU KIỆN 30% TỔ CHỨC HNNCC THƯỜNG NIÊN`;
+                } else {
+                    statusBadge.className = "px-3.5 py-1 text-xs font-bold rounded-full bg-amber-500/20 text-amber-800 dark:text-amber-300 border border-amber-500/30 flex items-center gap-1.5";
+                    statusBadge.innerHTML = `<i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30% tổ chức`;
+                    state.hasFiredConfetti = false;
+                }
+            }
+
+            renderEvaluationAnalytics();
+            renderTable();
+            if (state.isAdminAuthenticated) {
+                renderAdminOverviewHeader();
+                renderAdminTable();
+                renderAdminEvaluationsTable();
+                renderManualHistoryTable();
+                renderBuildingStats();
+            }
+        }
+
+        /* ==================== MODAL LỊCH SỬ ĐÁNH GIÁ THEO DÒNG THỜI GIAN CỦA TỪNG CĂN HỘ ==================== */
+        function openAptEvalHistoryModal(aptId) {
+            const modal = document.getElementById('apt-eval-history-modal');
+            const titleEl = document.getElementById('apt-history-modal-title');
+            const bodyEl = document.getElementById('apt-history-modal-body');
+            const newBtn = document.getElementById('apt-history-new-eval-btn');
+            if (!modal || !bodyEl) return;
+
+            const apt = findApartmentSmart(aptId) || { id: aptId, ownerName: 'Chủ sở hữu', area: 0 };
+            const aptKey = canonicalizeAptKey(apt.id);
+            const activeCats = getActiveEvaluationCategories();
+
+            const aptEvals = (state.evaluations || [])
+                .filter(ev => canonicalizeAptKey(ev.aptId) === aptKey)
+                .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+
+            if (titleEl) {
+                titleEl.innerHTML = `Căn hộ <span class="text-emerald-600 dark:text-emerald-400">${apt.id}</span> • ${apt.ownerName || 'Chủ sở hữu'} (${aptEvals.length} kỳ đánh giá)`;
+            }
+            if (newBtn) {
+                newBtn.onclick = () => {
+                    closeAptEvalHistoryModal();
+                    quickSelectAptForEvaluation(apt.id);
+                };
+            }
+
+            if (aptEvals.length === 0) {
+                bodyEl.innerHTML = `
+                    <div class="text-center py-8 text-xs text-slate-400">
+                        Căn hộ <strong>${apt.id}</strong> chưa gửi đánh giá ở kỳ nào.
+                    </div>
+                `;
+            } else {
+                bodyEl.innerHTML = aptEvals.map(ev => {
+                    const pBadge = formatEvalPeriodBadge(ev.evalQuarter, ev.evalYear);
+                    const relTime = ev.submittedAt ? formatRelativeTimeAgo(ev.submittedAt) : '';
+                    const catGrid = activeCats.map(cat => {
+                        const sc = ev.ratings?.[cat.id] ?? ev.avgScore ?? 5;
+                        return `
+                            <div class="flex items-center justify-between p-2 rounded-lg bg-slate-100 dark:bg-slate-900 text-[11px]">
+                                <span class="text-slate-700 dark:text-slate-300 font-medium truncate mr-2">${cat.name}</span>
+                                <span class="font-mono font-bold text-amber-500 shrink-0">${sc} ★</span>
+                            </div>
+                        `;
+                    }).join('');
+
+                    return `
+                        <div class="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 space-y-3">
+                            <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-2">
+                                <div class="flex items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-lg bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/30 font-extrabold text-xs">${pBadge}</span>
+                                    <span class="text-[11px] text-slate-400 font-mono">${ev.displayTime || ''} (${relTime})</span>
+                                </div>
+                                <span class="px-2.5 py-1 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-mono font-black text-xs">
+                                    Điểm TB: ${Number(ev.avgScore || 5).toFixed(2)} / 5.0 ★
+                                </span>
+                            </div>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">${catGrid}</div>
+                            <div class="text-xs italic text-slate-600 dark:text-slate-300 bg-white dark:bg-slate-900 p-2.5 rounded-xl border border-slate-200/70 dark:border-slate-800">
+                                ${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Không có kiến nghị bổ sung trong kỳ này.</span>'}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100');
+        }
+
+        function closeAptEvalHistoryModal() {
+            const modal = document.getElementById('apt-eval-history-modal');
+            if (modal) {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
         }
 
         function syncDefaultPeriodSelects() {
@@ -2288,8 +2726,12 @@
             const searchKey = canonicalizeAptKey(rawSearch);
             const filterStatus = document.getElementById('filter-status')?.value || 'all';
 
-            const evalMap = new Map();
-            (state.evaluations || []).forEach(ev => evalMap.set(ev.aptId, ev));
+            const evalGroupMap = new Map();
+            (state.evaluations || []).forEach(ev => {
+                const key = canonicalizeAptKey(ev.aptId);
+                if (!evalGroupMap.has(key)) evalGroupMap.set(key, []);
+                evalGroupMap.get(key).push(ev);
+            });
 
             const filtered = state.apartments.filter(apt => {
                 const matchesSearch = !rawSearch ||
@@ -2297,9 +2739,10 @@
                                       (searchKey && canonicalizeAptKey(apt.id).includes(searchKey)) ||
                                       (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesStatus = true;
+                const aptEvals = evalGroupMap.get(canonicalizeAptKey(apt.id)) || [];
                 if (filterStatus === 'attended') matchesStatus = apt.attended;
                 if (filterStatus === 'absent') matchesStatus = !apt.attended;
-                if (filterStatus === 'evaluated') matchesStatus = evalMap.has(apt.id);
+                if (filterStatus === 'evaluated') matchesStatus = aptEvals.length > 0;
                 return matchesSearch && matchesStatus;
             });
 
@@ -2322,7 +2765,9 @@
             tbody.innerHTML = filtered.map((apt, index) => {
                 const blockKey = apt.id.split('-')[0]?.toUpperCase() || 'B1';
                 const blockDisplayName = state.blockNames[blockKey] || `Khối ${blockKey}`;
-                const ev = evalMap.get(apt.id);
+                const aptEvals = (evalGroupMap.get(canonicalizeAptKey(apt.id)) || [])
+                    .sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+                const latestEv = aptEvals[0];
 
                 return `
                     <tr class="hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition border-b border-slate-200 dark:border-slate-800/80">
@@ -2333,8 +2778,12 @@
                         <td class="py-2.5 px-4 text-slate-600 font-medium">${blockDisplayName}</td>
                         <td class="py-2.5 px-4 text-right font-bold text-slate-800 font-mono">${formatNumber(apt.area)}</td>
                         <td class="py-2.5 px-4 text-center">
-                            ${ev 
-                                ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-star text-amber-500"></i> ${Number(ev.avgScore).toFixed(1)}/5.0</span>`
+                            ${latestEv 
+                                ? `<button onclick="openAptEvalHistoryModal('${apt.id}')" class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300 transition shadow-sm" title="Nhấn để xem lịch sử ${aptEvals.length} kỳ đánh giá">
+                                    <i class="fa-solid fa-star text-amber-500"></i>
+                                    <span>${Number(latestEv.avgScore).toFixed(1)}</span>
+                                    <span class="text-[10px] text-amber-700">(${formatEvalPeriodBadge(latestEv.evalQuarter, latestEv.evalYear)}${aptEvals.length > 1 ? ` +${aptEvals.length - 1}` : ''})</span>
+                                   </button>`
                                 : `<button onclick="quickSelectAptForEvaluation('${apt.id}')" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">Đánh giá ngay</button>`
                             }
                         </td>
@@ -3755,14 +4204,25 @@
         window.onStep2PeriodChange = onStep2PeriodChange;
         window.quickFilterPublicEvalPeriod = quickFilterPublicEvalPeriod;
         window.saveDefaultEvalPeriodToCloud = saveDefaultEvalPeriodToCloud;
+        window.syncFormWithCurrentSystemTime = syncFormWithCurrentSystemTime;
+        window.toggleMatrixHeatmapView = toggleMatrixHeatmapView;
+        window.openAptEvalHistoryModal = openAptEvalHistoryModal;
+        window.closeAptEvalHistoryModal = closeAptEvalHistoryModal;
+        window.renderEvaluationAnalytics = renderEvaluationAnalytics;
+        window.render = render;
 
         /* Initialization */
         window.addEventListener('DOMContentLoaded', () => {
             applyTheme(state.theme);
-            renderEvaluationAnalytics();
+            syncDefaultPeriodSelects();
+            render();
             initFirebaseAndSync();
             updateLiveClock();
             setInterval(updateLiveClock, 1000);
+            // Tự động làm mới thời gian tương đối ("Vừa xong", "X phút trước") mỗi 30 giây
+            setInterval(() => {
+                renderEvaluationAnalytics();
+            }, 30000);
 
             if (window.location.hash === '#admin') {
                 openAdminView();
