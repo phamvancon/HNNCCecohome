@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hội Nghị Nhà Chung Cư Ecohome Nhơn Bình 2026</title>
+    <title>Hội Nghị Nhà Chung Cư & Đánh Giá Vận Hành Ecohome Nhơn Bình 2026</title>
     
     <!-- Google Fonts Preconnect & Plus Jakarta Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -42,6 +42,7 @@
                     animation: {
                         'pulse-glow': 'pulseGlow 2s infinite',
                         'float': 'float 3s ease-in-out infinite',
+                        'scale-up': 'scaleUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards',
                     },
                     keyframes: {
                         pulseGlow: {
@@ -51,6 +52,10 @@
                         float: {
                             '0%, 100%': { transform: 'translateY(0px)' },
                             '50%': { transform: 'translateY(-6px)' },
+                        },
+                        scaleUp: {
+                            '0%': { opacity: '0', transform: 'scale(0.9)' },
+                            '100%': { opacity: '1', transform: 'scale(1)' },
                         }
                     }
                 }
@@ -82,10 +87,10 @@
 
         /* Light mode styles */
         html:not(.dark) .glass-card {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(203, 213, 225, 0.8);
+            border: 1px solid rgba(203, 213, 225, 0.85);
             box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
         }
         html:not(.dark) .glass-card-light {
@@ -93,10 +98,18 @@
             border: 1px solid rgba(203, 213, 225, 1);
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
         }
+
+        .star-btn {
+            transition: transform 0.15s ease, color 0.15s ease;
+        }
+        .star-btn:hover {
+            transform: scale(1.2);
+        }
     </style>
 </head>
 <body class="h-full flex flex-col text-slate-900 dark:text-slate-100 bg-slate-100 dark:bg-slate-950 antialiased min-h-screen">
 
+    <!-- ==================== PUBLIC VIEW ==================== -->
     <div id="public-view" class="min-h-screen flex flex-col bg-slate-100 dark:bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] dark:from-teal-950 dark:via-slate-950 dark:to-slate-950">
 
         <!-- Header -->
@@ -121,14 +134,14 @@
                     </div>
 
                     <div class="flex items-center justify-between md:justify-end space-x-2 sm:space-x-3">
+                        <a href="#evaluation-section" class="px-3.5 py-2 text-xs font-extrabold bg-amber-500/20 hover:bg-amber-500/30 text-amber-700 dark:text-amber-300 rounded-xl transition border border-amber-500/40 flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-star text-amber-500 animate-spin" style="animation-duration: 6s;"></i>
+                            <span>Đánh Giá BQT & Vận Hành</span>
+                        </a>
+
                         <button onclick="toggleTheme()" class="px-3 py-2 text-xs font-bold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-amber-300 rounded-xl transition border border-slate-300 dark:border-slate-700 flex items-center gap-1.5 shadow-sm" title="Đổi giao diện Sáng / Tối">
                             <i id="theme-icon" class="fa-solid fa-sun text-amber-500 dark:text-amber-300"></i>
                             <span id="theme-text" class="hidden sm:inline">Giao diện</span>
-                        </button>
-
-                        <button onclick="triggerManualConfetti()" class="px-3 py-2 text-xs font-bold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-emerald-700 dark:text-emerald-300 rounded-xl transition border border-slate-300 dark:border-emerald-500/30 flex items-center gap-1.5 shadow-sm" title="Bắn pháo hoa thử nghiệm">
-                            <i class="fa-solid fa-wand-magic-sparkles text-amber-500 dark:text-amber-300"></i>
-                            <span class="hidden sm:inline">Pháo hoa</span>
                         </button>
 
                         <button onclick="openAdminView()" class="px-4 py-2 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white rounded-xl font-bold text-xs shadow-lg shadow-emerald-500/25 transition flex items-center gap-2 border border-emerald-400/40">
@@ -148,7 +161,7 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
                     </span>
-                    <span class="tracking-wide">Tự động ghi nhận điểm danh thời gian thực</span>
+                    <span class="tracking-wide">Tự động ghi nhận điểm danh & phân tích đánh giá thời gian thực</span>
                 </div>
 
                 <div class="flex items-center gap-3 bg-white dark:bg-slate-950/80 px-4 py-1.5 rounded-xl border border-slate-300 dark:border-slate-800 shadow-inner ml-auto sm:ml-0">
@@ -161,8 +174,9 @@
         </div>
 
         <!-- Main Dashboard Container -->
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
             
+            <!-- 1. TỶ LỆ DIỆN TÍCH THAM DỰ HỘI NGHỊ -->
             <div class="glass-card rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden border border-slate-300 dark:border-emerald-500/20">
                 <div class="absolute -right-20 -top-20 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -175,7 +189,7 @@
                             </span>
                         </div>
                         <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-1.5">
-                            Căn cứ pháp lý: Đạt <strong class="text-blue-600 dark:text-blue-400 font-bold">30% diện tích</strong> đủ điều kiện tổ chức HNNCC thường niên • Đạt <strong class="text-emerald-600 dark:text-emerald-400 font-bold">diện tích</strong> .
+                            Căn cứ pháp lý: Đạt <strong class="text-blue-600 dark:text-blue-400 font-bold">30% diện tích</strong> đủ điều kiện tổ chức HNNCC thường niên • Đạt <strong class="text-emerald-600 dark:text-emerald-400 font-bold">50% diện tích</strong> đủ điều kiện thông qua biểu quyết.
                         </p>
                     </div>
 
@@ -186,14 +200,12 @@
                 </div>
 
                 <div class="relative pt-8 pb-2">
-                    <!-- Marker 30% -->
                     <div class="absolute top-0 left-[30%] -translate-x-1/2 flex flex-col items-center z-20">
                         <span class="text-[10px] sm:text-xs font-black text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-950/90 border border-blue-400 dark:border-blue-500/50 px-2 py-0.5 rounded-full shadow-md flex items-center gap-1 whitespace-nowrap">
                             <i class="fa-solid fa-building-user text-[10px]"></i> 30% TỔ CHỨC
                         </span>
                     </div>
 
-                    <!-- Marker 50% -->
                     <div class="absolute top-0 left-[50%] -translate-x-1/2 flex flex-col items-center z-20">
                         <span class="text-[10px] sm:text-xs font-black text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/90 border border-rose-400 dark:border-rose-500/50 px-2 py-0.5 rounded-full shadow-md flex items-center gap-1 whitespace-nowrap">
                             <i class="fa-solid fa-check-double text-[10px]"></i> 50% BIỂU QUYẾT
@@ -217,6 +229,7 @@
                 </div>
             </div>
 
+            <!-- 4 KPI CARDS -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div class="glass-card rounded-2xl p-5 border border-slate-300 dark:border-slate-800 hover:border-slate-400 transition">
                     <div class="flex items-center justify-between text-slate-500 dark:text-slate-400 mb-3">
@@ -281,19 +294,220 @@
                 </div>
             </div>
 
+            <!-- 2. HỆ THỐNG ĐÁNH GIÁ ĐƠN VỊ VẬN HÀNH & BAN QUẢN TRỊ (BQT) + PHÂN TÍCH TRỰC QUAN -->
+            <div id="evaluation-section" class="scroll-mt-28 space-y-6">
+                <!-- Banner Header -->
+                <div class="glass-card rounded-3xl p-6 md:p-8 border border-amber-500/30 dark:border-amber-500/30 shadow-2xl relative overflow-hidden">
+                    <div class="absolute -left-16 -bottom-16 w-72 h-72 bg-amber-500/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="absolute -right-16 -top-16 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-5 mb-6 relative z-10">
+                        <div class="flex items-start sm:items-center gap-4">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white flex items-center justify-center text-2xl shadow-lg shadow-amber-500/25 shrink-0">
+                                <i class="fa-solid fa-award"></i>
+                            </div>
+                            <div>
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-500/40">Khảo Sát Chính Chủ 2026</span>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30">
+                                        <i class="fa-solid fa-shield-halved mr-1"></i>Xác Thực Mã Căn & SĐT
+                                    </span>
+                                </div>
+                                <h2 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mt-1">
+                                    Đánh Giá Chất Lượng Đơn Vị Vận Hành & Ban Quản Trị (BQT)
+                                </h2>
+                                <p class="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-0.5">
+                                    Cư dân xác thực thông tin chính chủ bằng Mã Căn Hộ và Số Điện Thoại đã đăng ký để gửi đánh giá trực tiếp.
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- Tổng Điểm Trung Bình Toàn Chung Cư -->
+                        <div class="flex items-center gap-4 bg-slate-100 dark:bg-slate-900/90 px-5 py-3.5 rounded-2xl border border-slate-300 dark:border-slate-800 shrink-0 self-start md:self-auto">
+                            <div class="text-right">
+                                <span class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">Chỉ Số Hài Lòng Chung</span>
+                                <div class="flex items-baseline gap-1 justify-end mt-0.5">
+                                    <span id="eval-overall-score" class="text-3xl font-black text-amber-500 font-mono">0.0</span>
+                                    <span class="text-xs font-bold text-slate-400">/ 5.0</span>
+                                </div>
+                                <span id="eval-total-count-badge" class="text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">0 căn đã đánh giá</span>
+                            </div>
+                            <div class="w-12 h-12 rounded-xl bg-amber-500/15 border border-amber-500/30 flex flex-col items-center justify-center text-amber-500">
+                                <i class="fa-solid fa-star text-lg"></i>
+                                <span id="eval-satisfaction-percent" class="text-[10px] font-black font-mono">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Grid 2 Cột: Cột Trái (Form Xác Thực & Đánh Giá) + Cột Phải (Bảng Phân Tích Thông Minh Realtime) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 relative z-10">
+                        
+                        <!-- CỘT TRÁI (5/12): CỔNG XÁC THỰC CHÍNH CHỦ & ĐÁNH GIÁ -->
+                        <div class="lg:col-span-5 flex flex-col justify-between bg-white/90 dark:bg-slate-900/90 rounded-2xl p-5 sm:p-6 border border-slate-200 dark:border-slate-800 shadow-lg">
+                            
+                            <!-- BƯỚC 1: FORM XÁC THỰC CHÍNH CHỦ -->
+                            <div id="resident-verify-step" class="space-y-4">
+                                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                                    <div>
+                                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-emerald-600 dark:text-emerald-400">Bước 1 / 2</span>
+                                        <h3 class="text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                            <i class="fa-solid fa-user-check text-emerald-500"></i> Xác Thực Cư Dân Chính Chủ
+                                        </h3>
+                                    </div>
+                                    <span class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-500 flex items-center justify-center font-bold text-xs border border-emerald-500/20">1</span>
+                                </div>
+
+                                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                                    Nhập <strong>Mã Căn Hộ</strong> và <strong>Số Điện Thoại</strong> chủ hộ. Hệ thống hỗ trợ chuẩn hóa thông minh (nhập <code class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded font-mono text-emerald-600 dark:text-emerald-400">+84...</code> hoặc <code class="px-1.5 py-0.5 bg-slate-200 dark:bg-slate-800 rounded font-mono text-emerald-600 dark:text-emerald-400">09...</code> đều tự động khớp).
+                                </p>
+
+                                <form onsubmit="handleVerifyResident(event)" class="space-y-3.5 pt-1">
+                                    <div>
+                                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1.5">
+                                            <i class="fa-solid fa-door-open text-emerald-500 mr-1"></i> Mã Căn Hộ Của Bạn:
+                                        </label>
+                                        <input type="text" id="verify-apt-input" required placeholder="VD: B1-0205 hoặc NO1-0205..." oninput="previewNormalizedPhone()"
+                                            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-bold uppercase bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition">
+                                    </div>
+
+                                    <div>
+                                        <div class="flex items-center justify-between mb-1.5">
+                                            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">
+                                                <i class="fa-solid fa-phone-volume text-amber-500 mr-1"></i> Số Điện Thoại Chính Chủ:
+                                            </label>
+                                            <span id="normalized-phone-preview" class="text-[11px] font-mono font-bold text-emerald-600 dark:text-emerald-400 hidden"></span>
+                                        </div>
+                                        <input type="tel" id="verify-phone-input" required placeholder="VD: 0912345678 hoặc +84912345678..." oninput="previewNormalizedPhone()"
+                                            class="w-full px-3.5 py-2.5 text-xs sm:text-sm font-mono font-bold bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition">
+                                    </div>
+
+                                    <div id="verify-error-box" class="hidden p-3 rounded-xl bg-rose-500/15 border border-rose-500/30 text-xs text-rose-600 dark:text-rose-300 font-semibold flex items-start gap-2">
+                                        <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0"></i>
+                                        <span id="verify-error-text">Thông tin không khớp!</span>
+                                    </div>
+
+                                    <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition flex items-center justify-center gap-2">
+                                        <i class="fa-solid fa-key"></i>
+                                        <span>Xác Nhận Chính Chủ & Vào Đánh Giá</span>
+                                    </button>
+                                </form>
+
+                                <div class="p-3 rounded-xl bg-slate-100 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800/80 text-[11px] text-slate-500 dark:text-slate-400 flex items-center gap-2.5">
+                                    <i class="fa-solid fa-lock text-amber-500 text-sm shrink-0"></i>
+                                    <span>Số điện thoại cư dân được mã hóa bảo mật trên bảng công khai (VD: <strong class="font-mono text-slate-700 dark:text-slate-300">0912***678</strong>).</span>
+                                </div>
+                            </div>
+
+                            <!-- BƯỚC 2: FORM ĐÁNH GIÁ CHI TIẾT CÁC HẠNG MỤC VẬN HÀNH -->
+                            <div id="resident-rating-step" class="hidden space-y-4">
+                                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3">
+                                    <div>
+                                        <span class="text-[11px] font-extrabold uppercase tracking-wider text-amber-500">Bước 2 / 2 • Đã Xác Thực Chính Chủ</span>
+                                        <h3 id="verified-owner-greeting" class="text-sm sm:text-base font-black text-slate-900 dark:text-white mt-0.5">
+                                            Căn hộ: --
+                                        </h3>
+                                    </div>
+                                    <button type="button" onclick="resetResidentVerifyStep()" class="px-2.5 py-1 text-[11px] font-bold bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 text-slate-700 dark:text-slate-300 rounded-lg transition">
+                                        Đổi căn khác
+                                    </button>
+                                </div>
+
+                                <!-- Danh sách 6 hạng mục vận hành -->
+                                <div id="rating-categories-container" class="space-y-3 max-h-[340px] overflow-y-auto pr-1 custom-scrollbar">
+                                </div>
+
+                                <!-- Ý kiến đóng góp bổ sung -->
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-700 dark:text-slate-300 mb-1">
+                                        <i class="fa-regular fa-comment-dots text-emerald-500 mr-1"></i> Ý kiến đóng góp / Kiến nghị với BQT & Đơn vị vận hành:
+                                    </label>
+                                    <textarea id="eval-comment-input" rows="2" placeholder="Nhập ý kiến đóng góp để xây dựng chung cư Ecohome văn minh, hiện đại hơn..."
+                                        class="w-full p-2.5 text-xs bg-slate-50 dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-amber-500 text-slate-900 dark:text-white outline-none transition"></textarea>
+                                </div>
+
+                                <div class="flex items-center gap-2">
+                                    <input type="checkbox" id="eval-auto-checkin-chk" checked class="w-4 h-4 text-emerald-500 rounded border-slate-300 focus:ring-emerald-500 cursor-pointer">
+                                    <label for="eval-auto-checkin-chk" class="text-xs font-semibold text-slate-700 dark:text-slate-300 cursor-pointer select-none">
+                                        Đồng thời xác nhận căn hộ <strong>Có Mặt Tham Dự Hội Nghị</strong>
+                                    </label>
+                                </div>
+
+                                <button type="button" onclick="submitResidentEvaluation()" class="w-full py-3 bg-gradient-to-r from-amber-500 via-orange-500 to-emerald-600 hover:from-amber-600 hover:to-emerald-700 text-white font-black rounded-xl text-xs sm:text-sm shadow-xl shadow-amber-500/20 transition flex items-center justify-center gap-2">
+                                    <i class="fa-solid fa-paper-plane"></i>
+                                    <span>Gửi Đánh Giá Chính Chủ Ngay</span>
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <!-- CỘT PHẢI (7/12): BẢNG PHÂN TÍCH ĐÁNH GIÁ THÔNG MINH TRÊN TRANG CHÍNH -->
+                        <div class="lg:col-span-7 flex flex-col justify-between space-y-5">
+                            
+                            <!-- Thống Kê Điểm Chi Tiết Theo 6 Hạng Mục Vận Hành -->
+                            <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-4">
+                                <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 dark:border-slate-800 pb-3">
+                                    <div>
+                                        <h3 class="text-sm sm:text-base font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                            <i class="fa-solid fa-chart-column text-amber-500"></i> Phân Tích Chi Tiết Từng Hạng Mục Vận Hành & BQT
+                                        </h3>
+                                        <p class="text-[11px] text-slate-500 dark:text-slate-400">Tổng hợp tự động thời gian thực từ toàn bộ phiếu đánh giá của cư dân</p>
+                                    </div>
+                                    <div class="flex items-center gap-2 text-xs">
+                                        <span class="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-bold border border-emerald-500/20" id="eval-area-weight-badge">
+                                            DT tham gia đánh giá: 0,00 m²
+                                        </span>
+                                    </div>
+                                </div>
+
+                                <!-- Bars cho 6 hạng mục -->
+                                <div id="eval-category-breakdown" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                                </div>
+
+                                <!-- Phân bổ mức độ hài lòng (5 sao -> 1 sao) -->
+                                <div class="pt-3 border-t border-slate-200 dark:border-slate-800">
+                                    <div class="flex items-center justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-2">
+                                        <span>Phân Bổ Mức Độ Tín Nhiệm Toàn Dự Án</span>
+                                        <span id="eval-rating-tier-summary" class="text-emerald-600 dark:text-emerald-400 font-mono">Chưa có dữ liệu</span>
+                                    </div>
+                                    <div class="grid grid-cols-5 gap-2 text-center text-[11px]" id="eval-star-distribution">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Luồng Ý Kiến & Đánh Giá Mới Nhất Của Cư Dân -->
+                            <div class="bg-white/90 dark:bg-slate-900/90 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-lg space-y-3 flex-1">
+                                <div class="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-2.5">
+                                    <h4 class="text-xs sm:text-sm font-black text-slate-900 dark:text-white flex items-center gap-2">
+                                        <i class="fa-solid fa-comments text-emerald-500"></i> Phản Hồi & Đánh Giá Thực Tế Từ Cư Dân Chính Chủ
+                                    </h4>
+                                    <span class="text-[11px] font-bold text-slate-400">Hiển thị công khai • Bảo mật SĐT</span>
+                                </div>
+
+                                <div id="public-recent-evaluations" class="space-y-2.5 max-h-[210px] overflow-y-auto pr-1 custom-scrollbar">
+                                    <div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào. Hãy là cư dân đầu tiên gửi đánh giá!</div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. DANH SÁCH CĂN HỘ & CHI TIẾT DIỆN TÍCH -->
             <div class="glass-card-light rounded-3xl overflow-hidden shadow-2xl text-slate-800 border border-slate-200">
                 <div class="p-5 border-b border-slate-200/80 bg-slate-50/80 flex flex-col md:flex-row md:items-center justify-between gap-4">
                     <div>
                         <h3 class="font-black text-slate-900 text-base flex items-center gap-2">
-                            <i class="fa-solid fa-list-ul text-emerald-600"></i> Danh Sách Căn Hộ & Chi Tiết Diện Tích
+                            <i class="fa-solid fa-list-ul text-emerald-600"></i> Danh Sách Căn Hộ, Xác Thực SĐT & Trạng Thái Đánh Giá
                         </h3>
-                        <p class="text-xs text-slate-500 mt-0.5">Tra cứu mã căn hộ để kiểm tra trạng thái đăng ký tham dự hội nghị</p>
+                        <p class="text-xs text-slate-500 mt-0.5">Tra cứu mã căn hộ để kiểm tra trạng thái đăng ký tham dự hội nghị và trạng thái đánh giá vận hành</p>
                     </div>
 
                     <div class="flex flex-col sm:flex-row items-center gap-2.5">
                         <div class="relative w-full sm:w-64">
                             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm mã căn (VD: B1-0101)..." 
+                            <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm mã căn, tên chủ hộ..." 
                                 class="w-full pl-9 pr-3 py-2 text-xs bg-white border border-slate-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/30 focus:border-emerald-500 transition font-medium shadow-sm">
                         </div>
 
@@ -301,6 +515,7 @@
                             <option value="all">Tất cả trạng thái</option>
                             <option value="attended">Đã tham dự</option>
                             <option value="absent">Chưa tham dự</option>
+                            <option value="evaluated">Đã đánh giá BQT</option>
                         </select>
                     </div>
                 </div>
@@ -312,9 +527,10 @@
                                 <th class="py-3 px-4">STT</th>
                                 <th class="py-3 px-4">Mã Căn Hộ</th>
                                 <th class="py-3 px-4">Chủ Sở Hữu</th>
+                                <th class="py-3 px-4">SĐT Đã Mã Hóa</th>
                                 <th class="py-3 px-4">Khối Tòa</th>
                                 <th class="py-3 px-4 text-right">Diện Tích (m²)</th>
-                                <th class="py-3 px-4 text-right">Tỷ Lệ Đóng Góp (%)</th>
+                                <th class="py-3 px-4 text-center">Đánh Giá Vận Hành</th>
                                 <th class="py-3 px-4 text-center">Trạng Thái Tham Dự</th>
                             </tr>
                         </thead>
@@ -325,7 +541,7 @@
 
                 <div class="p-4 bg-slate-50 border-t border-slate-200 text-xs text-slate-500 flex flex-col sm:flex-row items-center justify-between gap-2">
                     <span id="table-count-info" class="font-bold text-slate-700">Hiển thị 0 / 0 căn hộ</span>
-                    <span class="text-slate-400 font-medium">Ecohome Nhơn Bình 2026 • Hệ thống biểu quyết tự động Realtime</span>
+                    <span class="text-slate-400 font-medium">Ecohome Nhơn Bình 2026 • Hệ thống biểu quyết & đánh giá vận hành Realtime</span>
                 </div>
             </div>
 
@@ -333,13 +549,14 @@
 
         <footer class="bg-slate-200 dark:bg-slate-950 text-slate-600 dark:text-slate-500 text-xs py-6 mt-12 border-t border-slate-300 dark:border-slate-800">
             <div class="max-w-7xl mx-auto px-4 text-center space-y-1.5">
-                <p class="font-bold text-slate-700 dark:text-slate-400">Ban Quản Tị / Ban Tổ Chức Hội Nghị Nhà Chung Cư Ecohome Nhơn Bình 2026</p>
-                <p class="text-slate-500 dark:text-slate-600">Tổng diện tích căn hộ tính toán chính xác gốc: 27.734,30 m²</p>
+                <p class="font-bold text-slate-700 dark:text-slate-400">Ban Quản Trị / Ban Tổ Chức Hội Nghị Nhà Chung Cư Ecohome Nhơn Bình 2026</p>
+                <p class="text-slate-500 dark:text-slate-600">Tổng diện tích căn hộ tính toán chính xác gốc: 27.734,30 m² • Chuẩn hóa dữ liệu SĐT thông minh</p>
             </div>
         </footer>
 
     </div><!-- END PUBLIC VIEW -->
 
+    <!-- ==================== ADMIN VIEW ==================== -->
     <div id="admin-page-view" class="hidden min-h-screen w-full flex-col bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 z-50">
         <header class="glass-card sticky top-0 z-30 border-b border-slate-300 dark:border-slate-800 shadow-xl">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -412,6 +629,7 @@
                 </form>
             </div>
 
+            <!-- ADMIN PANEL CONTENT -->
             <div id="admin-panel-view" class="hidden space-y-6">
                 
                 <div id="admin-summary-overview" class="glass-card rounded-2xl p-5 shadow-xl border border-slate-300 dark:border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4">
@@ -433,46 +651,49 @@
 
                     <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto pb-1 md:pb-0">
                         <button onclick="exportApartmentsToExcel()" class="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-700 border border-emerald-500/30 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-file-excel text-emerald-300"></i> Xuất Excel
+                            <i class="fa-solid fa-file-excel text-emerald-200"></i> Xuất Excel Căn Hộ & SĐT
                         </button>
-                        <button onclick="switchAdminTab('stats')" class="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-building text-indigo-500"></i> Xem theo Khối Tòa
-                        </button>
-                        <button onclick="switchAdminTab('manage')" class="px-3.5 py-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
-                            <i class="fa-solid fa-list-check text-amber-500"></i> Quản Lý Căn Hộ
+                        <button onclick="exportEvaluationsToExcel()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-700 border border-amber-500/30 text-white rounded-xl text-xs font-bold transition whitespace-nowrap flex items-center gap-1.5 shadow-sm">
+                            <i class="fa-solid fa-star text-amber-200"></i> Xuất Excel Đánh Giá BQT
                         </button>
                     </div>
                 </div>
 
+                <!-- Admin Navigation Tabs -->
                 <div class="flex border border-slate-300 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 p-2 rounded-2xl shadow-sm text-xs font-bold text-slate-500 dark:text-slate-400 gap-2 overflow-x-auto">
-                    <button onclick="switchAdminTab('import')" id="tab-btn-import" class="py-2.5 px-4 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-2 bg-emerald-500/10 rounded-xl">
-                        <i class="fa-solid fa-file-import"></i> Nạp Dữ Liệu (Excel/Paste)
+                    <button onclick="switchAdminTab('import')" id="tab-btn-import" class="py-2.5 px-4 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-2 bg-emerald-500/10 rounded-xl whitespace-nowrap">
+                        <i class="fa-solid fa-file-import"></i> Nạp Danh Sách & Mã Hóa SĐT (+84 -> 0)
                     </button>
-                    <button onclick="switchAdminTab('manual-add')" id="tab-btn-manual-add" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
+                    <button onclick="switchAdminTab('manage')" id="tab-btn-manage" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition whitespace-nowrap">
+                        <i class="fa-solid fa-list-check text-amber-500"></i> Quản Lý Căn Hộ & SĐT
+                    </button>
+                    <button onclick="switchAdminTab('evaluations')" id="tab-btn-evaluations" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition whitespace-nowrap">
+                        <i class="fa-solid fa-award text-orange-500"></i> Quản Lý Đánh Giá BQT
+                    </button>
+                    <button onclick="switchAdminTab('manual-add')" id="tab-btn-manual-add" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition whitespace-nowrap">
                         <i class="fa-solid fa-calculator text-blue-500"></i> Cộng Dồn Thủ Công
                     </button>
-                    <button onclick="switchAdminTab('proxy')" id="tab-btn-proxy" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
-                        <i class="fa-solid fa-file-signature text-purple-500"></i> Tính % Ủy Quyền Tập Trung
+                    <button onclick="switchAdminTab('proxy')" id="tab-btn-proxy" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition whitespace-nowrap">
+                        <i class="fa-solid fa-file-signature text-purple-500"></i> Tính % Ủy Quyền
                     </button>
-                    <button onclick="switchAdminTab('stats')" id="tab-btn-stats" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
-                        <i class="fa-solid fa-chart-pie text-indigo-500"></i> Thống Kê Theo Khối Tòa
-                    </button>
-                    <button onclick="switchAdminTab('manage')" id="tab-btn-manage" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition">
-                        <i class="fa-solid fa-list-check text-amber-500"></i> Quản Lý Căn Hộ
+                    <button onclick="switchAdminTab('stats')" id="tab-btn-stats" class="py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition whitespace-nowrap">
+                        <i class="fa-solid fa-chart-pie text-indigo-500"></i> Thống Kê Khối Tòa
                     </button>
                 </div>
 
-                <!-- Tab 1: Excel / Paste Import -->
+                <!-- Tab 1: Excel / Paste Import with Smart Phone Normalization -->
                 <div id="tab-content-import" class="glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
                     
                     <div class="bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-300 dark:border-emerald-500/30 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-inner">
                         <div class="flex items-center gap-3">
                             <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 font-bold text-lg shadow-md">
-                                <i class="fa-solid fa-file-excel"></i>
+                                <i class="fa-solid fa-wand-magic-sparkles"></i>
                             </div>
                             <div>
-                                <h5 class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Nạp tệp "DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx"</h5>
-                                <p class="text-[11px] text-slate-500 dark:text-slate-400">Tải lên tệp Excel thực tế để cập nhật danh sách căn hộ, tên chủ sở hữu và tổng diện tích chuẩn xác.</p>
+                                <h5 class="font-bold text-slate-900 dark:text-white text-xs sm:text-sm">Cập Nhật Danh Sách Kèm Số Điện Thoại Chuẩn Hóa Thông Minh</h5>
+                                <p class="text-[11px] text-slate-500 dark:text-slate-400">
+                                    Tự động nhận diện cột <strong>Mã Căn</strong>, <strong>Chủ Sở Hữu</strong>, <strong>Số Điện Thoại</strong>, <strong>Diện Tích</strong>. Tự động chuyển đổi <code class="text-emerald-600 dark:text-emerald-300 font-bold">+84...</code>, <code class="text-emerald-600 dark:text-emerald-300 font-bold">84...</code> hoặc số bị mất số 0 đầu từ Excel (VD: <code class="text-emerald-600 dark:text-emerald-300 font-bold">912345678</code>) về chuẩn <code class="text-emerald-600 dark:text-emerald-300 font-bold">0912345678</code>.
+                                </p>
                             </div>
                         </div>
                         <button onclick="document.getElementById('excel-file-input').click()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold rounded-xl shadow-lg transition whitespace-nowrap">
@@ -486,9 +707,9 @@
                         <div class="w-12 h-12 bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 rounded-full flex items-center justify-center mx-auto mb-3 text-xl group-hover:scale-110 transition border border-emerald-500/30">
                             <i class="fa-solid fa-file-excel"></i>
                         </div>
-                        <h5 class="font-bold text-slate-900 dark:text-white text-sm">Tải Lên File Excel DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx</h5>
-                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-sm mx-auto">
-                            Tự động nhận diện các cột: <strong class="text-emerald-600 dark:text-emerald-300">Mã Căn Hộ</strong>, <strong class="text-emerald-600 dark:text-emerald-300">Chủ Sở Hữu</strong>, <strong class="text-emerald-600 dark:text-emerald-300">Diện Tích</strong> và <strong class="text-emerald-600 dark:text-emerald-300">Trạng Thái Check-in</strong>.
+                        <h5 class="font-bold text-slate-900 dark:text-white text-sm">Tải Lên File Excel "DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx"</h5>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-lg mx-auto">
+                            Nhận diện thông minh: <strong class="text-emerald-600 dark:text-emerald-300">Mã Căn Hộ</strong>, <strong class="text-emerald-600 dark:text-emerald-300">Chủ Sở Hữu</strong>, <strong class="text-amber-600 dark:text-amber-300">Số Điện Thoại (+84 -> 0)</strong>, <strong class="text-emerald-600 dark:text-emerald-300">Diện Tích</strong> và <strong class="text-emerald-600 dark:text-emerald-300">Check-in</strong>.
                         </p>
                         <span class="inline-block mt-3 px-3.5 py-1 bg-slate-200 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-xs font-bold shadow-sm">
                             Chọn tệp từ máy tính
@@ -497,26 +718,166 @@
 
                     <div class="relative flex py-1 items-center">
                         <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
-                        <span class="flex-shrink mx-4 text-slate-400 dark:text-slate-500 text-xs font-bold uppercase">Hoặc Dán Trực Tiếp Văn Bản</span>
+                        <span class="flex-shrink mx-4 text-slate-400 dark:text-slate-500 text-xs font-bold uppercase">Hoặc Dán Trực Tiếp Danh Sách Căn Hộ Kèm SĐT</span>
                         <div class="flex-grow border-t border-slate-300 dark:border-slate-800"></div>
                     </div>
 
                     <div class="space-y-2">
-                        <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
-                            Dán danh sách Mã căn & Diện tích (Ví dụ định dạng: MãCăn, DiệnTích):
-                        </label>
-                        <textarea id="paste-import-input" rows="5" placeholder="Ví dụ copy từ Excel:&#10;B1-0101, 68.5&#10;B1-0102, 72.3&#10;B2-0205, 55.0"
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <label class="block text-xs font-bold text-slate-700 dark:text-slate-300">
+                                Dán danh sách theo định dạng: <code class="text-emerald-600 dark:text-emerald-400">MãCăn, DiệnTích, ChủSởHữu, SốĐiệnThoại</code> (Hoặc <code class="text-amber-600 dark:text-amber-400">MãCăn, SốĐiệnThoại</code> để cập nhật riêng SĐT):
+                            </label>
+                            <button type="button" onclick="fillSamplePasteData()" class="text-[11px] font-bold text-indigo-600 dark:text-indigo-400 hover:underline">
+                                <i class="fa-solid fa-magic mr-1"></i>Chèn dữ liệu mẫu thử nghiệm (+84)
+                            </button>
+                        </div>
+                        <textarea id="paste-import-input" rows="5" placeholder="Ví dụ copy từ Excel:&#10;B1-0101, 68.5, Nguyễn Văn A, +84912345678&#10;B1-0102, 72.3, Trần Thị B, 84987654321&#10;B2-0205, 55.0, Lê Văn C, 0905112233"
                             class="w-full p-3 text-xs font-mono bg-white dark:bg-slate-900 border border-slate-300 dark:border-slate-700 rounded-xl focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white outline-none transition"></textarea>
-                        <div class="flex items-center justify-between">
-                            <span class="text-[11px] text-slate-500">Chấp nhận phân cách bởi Dấu phẩy (,), Tab, hoặc Dấu gạch đứng (|)</span>
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="text-[11px] text-slate-500">Tự động lọc khoảng trắng, dấu chấm/gạch ngang trong SĐT và chuyển <code class="font-mono font-bold">+84</code> thành <code class="font-mono font-bold">0</code>.</span>
                             <button onclick="handlePasteImport()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow transition">
-                                <i class="fa-solid fa-circle-plus mr-1"></i> Nạp Danh Sách
+                                <i class="fa-solid fa-circle-plus mr-1"></i> Nạp & Chuẩn Hóa Danh Sách
                             </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Tab 2: Manual Increment -->
+                <!-- Tab 2: Manage Apartments & Phone Numbers -->
+                <div id="tab-content-manage" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
+                    
+                    <!-- Thêm / Cập nhật nhanh 1 căn hộ kèm SĐT -->
+                    <div class="bg-slate-100 dark:bg-slate-900/90 p-4 rounded-2xl border border-slate-300 dark:border-slate-800 space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h5 class="text-xs font-black uppercase tracking-wider text-emerald-700 dark:text-emerald-400 flex items-center gap-1.5">
+                                <i class="fa-solid fa-user-plus"></i> Thêm Mới Hoặc Cập Nhật Nhanh Căn Hộ & SĐT Chính Chủ
+                            </h5>
+                            <span class="text-[11px] text-slate-500">Tự động chuyển +84 thành 0</span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-5 gap-2.5">
+                            <input type="text" id="quick-apt-id" placeholder="Mã Căn (VD: B1-0101)" class="px-3 py-2 text-xs font-bold uppercase bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                            <input type="text" id="quick-apt-owner" placeholder="Tên Chủ Sở Hữu" class="px-3 py-2 text-xs bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                            <input type="text" id="quick-apt-phone" placeholder="SĐT (+849... / 09...)" class="px-3 py-2 text-xs font-mono bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                            <input type="number" step="0.01" id="quick-apt-area" placeholder="Diện tích m² (VD: 68.5)" class="px-3 py-2 text-xs font-mono bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl outline-none focus:ring-2 focus:ring-emerald-500">
+                            <button onclick="handleQuickUpsertApartment()" class="py-2 px-4 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs shadow transition flex items-center justify-center gap-1.5">
+                                <i class="fa-solid fa-floppy-disk"></i> Lưu Căn Hộ
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+                        <div class="flex items-center gap-2">
+                            <span class="font-bold text-slate-700 dark:text-slate-300">Danh sách căn hộ:</span>
+                            <span id="admin-table-count" class="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">(0 căn)</span>
+                        </div>
+                        <div class="flex flex-wrap items-center gap-3">
+                            <button onclick="normalizeAllExistingPhonesInCloud()" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold rounded-xl text-xs transition shadow flex items-center gap-1.5" title="Quét và chuẩn hóa toàn bộ SĐT +84 về 0 trên Cloud">
+                                <i class="fa-solid fa-wand-magic-sparkles"></i> Chuẩn Hóa Toàn Bộ SĐT (+84 -> 0)
+                            </button>
+                            <button onclick="exportApartmentsToExcel()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-excel text-sm"></i> Xuất File Excel
+                            </button>
+                            <button onclick="requestClearAllData()" class="text-rose-500 hover:text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
+                                <i class="fa-solid fa-trash-can"></i> Xóa toàn bộ dữ liệu Cloud
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-100 dark:bg-slate-900/90 p-3 rounded-2xl border border-slate-300 dark:border-slate-800">
+                        <div class="sm:col-span-5 relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="admin-search-input" oninput="renderAdminTable()" placeholder="Tìm mã căn, chủ hộ, hoặc SĐT..." 
+                                class="w-full pl-8 pr-8 py-2 text-xs bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white transition font-medium">
+                            <button onclick="clearAdminSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs" title="Xóa từ khóa tìm kiếm">
+                                <i class="fa-solid fa-xmark"></i>
+                            </button>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <select id="admin-filter-building" onchange="renderAdminTable()" class="w-full text-xs py-2 px-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-bold text-slate-800 dark:text-slate-200">
+                                <option value="all">Tất cả Khối</option>
+                                <option value="B1">Khối B1</option>
+                                <option value="B2">Khối B2</option>
+                                <option value="B3">Khối B3</option>
+                                <option value="B4">Khối B4</option>
+                                <option value="B5">Khối B5</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-2">
+                            <select id="admin-filter-status" onchange="renderAdminTable()" class="w-full text-xs py-2 px-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-bold text-slate-800 dark:text-slate-200">
+                                <option value="all">Tất cả trạng thái</option>
+                                <option value="attended">Đã tham dự</option>
+                                <option value="absent">Chưa tham dự</option>
+                            </select>
+                        </div>
+
+                        <div class="sm:col-span-3 flex items-center gap-1.5">
+                            <button onclick="toggleAllVisibleAdmin(true)" class="flex-1 py-2 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[11px] font-bold transition shadow flex items-center justify-center gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-check-double text-xs"></i>Tích hết
+                            </button>
+                            <button onclick="toggleAllVisibleAdmin(false)" class="flex-1 py-2 px-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-[11px] font-bold transition border border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-rotate-left text-xs"></i>Bỏ hết
+                            </button>
+                            <button onclick="invertVisibleAdmin()" class="py-2 px-2.5 bg-indigo-100 dark:bg-indigo-950 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/30 rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-right-left text-xs"></i>Đảo
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="max-h-[500px] overflow-y-auto border border-slate-300 dark:border-slate-800 rounded-2xl custom-scrollbar">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 dark:bg-slate-900 font-extrabold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
+                                <tr>
+                                    <th class="p-3">Mã Căn</th>
+                                    <th class="p-3">Chủ Sở Hữu</th>
+                                    <th class="p-3">Số Điện Thoại (Chuẩn 0...)</th>
+                                    <th class="p-3">Diện Tích (m²)</th>
+                                    <th class="p-3 text-center">Trạng Thái Tham Dự</th>
+                                    <th class="p-3 text-right">Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Manage Evaluations (Quản Lý Đánh Giá BQT) -->
+                <div id="tab-content-evaluations" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 dark:border-slate-800 pb-3">
+                        <div>
+                            <h4 class="font-black text-slate-900 dark:text-white text-sm sm:text-base flex items-center gap-2">
+                                <i class="fa-solid fa-award text-amber-500"></i> Danh Sách Chi Tiết Đánh Giá Đơn Vị Vận Hành & BQT
+                            </h4>
+                            <p class="text-xs text-slate-500 dark:text-slate-400">Xem toàn bộ điểm chấm từng hạng mục, SĐT chính chủ và ý kiến đóng góp của từng căn hộ</p>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <button onclick="exportEvaluationsToExcel()" class="px-3.5 py-2 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-bold transition shadow flex items-center gap-1.5">
+                                <i class="fa-solid fa-file-excel"></i> Xuất Báo Cáo Đánh Giá
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="max-h-[500px] overflow-y-auto border border-slate-300 dark:border-slate-800 rounded-2xl custom-scrollbar">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-100 dark:bg-slate-900 font-extrabold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
+                                <tr>
+                                    <th class="p-3">Thời Gian</th>
+                                    <th class="p-3">Mã Căn</th>
+                                    <th class="p-3">Chủ Hộ</th>
+                                    <th class="p-3">SĐT Xác Thực</th>
+                                    <th class="p-3 text-center">Điểm TB</th>
+                                    <th class="p-3">Ý Kiến Đóng Góp</th>
+                                    <th class="p-3 text-right">Xóa</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-evaluations-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-300">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Manual Increment -->
                 <div id="tab-content-manual-add" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
                     <div class="bg-blue-50 dark:bg-blue-950/60 border border-blue-300 dark:border-blue-500/30 rounded-2xl p-4 text-xs text-blue-900 dark:text-blue-200 space-y-1">
                         <div class="font-bold flex items-center gap-1.5 text-blue-700 dark:text-blue-300 text-sm">
@@ -573,7 +934,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 3: Proxy Authorization calculation -->
+                <!-- Tab 5: Proxy Authorization calculation -->
                 <div id="tab-content-proxy" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-5">
                     <div class="bg-purple-50 dark:bg-purple-950/60 border border-purple-300 dark:border-purple-500/30 rounded-2xl p-4 text-xs text-purple-900 dark:text-purple-200 space-y-1">
                         <div class="font-bold flex items-center gap-1.5 text-purple-700 dark:text-purple-300 text-sm">
@@ -647,7 +1008,7 @@
                     </div>
                 </div>
 
-                <!-- Tab 4: Block Statistics -->
+                <!-- Tab 6: Block Statistics -->
                 <div id="tab-content-stats" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-300 dark:border-slate-800 pb-3">
                         <div>
@@ -679,112 +1040,37 @@
                     </div>
                 </div>
 
-                <!-- Tab 5: Manage Apartments Table -->
-                <div id="tab-content-manage" class="hidden glass-card p-6 rounded-2xl border border-slate-300 dark:border-slate-800 shadow-xl space-y-4">
-                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-slate-700 dark:text-slate-300">Danh sách căn hộ:</span>
-                            <span id="admin-table-count" class="text-emerald-600 dark:text-emerald-400 font-bold bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">(0 căn)</span>
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="exportApartmentsToExcel()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-xs transition shadow flex items-center gap-1.5">
-                                <i class="fa-solid fa-file-excel text-sm"></i> Xuất File Excel
-                            </button>
-                            <button onclick="requestClearAllData()" class="text-rose-500 hover:text-rose-600 dark:text-rose-400 font-semibold flex items-center gap-1">
-                                <i class="fa-solid fa-trash-can"></i> Xóa toàn bộ dữ liệu Cloud
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-12 gap-2 bg-slate-100 dark:bg-slate-900/90 p-3 rounded-2xl border border-slate-300 dark:border-slate-800">
-                        <div class="sm:col-span-5 relative">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
-                            <input type="text" id="admin-search-input" oninput="renderAdminTable()" placeholder="Tìm mã căn (VD: B1-0101, 0203)..." 
-                                class="w-full pl-8 pr-8 py-2 text-xs bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-900 dark:text-white transition font-medium">
-                            <button onclick="clearAdminSearch()" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 text-xs" title="Xóa từ khóa tìm kiếm">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <select id="admin-filter-building" onchange="renderAdminTable()" class="w-full text-xs py-2 px-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-bold text-slate-800 dark:text-slate-200">
-                                <option value="all">Tất cả Khối</option>
-                                <option value="B1">Khối B1</option>
-                                <option value="B2">Khối B2</option>
-                                <option value="B3">Khối B3</option>
-                                <option value="B4">Khối B4</option>
-                                <option value="B5">Khối B5</option>
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-2">
-                            <select id="admin-filter-status" onchange="renderAdminTable()" class="w-full text-xs py-2 px-2 bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 transition font-bold text-slate-800 dark:text-slate-200">
-                                <option value="all">Tất cả trạng thái</option>
-                                <option value="attended">Đã tham dự</option>
-                                <option value="absent">Chưa tham dự</option>
-                            </select>
-                        </div>
-
-                        <div class="sm:col-span-3 flex items-center gap-1.5">
-                            <button onclick="toggleAllVisibleAdmin(true)" class="flex-1 py-2 px-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-[11px] font-bold transition shadow flex items-center justify-center gap-1 whitespace-nowrap" title="Tích chọn tất cả danh sách đang hiển thị">
-                                <i class="fa-solid fa-check-double text-xs"></i>Tích hết
-                            </button>
-                            <button onclick="toggleAllVisibleAdmin(false)" class="flex-1 py-2 px-2 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-[11px] font-bold transition border border-slate-300 dark:border-slate-700 flex items-center justify-center gap-1 whitespace-nowrap" title="Bỏ tích chọn tất cả danh sách đang hiển thị">
-                                <i class="fa-solid fa-rotate-left text-xs"></i>Bỏ hết
-                            </button>
-                            <button onclick="invertVisibleAdmin()" class="py-2 px-2.5 bg-indigo-100 dark:bg-indigo-950 hover:bg-indigo-200 dark:hover:bg-indigo-900 text-indigo-800 dark:text-indigo-300 border border-indigo-300 dark:border-indigo-500/30 rounded-xl text-[11px] font-bold transition flex items-center justify-center gap-1 whitespace-nowrap" title="Đảo trạng thái danh sách đang chọn">
-                                <i class="fa-solid fa-right-left text-xs"></i>Đảo chọn
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-2 overflow-x-auto pb-1 text-xs">
-                        <span class="text-slate-500 font-bold text-[11px] shrink-0 mr-1">Lọc nhanh:</span>
-                        <button onclick="setAdminQuickFilter('all', 'all')" class="px-3 py-1 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl font-bold text-[11px] border border-slate-300 dark:border-slate-700 transition shrink-0">
-                            Tất cả
-                        </button>
-                        <button onclick="setAdminQuickFilter('B1', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
-                            Khối B1
-                        </button>
-                        <button onclick="setAdminQuickFilter('B2', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
-                            Khối B2
-                        </button>
-                        <button onclick="setAdminQuickFilter('B3', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
-                            Khối B3
-                        </button>
-                        <button onclick="setAdminQuickFilter('B4', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
-                            Khối B4
-                        </button>
-                        <button onclick="setAdminQuickFilter('B5', 'all')" class="px-3 py-1 bg-teal-100 dark:bg-teal-950/80 hover:bg-teal-200 dark:hover:bg-teal-900 text-teal-800 dark:text-teal-300 border border-teal-300 dark:border-teal-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
-                            Khối B5
-                        </button>
-                        <button onclick="setAdminQuickFilter('all', 'absent')" class="px-3 py-1 bg-amber-100 dark:bg-amber-950/80 hover:bg-amber-200 dark:hover:bg-amber-900 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-500/30 rounded-xl font-bold text-[11px] transition shrink-0">
-                            Chưa tham dự
-                        </button>
-                    </div>
-
-                    <div class="max-h-[500px] overflow-y-auto border border-slate-300 dark:border-slate-800 rounded-2xl custom-scrollbar">
-                        <table class="w-full text-left text-xs">
-                            <thead class="bg-slate-100 dark:bg-slate-900 font-extrabold text-slate-600 dark:text-slate-400 sticky top-0 z-10 border-b border-slate-300 dark:border-slate-800">
-                                <tr>
-                                    <th class="p-3">Mã Căn</th>
-                                    <th class="p-3">Chủ Sở Hữu</th>
-                                    <th class="p-3">Diện Tích (m²)</th>
-                                    <th class="p-3 text-center">Trạng Thái Tham Dự</th>
-                                    <th class="p-3 text-right">Thao Tác</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-table-body" class="divide-y divide-slate-200 dark:divide-slate-800/80 text-slate-800 dark:text-slate-300">
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
             </div>
 
         </div>
     </div><!-- END STANDALONE ADMIN PAGE VIEW -->
 
+    <!-- ==================== MODAL HIỆU ỨNG GỬI ĐÁNH GIÁ THÀNH CÔNG ==================== -->
+    <div id="eval-success-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
+        <div class="glass-card rounded-3xl shadow-2xl border border-emerald-500/40 w-full max-w-md p-7 text-center space-y-5 transform scale-95 transition-transform duration-300 relative overflow-hidden">
+            <div class="absolute -top-16 -right-16 w-44 h-44 bg-emerald-500/20 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="w-20 h-20 bg-gradient-to-br from-emerald-400 to-teal-600 text-white rounded-3xl flex items-center justify-center mx-auto text-4xl shadow-xl shadow-emerald-500/30 animate-bounce">
+                <i class="fa-solid fa-check-double"></i>
+            </div>
+            <div class="space-y-1.5">
+                <span class="px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-wider bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 border border-emerald-500/30">
+                    Ghi Nhận Thành Công Trên Cloud
+                </span>
+                <h4 class="font-black text-slate-900 dark:text-white text-xl pt-1">Cảm Ơn Quý Cư Dân!</h4>
+                <p id="eval-success-apt-info" class="text-xs sm:text-sm font-bold text-amber-600 dark:text-amber-400">Căn hộ B1-0101 • Điểm đánh giá: 5.0/5.0</p>
+                <p class="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                    Đánh giá của Quý cư dân về <strong>Đơn vị vận hành & Ban Quản Trị (BQT)</strong> đã được mã hóa bảo mật và tổng hợp trực tiếp vào biểu đồ phân tích chung của Hội nghị.
+                </p>
+            </div>
+            <div class="pt-2">
+                <button onclick="closeEvalSuccessModal()" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold rounded-xl text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition">
+                    Hoàn Tất & Xem Bảng Phân Tích
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN XÓA DỮ LIỆU -->
     <div id="confirm-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
         <div class="glass-card rounded-3xl shadow-2xl border border-slate-300 dark:border-slate-800 w-full max-w-sm p-6 text-center space-y-4 transform scale-95 transition-transform duration-300">
             <div class="w-12 h-12 bg-rose-500/20 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto text-xl border border-rose-500/30">
@@ -801,6 +1087,7 @@
         </div>
     </div>
 
+    <!-- TOAST NOTIFICATION -->
     <div id="toast" class="fixed bottom-5 right-5 z-50 transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-2xl shadow-2xl flex items-center space-x-3 border border-slate-700 text-xs font-semibold">
         <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
         <span id="toast-msg">Thông báo...</span>
@@ -816,17 +1103,19 @@
         const DEFAULT_TOTAL_AREA = 27734.30; /* 27.734,3 m² */
         
         const DEFAULT_BLOCK_NAMES = {
-            'B1': 'Khối B1',
-            'B2': 'Khối B2',
-            'B3': 'Khối B3',
-            'B4': 'Khối B4',
-            'B5': 'Khối B5',
-            'NO1': 'Khối B1',
-            'NO2': 'Khối B2',
-            'NO3': 'Khối B3',
-            'NO4': 'Khối B4',
-            'NO5': 'Khối B5'
+            'B1': 'Khối B1', 'B2': 'Khối B2', 'B3': 'Khối B3', 'B4': 'Khối B4', 'B5': 'Khối B5',
+            'NO1': 'Khối B1', 'NO2': 'Khối B2', 'NO3': 'Khối B3', 'NO4': 'Khối B4', 'NO5': 'Khối B5'
         };
+
+        /* 6 Hạng Mục Đánh Giá Đơn Vị Vận Hành & Ban Quản Trị (BQT) */
+        const EVALUATION_CATEGORIES = [
+            { id: 'security', name: 'An ninh, Bảo vệ & Trật tự PCCC', icon: 'fa-shield-halved', color: 'text-blue-500' },
+            { id: 'hygiene', name: 'Vệ sinh môi trường & Cảnh quan', icon: 'fa-leaf', color: 'text-emerald-500' },
+            { id: 'technical', name: 'Kỹ thuật, Thang máy & Bảo trì', icon: 'fa-screwdriver-wrench', color: 'text-amber-500' },
+            { id: 'service', name: 'Thái độ phục vụ & CSKH Vận hành', icon: 'fa-headset', color: 'text-purple-500' },
+            { id: 'finance', name: 'Minh bạch tài chính & Quỹ vận hành', icon: 'fa-coins', color: 'text-teal-500' },
+            { id: 'bqt', name: 'Hiệu quả hoạt động Ban Quản Trị (BQT)', icon: 'fa-users-gear', color: 'text-rose-500' }
+        ];
 
         /* Firebase Configuration */
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -839,26 +1128,419 @@
             measurementId: "G-MTWM4RJY1E"
         };
 
-        /* Initialize Firebase */
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-2026';
         const apartmentsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'apartments');
+        const evaluationsColRef = collection(db, 'artifacts', appId, 'public', 'data', 'evaluations');
         const settingsDocRef = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
 
         /* Application Global State */
         let state = {
             totalAreaOverride: DEFAULT_TOTAL_AREA,
             apartments: [],
+            evaluations: [],
             manualEntries: [],
             blockNames: { ...DEFAULT_BLOCK_NAMES },
             isAdminAuthenticated: false,
             hasFiredConfetti: false,
             isInitialLoadDone: false,
-            theme: localStorage.getItem('theme') || 'dark'
+            theme: 'dark',
+            verifiedApartment: null,
+            currentRatings: {
+                security: 5,
+                hygiene: 5,
+                technical: 5,
+                service: 5,
+                finance: 5,
+                bqt: 5
+            }
         };
+
+        /* ==================== HÀM MÃ HÓA & CHUẨN HÓA SỐ ĐIỆN THOẠI THÔNG MINH (+84 -> 0) ==================== */
+        function smartNormalizePhone(rawInput) {
+            if (rawInput === undefined || rawInput === null) return '';
+            let str = String(rawInput).trim();
+            if (!str) return '';
+
+            // Nếu chuỗi chứa nhiều số điện thoại ngăn cách bởi dấu / hoặc , thì lấy số đầu tiên
+            str = str.split(/[\/,;]/)[0].trim();
+
+            // Loại bỏ khoảng trắng, dấu chấm, gạch ngang, ngoặc đơn
+            let cleaned = str.replace(/[\s\.\-\(\)]/g, '');
+
+            // Chuyển +840... hoặc +84... thành 0...
+            if (cleaned.startsWith('+840')) {
+                cleaned = '0' + cleaned.slice(4);
+            } else if (cleaned.startsWith('+84')) {
+                cleaned = '0' + cleaned.slice(3);
+            } else if (cleaned.startsWith('0084')) {
+                cleaned = '0' + cleaned.slice(4);
+            } else if (cleaned.startsWith('84') && (cleaned.length === 11 || cleaned.length === 12)) {
+                cleaned = cleaned.startsWith('840') ? '0' + cleaned.slice(3) : '0' + cleaned.slice(2);
+            }
+
+            // Chỉ giữ lại các chữ số
+            cleaned = cleaned.replace(/[^0-9]/g, '');
+
+            // Trường hợp file Excel tự cắt mất số 0 ở đầu (còn 9 chữ số, bắt đầu bằng 3, 5, 7, 8, 9)
+            if (cleaned.length === 9 && /^[35789]/.test(cleaned)) {
+                cleaned = '0' + cleaned;
+            }
+
+            return cleaned;
+        }
+
+        function maskPhoneForPublic(phone) {
+            const norm = smartNormalizePhone(phone);
+            if (!norm || norm.length < 7) return '<span class="text-slate-400 font-normal">Chưa cập nhật</span>';
+            const prefix = norm.slice(0, 4);
+            const suffix = norm.slice(-3);
+            return `<span class="font-mono font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${prefix}***${suffix}</span>`;
+        }
+
+        function previewNormalizedPhone() {
+            const phoneInput = document.getElementById('verify-phone-input');
+            const previewEl = document.getElementById('normalized-phone-preview');
+            if (!phoneInput || !previewEl) return;
+
+            const raw = phoneInput.value.trim();
+            const norm = smartNormalizePhone(raw);
+            if (raw && norm) {
+                previewEl.classList.remove('hidden');
+                previewEl.innerHTML = `<i class="fa-solid fa-wand-magic-sparkles mr-1"></i>Chuẩn hóa: ${norm}`;
+            } else {
+                previewEl.classList.add('hidden');
+            }
+        }
+
+        /* ==================== XÁC THỰC CHÍNH CHỦ & ĐÁNH GIÁ VẬN HÀNH ==================== */
+        function normalizeAptCode(code) {
+            return String(code || '').trim().toUpperCase().replace(/\s+/g, '');
+        }
+
+        function findApartmentSmart(inputCode) {
+            const clean = normalizeAptCode(inputCode);
+            if (!clean) return null;
+
+            return state.apartments.find(apt => {
+                const aptUpper = normalizeAptCode(apt.id);
+                if (aptUpper === clean) return true;
+                // Cho phép khớp linh hoạt giữa B1-0101 và NO1-0101
+                const altApt = aptUpper.startsWith('NO') ? 'B' + aptUpper.slice(2) : (aptUpper.startsWith('B') ? 'NO' + aptUpper.slice(1) : aptUpper);
+                return altApt === clean;
+            });
+        }
+
+        function handleVerifyResident(event) {
+            if (event) event.preventDefault();
+            const aptInput = document.getElementById('verify-apt-input')?.value || '';
+            const phoneInput = document.getElementById('verify-phone-input')?.value || '';
+            const errBox = document.getElementById('verify-error-box');
+            const errText = document.getElementById('verify-error-text');
+
+            const normPhone = smartNormalizePhone(phoneInput);
+            const foundApt = findApartmentSmart(aptInput);
+
+            if (!foundApt) {
+                if (errBox && errText) {
+                    errText.innerHTML = `Không tìm thấy mã căn hộ <strong>${aptInput.toUpperCase()}</strong> trong danh sách dự án!`;
+                    errBox.classList.remove('hidden');
+                }
+                return;
+            }
+
+            if (!normPhone || normPhone.length < 9) {
+                if (errBox && errText) {
+                    errText.innerHTML = `Số điện thoại không hợp lệ. Vui lòng kiểm tra lại!`;
+                    errBox.classList.remove('hidden');
+                }
+                return;
+            }
+
+            const registeredPhone = smartNormalizePhone(foundApt.phone || '');
+            if (registeredPhone && registeredPhone !== normPhone) {
+                if (errBox && errText) {
+                    errText.innerHTML = `Số điện thoại <strong>${normPhone}</strong> không khớp với SĐT chính chủ đã đăng ký của căn <strong>${foundApt.id}</strong> (${registeredPhone.slice(0,4)}***${registeredPhone.slice(-3)})!`;
+                    errBox.classList.remove('hidden');
+                }
+                showToast("Xác thực số điện thoại chính chủ không khớp!", "error");
+                return;
+            }
+
+            if (errBox) errBox.classList.add('hidden');
+
+            // Kiểm tra xem căn hộ đã có đánh giá trước đó chưa để nạp lại điểm cũ
+            const existingEval = state.evaluations.find(ev => ev.aptId === foundApt.id);
+            if (existingEval && existingEval.ratings) {
+                state.currentRatings = { ...existingEval.ratings };
+                const commentEl = document.getElementById('eval-comment-input');
+                if (commentEl) commentEl.value = existingEval.comment || '';
+            } else {
+                state.currentRatings = { security: 5, hygiene: 5, technical: 5, service: 5, finance: 5, bqt: 5 };
+                const commentEl = document.getElementById('eval-comment-input');
+                if (commentEl) commentEl.value = '';
+            }
+
+            state.verifiedApartment = {
+                ...foundApt,
+                verifiedPhone: normPhone
+            };
+
+            document.getElementById('resident-verify-step')?.classList.add('hidden');
+            document.getElementById('resident-rating-step')?.classList.remove('hidden');
+
+            const greetingEl = document.getElementById('verified-owner-greeting');
+            if (greetingEl) {
+                greetingEl.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400">${foundApt.id}</span> • ${foundApt.ownerName || 'Chủ sở hữu'} <span class="text-xs font-mono text-slate-400">(${normPhone})</span>`;
+            }
+
+            renderRatingCategoryInputs();
+            showToast(`Đã xác thực chính chủ căn hộ ${foundApt.id}!`, "success");
+        }
+
+        function resetResidentVerifyStep() {
+            state.verifiedApartment = null;
+            document.getElementById('resident-rating-step')?.classList.add('hidden');
+            document.getElementById('resident-verify-step')?.classList.remove('hidden');
+        }
+
+        function setCategoryRating(catId, starVal) {
+            state.currentRatings[catId] = starVal;
+            renderRatingCategoryInputs();
+        }
+
+        function renderRatingCategoryInputs() {
+            const container = document.getElementById('rating-categories-container');
+            if (!container) return;
+
+            const ratingLabels = {
+                1: 'Kém (1/5)',
+                2: 'Chưa tốt (2/5)',
+                3: 'Bình thường (3/5)',
+                4: 'Tốt (4/5)',
+                5: 'Rất hài lòng (5/5)'
+            };
+
+            container.innerHTML = EVALUATION_CATEGORIES.map(cat => {
+                const currentScore = state.currentRatings[cat.id] || 5;
+                let starsHtml = '';
+                for (let s = 1; s <= 5; s++) {
+                    const active = s <= currentScore;
+                    starsHtml += `
+                        <button type="button" onclick="setCategoryRating('${cat.id}', ${s})" class="star-btn p-1 focus:outline-none ${active ? 'text-amber-400' : 'text-slate-300 dark:text-slate-700'}">
+                            <i class="fa-solid fa-star text-base sm:text-lg"></i>
+                        </button>
+                    `;
+                }
+
+                return `
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-lg bg-slate-200/70 dark:bg-slate-900 flex items-center justify-center ${cat.color} shrink-0">
+                                <i class="fa-solid ${cat.icon} text-sm"></i>
+                            </div>
+                            <div>
+                                <div class="text-xs font-extrabold text-slate-800 dark:text-slate-200">${cat.name}</div>
+                                <div class="text-[10px] font-bold text-amber-600 dark:text-amber-400">${ratingLabels[currentScore]}</div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-end gap-0.5 shrink-0">
+                            ${starsHtml}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        async function submitResidentEvaluation() {
+            if (!state.verifiedApartment) {
+                showToast("Vui lòng xác thực căn hộ trước khi gửi đánh giá!", "error");
+                return;
+            }
+
+            const apt = state.verifiedApartment;
+            const comment = (document.getElementById('eval-comment-input')?.value || '').trim();
+            const autoCheckin = document.getElementById('eval-auto-checkin-chk')?.checked;
+
+            const scores = Object.values(state.currentRatings);
+            const avgScore = Math.round((scores.reduce((a, b) => a + b, 0) / scores.length) * 100) / 100;
+
+            const evalDocData = {
+                aptId: apt.id,
+                ownerName: apt.ownerName || 'Chủ sở hữu',
+                phone: apt.verifiedPhone,
+                area: apt.area || 0,
+                ratings: { ...state.currentRatings },
+                avgScore: avgScore,
+                comment: comment,
+                submittedAt: new Date().toISOString(),
+                displayTime: new Date().toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' })
+            };
+
+            try {
+                // 1. Lưu phiếu đánh giá vào bộ sưu tập evaluations (mỗi căn hộ 1 phiếu chính chủ)
+                await setDoc(doc(evaluationsColRef, apt.id), evalDocData, { merge: true });
+
+                // 2. Cập nhật SĐT chuẩn hóa (nếu căn hộ chưa có SĐT) và tự động điểm danh nếu tích chọn
+                const aptUpdate = {
+                    phone: apt.verifiedPhone,
+                    updatedAt: new Date().toISOString()
+                };
+                if (autoCheckin) {
+                    aptUpdate.attended = true;
+                }
+                await setDoc(doc(apartmentsColRef, apt.id), aptUpdate, { merge: true });
+
+                // 3. Kích hoạt pháo hoa & Modal chúc mừng
+                triggerCelebrationConfetti();
+                openEvalSuccessModal(apt.id, avgScore);
+                resetResidentVerifyStep();
+            } catch (err) {
+                console.error("Error submitting evaluation:", err);
+                showToast("Lỗi khi lưu đánh giá lên Cloud!", "error");
+            }
+        }
+
+        function openEvalSuccessModal(aptId, avgScore) {
+            const modal = document.getElementById('eval-success-modal');
+            const infoEl = document.getElementById('eval-success-apt-info');
+            if (infoEl) {
+                infoEl.innerText = `Căn hộ ${aptId} • Điểm trung bình: ${avgScore.toFixed(1)} / 5.0 Sao`;
+            }
+            if (modal) {
+                modal.classList.remove('opacity-0', 'pointer-events-none');
+                modal.classList.add('opacity-100');
+            }
+        }
+
+        function closeEvalSuccessModal() {
+            const modal = document.getElementById('eval-success-modal');
+            if (modal) {
+                modal.classList.remove('opacity-100');
+                modal.classList.add('opacity-0', 'pointer-events-none');
+            }
+        }
+
+        /* ==================== RENDER BẢNG PHÂN TÍCH ĐÁNH GIÁ TRÊN TRANG CHÍNH ==================== */
+        function renderEvaluationAnalytics() {
+            const evals = state.evaluations || [];
+            const totalEvals = evals.length;
+
+            const overallScoreEl = document.getElementById('eval-overall-score');
+            const totalCountBadge = document.getElementById('eval-total-count-badge');
+            const satPercentEl = document.getElementById('eval-satisfaction-percent');
+            const areaWeightBadge = document.getElementById('eval-area-weight-badge');
+            const breakdownContainer = document.getElementById('eval-category-breakdown');
+            const distContainer = document.getElementById('eval-star-distribution');
+            const tierSummaryEl = document.getElementById('eval-rating-tier-summary');
+            const recentListEl = document.getElementById('public-recent-evaluations');
+
+            let overallSum = 0;
+            let evaluatedAreaSum = 0;
+            const catSums = { security: 0, hygiene: 0, technical: 0, service: 0, finance: 0, bqt: 0 };
+            const starCounts = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
+
+            evals.forEach(ev => {
+                const avg = parseFloat(ev.avgScore) || 5;
+                overallSum += avg;
+                evaluatedAreaSum += parseFloat(ev.area) || 0;
+
+                const roundedStar = Math.min(5, Math.max(1, Math.round(avg)));
+                starCounts[roundedStar] = (starCounts[roundedStar] || 0) + 1;
+
+                EVALUATION_CATEGORIES.forEach(c => {
+                    catSums[c.id] += parseFloat(ev.ratings?.[c.id]) || 5;
+                });
+            });
+
+            const overallAvg = totalEvals > 0 ? (overallSum / totalEvals) : 0;
+            const satPercent = totalEvals > 0 ? Math.round((overallAvg / 5) * 100) : 0;
+
+            if (overallScoreEl) overallScoreEl.innerText = overallAvg.toFixed(2);
+            if (totalCountBadge) totalCountBadge.innerText = `${totalEvals} căn hộ đã đánh giá`;
+            if (satPercentEl) satPercentEl.innerText = `${satPercent}%`;
+            if (areaWeightBadge) areaWeightBadge.innerText = `DT tham gia đánh giá: ${formatNumber(evaluatedAreaSum)} m²`;
+
+            // 1. Render 6 hạng mục
+            if (breakdownContainer) {
+                breakdownContainer.innerHTML = EVALUATION_CATEGORIES.map(cat => {
+                    const avg = totalEvals > 0 ? (catSums[cat.id] / totalEvals) : 0;
+                    const pct = Math.round((avg / 5) * 100);
+                    return `
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/80 border border-slate-200 dark:border-slate-800 space-y-2">
+                            <div class="flex items-center justify-between text-xs">
+                                <span class="font-bold text-slate-800 dark:text-slate-200 flex items-center gap-1.5 truncate">
+                                    <i class="fa-solid ${cat.icon} ${cat.color}"></i>
+                                    <span class="truncate">${cat.name}</span>
+                                </span>
+                                <span class="font-mono font-black text-amber-500 shrink-0">${avg.toFixed(2)} <i class="fa-solid fa-star text-[10px]"></i></span>
+                            </div>
+                            <div class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                                <div class="bg-gradient-to-r from-amber-500 to-emerald-500 h-full rounded-full transition-all duration-500" style="width: ${pct}%"></div>
+                            </div>
+                            <div class="flex justify-between text-[10px] text-slate-500 font-semibold">
+                                <span>Mức hài lòng: ${pct}%</span>
+                                <span>${totalEvals} phiếu</span>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 2. Render phân bổ 5 sao -> 1 sao
+            if (distContainer) {
+                const highSatCount = starCounts[5] + starCounts[4];
+                const highSatPct = totalEvals > 0 ? ((highSatCount / totalEvals) * 100).toFixed(1) : '0.0';
+                if (tierSummaryEl) {
+                    tierSummaryEl.innerText = totalEvals > 0 ? `${highSatPct}% Tín nhiệm cao (4-5 sao)` : 'Chưa có dữ liệu';
+                }
+
+                distContainer.innerHTML = [5, 4, 3, 2, 1].map(star => {
+                    const count = starCounts[star] || 0;
+                    const pct = totalEvals > 0 ? Math.round((count / totalEvals) * 100) : 0;
+                    return `
+                        <div class="p-2 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                            <div class="font-black text-amber-500 flex items-center justify-center gap-0.5">
+                                <span>${star}</span><i class="fa-solid fa-star text-[10px]"></i>
+                            </div>
+                            <div class="font-mono font-bold text-slate-800 dark:text-white text-xs mt-0.5">${count} căn</div>
+                            <div class="text-[10px] text-slate-400 font-mono">${pct}%</div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            // 3. Render danh sách phản hồi công khai mới nhất
+            if (recentListEl) {
+                if (totalEvals === 0) {
+                    recentListEl.innerHTML = `<div class="text-center py-6 text-xs text-slate-400">Chưa có lượt đánh giá nào. Hãy là cư dân đầu tiên xác thực mã căn & SĐT để gửi đánh giá!</div>`;
+                } else {
+                    const sortedEvals = [...evals].sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+                    recentListEl.innerHTML = sortedEvals.map(ev => `
+                        <div class="p-3 rounded-xl bg-slate-50 dark:bg-slate-950/90 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                            <div class="space-y-1">
+                                <div class="flex flex-wrap items-center gap-2">
+                                    <span class="font-black text-xs text-emerald-700 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">${ev.aptId}</span>
+                                    <span class="font-bold text-xs text-slate-800 dark:text-slate-200">${ev.ownerName || 'Chủ sở hữu'}</span>
+                                    ${maskPhoneForPublic(ev.phone)}
+                                    <span class="text-[10px] text-slate-400 font-mono">${ev.displayTime || ''}</span>
+                                </div>
+                                <p class="text-xs text-slate-600 dark:text-slate-300 italic">
+                                    ${ev.comment ? `"${ev.comment}"` : '<span class="text-slate-400 not-italic">Đã chấm điểm tín nhiệm các hạng mục vận hành & BQT.</span>'}
+                                </p>
+                            </div>
+                            <div class="flex items-center gap-1 bg-amber-500/15 border border-amber-500/30 px-2.5 py-1 rounded-xl shrink-0 self-start sm:self-center">
+                                <i class="fa-solid fa-star text-amber-500 text-xs"></i>
+                                <span class="font-mono font-black text-xs text-amber-600 dark:text-amber-300">${Number(ev.avgScore || 5).toFixed(1)}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
+            }
+        }
 
         /* Confetti Trigger */
         function triggerCelebrationConfetti() {
@@ -902,12 +1584,16 @@
                     const batch = writeBatch(db);
                     chunk.forEach(apt => {
                         const docRef = doc(apartmentsColRef, apt.id);
-                        batch.set(docRef, {
+                        const payload = {
                             area: apt.area,
                             ownerName: apt.ownerName || '',
                             attended: apt.attended || false,
                             updatedAt: new Date().toISOString()
-                        }, { merge: true });
+                        };
+                        if (apt.phone !== undefined) {
+                            payload.phone = smartNormalizePhone(apt.phone);
+                        }
+                        batch.set(docRef, payload, { merge: true });
                     });
                     await batch.commit();
                 }
@@ -920,7 +1606,6 @@
         /* Theme Toggle Logic */
         function applyTheme(theme) {
             state.theme = theme;
-            localStorage.setItem('theme', theme);
             const htmlEl = document.documentElement;
             const themeIcon = document.getElementById('theme-icon');
             const themeText = document.getElementById('theme-text');
@@ -951,10 +1636,6 @@
                 adminView.classList.remove('hidden');
                 adminView.classList.add('flex');
             }
-            
-            if (sessionStorage.getItem('admin_authenticated') === 'true' || localStorage.getItem('admin_authenticated') === 'true') {
-                state.isAdminAuthenticated = true;
-            }
 
             if (state.isAdminAuthenticated) {
                 document.getElementById('admin-auth-view')?.classList.add('hidden');
@@ -962,6 +1643,7 @@
                 document.getElementById('admin-logout-btn')?.classList.remove('hidden');
                 renderAdminOverviewHeader();
                 renderAdminTable();
+                renderAdminEvaluationsTable();
                 renderManualHistoryTable();
                 renderBuildingStats();
             } else {
@@ -985,19 +1667,12 @@
             if (event) event.preventDefault();
             const passInput = document.getElementById('admin-pass-input');
             const errorMsg = document.getElementById('auth-error-msg');
-            const rememberChk = document.getElementById('remember-session-chk');
 
             if (passInput && passInput.value.trim() === ADMIN_PASS) {
                 state.isAdminAuthenticated = true;
-                if (rememberChk && rememberChk.checked) {
-                    localStorage.setItem('admin_authenticated', 'true');
-                } else {
-                    sessionStorage.setItem('admin_authenticated', 'true');
-                }
-                
                 if (errorMsg) errorMsg.classList.add('hidden');
                 passInput.value = '';
-                showToast("Đăng nhập thành công!", "success");
+                showToast("Đăng nhập Quản trị viên thành công!", "success");
 
                 document.getElementById('admin-auth-view')?.classList.add('hidden');
                 document.getElementById('admin-panel-view')?.classList.remove('hidden');
@@ -1005,6 +1680,7 @@
 
                 renderAdminOverviewHeader();
                 renderAdminTable();
+                renderAdminEvaluationsTable();
                 renderManualHistoryTable();
                 renderBuildingStats();
             } else {
@@ -1015,13 +1691,9 @@
 
         function handleAdminLogout() {
             state.isAdminAuthenticated = false;
-            sessionStorage.removeItem('admin_authenticated');
-            localStorage.removeItem('admin_authenticated');
-
             document.getElementById('admin-auth-view')?.classList.remove('hidden');
             document.getElementById('admin-panel-view')?.classList.add('hidden');
             document.getElementById('admin-logout-btn')?.classList.add('hidden');
-
             showToast("Đã đăng xuất phiên Quản trị!", "info");
         }
 
@@ -1055,7 +1727,7 @@
                 setupRealtimeListeners();
             } catch (err) {
                 console.error("Firebase auth error:", err);
-                updateSyncBadge(false, "Lỗi kết nối Firebase");
+                updateSyncBadge(false, "Lỗi kết nối Cloud");
             }
         }
 
@@ -1072,6 +1744,7 @@
         }
 
         function setupRealtimeListeners() {
+            // 1. Apartments listener
             onSnapshot(apartmentsColRef, (snapshot) => {
                 const loadedList = [];
                 snapshot.forEach((docSnap) => {
@@ -1080,6 +1753,7 @@
                         id: docSnap.id,
                         area: typeof data.area === 'number' ? data.area : parseFloat(data.area) || 0,
                         ownerName: data.ownerName || '',
+                        phone: smartNormalizePhone(data.phone || ''),
                         attended: !!data.attended
                     });
                 });
@@ -1090,9 +1764,25 @@
                 render();
             }, (error) => {
                 console.error("Apartments listener error:", error);
-                showToast("Lỗi đồng bộ dữ liệu căn hộ!", "error");
             });
 
+            // 2. Evaluations listener
+            onSnapshot(evaluationsColRef, (snapshot) => {
+                const evalList = [];
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    evalList.push({
+                        id: docSnap.id,
+                        ...data
+                    });
+                });
+                state.evaluations = evalList;
+                render();
+            }, (error) => {
+                console.error("Evaluations listener error:", error);
+            });
+
+            // 3. Settings listener
             onSnapshot(settingsDocRef, (docSnap) => {
                 if (docSnap.exists()) {
                     const data = docSnap.data();
@@ -1174,10 +1864,12 @@
                 }
             }
 
+            renderEvaluationAnalytics();
             renderTable();
             if (state.isAdminAuthenticated) {
                 renderAdminOverviewHeader();
                 renderAdminTable();
+                renderAdminEvaluationsTable();
                 renderManualHistoryTable();
                 renderBuildingStats();
             }
@@ -1190,13 +1882,16 @@
             const searchVal = (document.getElementById('search-input')?.value || '').trim().toLowerCase();
             const filterStatus = document.getElementById('filter-status')?.value || 'all';
 
-            const effectiveTotalArea = state.totalAreaOverride > 0 ? state.totalAreaOverride : DEFAULT_TOTAL_AREA;
+            const evalMap = new Map();
+            (state.evaluations || []).forEach(ev => evalMap.set(ev.aptId, ev));
 
             const filtered = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || 
+                                      (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
                 let matchesStatus = true;
                 if (filterStatus === 'attended') matchesStatus = apt.attended;
                 if (filterStatus === 'absent') matchesStatus = !apt.attended;
+                if (filterStatus === 'evaluated') matchesStatus = evalMap.has(apt.id);
                 return matchesSearch && matchesStatus;
             });
 
@@ -1206,9 +1901,9 @@
             if (filtered.length === 0) {
                 tbody.innerHTML = `
                     <tr>
-                        <td colspan="7" class="text-center py-8 text-slate-400 font-medium">
+                        <td colspan="8" class="text-center py-8 text-slate-400 font-medium">
                             ${state.apartments.length === 0 
-                                ? 'Chưa có dữ liệu căn hộ. Vui lòng vào <strong>Trang Quản Lý (Admin)</strong> để nạp tệp Excel <em>DANH SÁCH CHỦ SỞ HỮU check in 2026.xlsx</em>.' 
+                                ? 'Chưa có dữ liệu căn hộ. Vui lòng vào <strong>Trang Quản Lý (Admin)</strong> để nạp danh sách căn hộ kèm SĐT.' 
                                 : 'Không tìm thấy căn hộ phù hợp với từ khóa tìm kiếm.'}
                         </td>
                     </tr>
@@ -1217,27 +1912,44 @@
             }
 
             tbody.innerHTML = filtered.map((apt, index) => {
-                const contribPercent = effectiveTotalArea > 0 ? (apt.area / effectiveTotalArea) * 100 : 0;
-                const blockKey = apt.id.split('-')[0]?.toUpperCase() || 'Khối B1';
+                const blockKey = apt.id.split('-')[0]?.toUpperCase() || 'B1';
                 const blockDisplayName = state.blockNames[blockKey] || `Khối ${blockKey}`;
+                const ev = evalMap.get(apt.id);
 
                 return `
                     <tr class="hover:bg-slate-100/80 dark:hover:bg-slate-800/60 transition border-b border-slate-200 dark:border-slate-800/80">
                         <td class="py-2.5 px-4 font-mono text-slate-400 font-medium">${index + 1}</td>
-                        <td class="py-2.5 px-4 font-extrabold text-slate-900 dark:text-white">${apt.id}</td>
-                        <td class="py-2.5 px-4 font-semibold text-slate-800 dark:text-slate-200">${apt.ownerName || '<span class="text-slate-400 font-normal">--</span>'}</td>
-                        <td class="py-2.5 px-4 text-slate-600 dark:text-slate-300 font-medium">${blockDisplayName}</td>
-                        <td class="py-2.5 px-4 text-right font-bold text-slate-800 dark:text-slate-200 font-mono">${formatNumber(apt.area)}</td>
-                        <td class="py-2.5 px-4 text-right font-mono text-slate-500 dark:text-slate-400">${contribPercent.toFixed(3)}%</td>
+                        <td class="py-2.5 px-4 font-extrabold text-slate-900">${apt.id}</td>
+                        <td class="py-2.5 px-4 font-semibold text-slate-800">${apt.ownerName || '<span class="text-slate-400 font-normal">--</span>'}</td>
+                        <td class="py-2.5 px-4">${maskPhoneForPublic(apt.phone)}</td>
+                        <td class="py-2.5 px-4 text-slate-600 font-medium">${blockDisplayName}</td>
+                        <td class="py-2.5 px-4 text-right font-bold text-slate-800 font-mono">${formatNumber(apt.area)}</td>
+                        <td class="py-2.5 px-4 text-center">
+                            ${ev 
+                                ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-amber-100 text-amber-800 border border-amber-300"><i class="fa-solid fa-star text-amber-500"></i> ${Number(ev.avgScore).toFixed(1)}/5.0</span>`
+                                : `<button onclick="quickSelectAptForEvaluation('${apt.id}')" class="text-[11px] font-bold text-indigo-600 hover:text-indigo-800 underline">Đánh giá ngay</button>`
+                            }
+                        </td>
                         <td class="py-2.5 px-4 text-center">
                             ${apt.attended 
                                 ? `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 border border-emerald-300 shadow-sm"><i class="fa-solid fa-check"></i> Đã tham dự</span>`
-                                : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">Chưa tham dự</span>`
+                                : `<span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-medium bg-slate-100 text-slate-500 border border-slate-200">Chưa tham dự</span>`
                             }
                         </td>
                     </tr>
                 `;
             }).join('');
+        }
+
+        function quickSelectAptForEvaluation(aptId) {
+            resetResidentVerifyStep();
+            const aptInput = document.getElementById('verify-apt-input');
+            const phoneInput = document.getElementById('verify-phone-input');
+            if (aptInput) aptInput.value = aptId;
+            document.getElementById('evaluation-section')?.scrollIntoView({ behavior: 'smooth' });
+            setTimeout(() => {
+                if (phoneInput) phoneInput.focus();
+            }, 400);
         }
 
         function renderAdminOverviewHeader() {
@@ -1270,26 +1982,28 @@
         }
 
         function switchAdminTab(tabName) {
-            const tabs = ['import', 'manual-add', 'proxy', 'stats', 'manage'];
+            const tabs = ['import', 'manage', 'evaluations', 'manual-add', 'proxy', 'stats'];
             tabs.forEach(t => {
                 const btn = document.getElementById(`tab-btn-${t}`);
                 const content = document.getElementById(`tab-content-${t}`);
                 if (btn && content) {
                     if (t === tabName) {
-                        btn.className = "py-2.5 px-4 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-2 bg-emerald-500/10 rounded-xl";
+                        btn.className = "py-2.5 px-4 border-b-2 border-emerald-500 text-emerald-600 dark:text-emerald-400 flex items-center gap-2 bg-emerald-500/10 rounded-xl whitespace-nowrap";
                         content.classList.remove('hidden');
                     } else {
-                        btn.className = "py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition";
+                        btn.className = "py-2.5 px-4 border-b-2 border-transparent hover:text-slate-900 dark:hover:text-white flex items-center gap-2 rounded-xl transition whitespace-nowrap";
                         content.classList.add('hidden');
                     }
                 }
             });
 
             if (tabName === 'manage') renderAdminTable();
+            if (tabName === 'evaluations') renderAdminEvaluationsTable();
             if (tabName === 'stats') renderBuildingStats();
             if (tabName === 'manual-add') renderManualHistoryTable();
         }
 
+        /* ==================== NẠP FILE EXCEL & CHUẨN HÓA SỐ ĐIỆN THOẠI THÔNG MINH ==================== */
         function handleFileUpload(event) {
             const file = event.target.files[0];
             if (!file) return;
@@ -1300,6 +2014,7 @@
                     const data = new Uint8Array(e.target.result);
                     const workbook = XLSX.read(data, { type: 'array' });
                     let importedApts = [];
+                    let normalizedPhoneCount = 0;
 
                     for (const sheetName of workbook.SheetNames) {
                         const sheet = workbook.Sheets[sheetName];
@@ -1308,6 +2023,7 @@
 
                         let codeColIndex = -1;
                         let ownerColIndex = -1;
+                        let phoneColIndex = -1;
                         let areaColIndex = -1;
                         let attendedColIndex = -1;
                         let headerRowIndex = -1;
@@ -1323,8 +2039,7 @@
                                     cellVal.includes('mã căn') || cellVal.includes('ma can') || 
                                     cellVal.includes('căn hộ') || cellVal.includes('can ho') ||
                                     cellVal.includes('số căn') || cellVal.includes('so can') ||
-                                    cellVal.includes('mã ch') || cellVal === 'căn' || cellVal === 'can' ||
-                                    cellVal.includes('mã số') || (cellVal.includes('mã') && !cellVal.includes('chủ sở hữu'))
+                                    cellVal.includes('mã ch') || cellVal === 'căn' || cellVal === 'can'
                                 )) {
                                     codeColIndex = c;
                                     headerRowIndex = r;
@@ -1334,15 +2049,23 @@
                                     cellVal.includes('chủ sở hữu') || cellVal.includes('chu so huu') ||
                                     cellVal.includes('họ và tên') || cellVal.includes('ho va ten') ||
                                     cellVal.includes('tên chủ') || cellVal.includes('chủ hộ') ||
-                                    cellVal.includes('người đại diện') || cellVal.includes('khách hàng')
+                                    cellVal.includes('khách hàng')
                                 )) {
                                     ownerColIndex = c;
                                 }
 
+                                if (phoneColIndex === -1 && (
+                                    cellVal.includes('điện thoại') || cellVal.includes('dien thoai') ||
+                                    cellVal.includes('sđt') || cellVal.includes('sdt') ||
+                                    cellVal.includes('phone') || cellVal.includes('mobile') ||
+                                    cellVal.includes('liên hệ') || cellVal.includes('di động')
+                                )) {
+                                    phoneColIndex = c;
+                                }
+
                                 if (areaColIndex === -1 && (
                                     cellVal.includes('diện tích') || cellVal.includes('dien tich') || 
-                                    cellVal.includes('dt') || cellVal.includes('m2') || cellVal.includes('m²') ||
-                                    cellVal.includes('d.tích') || cellVal.includes('d.tich')
+                                    cellVal.includes('dt') || cellVal.includes('m2') || cellVal.includes('m²')
                                 )) {
                                     areaColIndex = c;
                                     if (headerRowIndex === -1) headerRowIndex = r;
@@ -1351,56 +2074,13 @@
                                 if (attendedColIndex === -1 && (
                                     cellVal.includes('check in') || cellVal.includes('checkin') ||
                                     cellVal.includes('tham dự') || cellVal.includes('tham du') ||
-                                    cellVal.includes('điểm danh') || cellVal.includes('diem danh') ||
-                                    cellVal.includes('có mặt') || cellVal.includes('trạng thái')
+                                    cellVal.includes('điểm danh') || cellVal.includes('trạng thái')
                                 )) {
                                     attendedColIndex = c;
                                 }
                             }
 
                             if (codeColIndex !== -1 && areaColIndex !== -1) break;
-                        }
-
-                        if (codeColIndex === -1 || areaColIndex === -1) {
-                            let colStats = [];
-                            for (let r = Math.max(0, headerRowIndex + 1); r < jsonData.length; r++) {
-                                const row = jsonData[r];
-                                if (!row || !Array.isArray(row)) continue;
-
-                                for (let c = 0; c < row.length; c++) {
-                                    if (!colStats[c]) colStats[c] = { codeScore: 0, numScore: 0 };
-                                    const val = String(row[c] || '').trim();
-                                    
-                                    if (/^[A-Z0-9]{1,6}[-\/\.\s]?[0-9]{2,5}$/i.test(val) || /^NO\d/i.test(val) || /^B\d/i.test(val)) {
-                                        colStats[c].codeScore++;
-                                    }
-
-                                    const num = parseFloat(val.replace(',', '.').replace(/[^0-9\.]/g, ''));
-                                    if (!isNaN(num) && num >= 15 && num <= 500) {
-                                        colStats[c].numScore++;
-                                    }
-                                }
-                            }
-
-                            if (codeColIndex === -1) {
-                                let maxCode = 0;
-                                colStats.forEach((st, idx) => {
-                                    if (st && st.codeScore > maxCode) {
-                                        maxCode = st.codeScore;
-                                        codeColIndex = idx;
-                                    }
-                                });
-                            }
-
-                            if (areaColIndex === -1) {
-                                let maxNum = 0;
-                                colStats.forEach((st, idx) => {
-                                    if (st && idx !== codeColIndex && st.numScore > maxNum) {
-                                        maxNum = st.numScore;
-                                        areaColIndex = idx;
-                                    }
-                                });
-                            }
                         }
 
                         if (codeColIndex === -1) codeColIndex = 0;
@@ -1418,16 +2098,31 @@
                             const lowerCode = rawCode.toLowerCase();
                             if (lowerCode.includes('tổng') || lowerCode.includes('tong') || 
                                 lowerCode.includes('căn hộ') || lowerCode.includes('mã căn') || 
-                                lowerCode.includes('stt') || lowerCode.includes('cộng') ||
-                                lowerCode.includes('bảng') || lowerCode.includes('danh sách')) {
+                                lowerCode.includes('stt') || lowerCode.includes('cộng')) {
                                 continue;
                             }
 
                             let formattedCode = rawCode.toUpperCase().replace(/\s+/g, '');
                             let ownerName = ownerColIndex !== -1 ? String(row[ownerColIndex] || '').trim() : '';
+                            let rawPhone = phoneColIndex !== -1 ? String(row[phoneColIndex] || '').trim() : '';
+
+                            // Nếu không tìm thấy cột SĐT theo tiêu đề, tự động quét trong hàng xem có ô nào chứa định dạng SĐT (+84 / 09...)
+                            if (!rawPhone) {
+                                for (let c = 0; c < row.length; c++) {
+                                    if (c === codeColIndex || c === areaColIndex || c === ownerColIndex) continue;
+                                    const candidate = String(row[c] || '').trim();
+                                    if (/^(\+?84|0)[35789][0-9\s\.\-]{7,10}$/.test(candidate) || /^[35789][0-9]{8}$/.test(candidate)) {
+                                        rawPhone = candidate;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            const normalizedPhone = smartNormalizePhone(rawPhone);
+                            if (normalizedPhone) normalizedPhoneCount++;
+
                             let rawArea = String(row[areaColIndex] || '').replace(',', '.').replace(/[^0-9\.]/g, '');
                             let areaNum = parseFloat(rawArea);
-
                             if (isNaN(areaNum) || areaNum <= 0) continue;
 
                             let isAttended = false;
@@ -1441,6 +2136,7 @@
                             importedApts.push({
                                 id: formattedCode,
                                 ownerName: ownerName,
+                                phone: normalizedPhone,
                                 area: Math.round(areaNum * 100) / 100,
                                 attended: isAttended
                             });
@@ -1460,14 +2156,26 @@
                     await saveBatchApartmentsToCloud(importedApts, true);
                     await setDoc(settingsDocRef, { totalAreaOverride: calculatedTotalArea, manualEntries: [] }, { merge: true });
 
-                    showToast(`Đã nạp thành công ${importedApts.length} căn hộ từ file Excel! (Tổng DT: ${formatNumber(calculatedTotalArea)} m²)`, "success");
+                    showToast(`Đã nạp ${importedApts.length} căn hộ & chuẩn hóa ${normalizedPhoneCount} SĐT (+84 -> 0)!`, "success");
                 } catch (err) {
                     console.error("Excel parse error:", err);
-                    showToast("Lỗi khi đọc tệp Excel/CSV! Vui lòng kiểm tra định dạng tệp.", "error");
+                    showToast("Lỗi khi đọc tệp Excel/CSV!", "error");
                 }
             };
             reader.readAsArrayBuffer(file);
             event.target.value = '';
+        }
+
+        function fillSamplePasteData() {
+            const el = document.getElementById('paste-import-input');
+            if (!el) return;
+            el.value = [
+                "B1-0101, 68.5, Nguyễn Văn An, +84912345678",
+                "B1-0102, 72.3, Trần Thị Bình, 84987654321",
+                "B2-0205, 55.0, Lê Hoàng Cường, 905112233",
+                "B3-0308, 64.2, Phạm Minh Đức, 0935.888.999"
+            ].join('\n');
+            showToast("Đã chèn dữ liệu mẫu có SĐT +84, 84 và thiếu số 0 đầu!", "info");
         }
 
         async function handlePasteImport() {
@@ -1479,20 +2187,47 @@
 
             const lines = inputVal.split('\n');
             let importedApts = [];
+            let phoneNormalizedCount = 0;
 
             lines.forEach(line => {
                 if (!line.trim()) return;
-                const parts = line.split(/[,|\t]+/);
+                const parts = line.split(/[,|\t]+/).map(p => p.trim());
                 if (parts.length >= 2) {
-                    const idStr = parts[0].trim().toUpperCase();
-                    const areaNum = parseFloat(parts[1].trim().replace(',', '.'));
-                    if (idStr && !isNaN(areaNum) && areaNum > 0) {
+                    const idStr = parts[0].toUpperCase().replace(/\s+/g, '');
+                    const secondPart = parts[1];
+
+                    // Hỗ trợ cả 2 kiểu:
+                    // Kiểu 1: MãCăn, DiệnTích, ChủHộ, SĐT
+                    // Kiểu 2: MãCăn, SĐT (chỉ cập nhật SĐT cho căn đã có)
+                    const existingApt = state.apartments.find(a => a.id === idStr);
+                    const looksLikePhone = /^(\+?84|0)[35789]/.test(secondPart.replace(/[\s\.\-]/g, '')) || secondPart.replace(/[^0-9]/g, '').length >= 9;
+
+                    if (parts.length === 2 && looksLikePhone) {
+                        const normPhone = smartNormalizePhone(secondPart);
+                        if (normPhone) phoneNormalizedCount++;
                         importedApts.push({
                             id: idStr,
-                            ownerName: parts[2] ? parts[2].trim() : '',
-                            area: areaNum,
-                            attended: false
+                            area: existingApt ? existingApt.area : 65.0,
+                            ownerName: existingApt ? existingApt.ownerName : '',
+                            phone: normPhone,
+                            attended: existingApt ? existingApt.attended : false
                         });
+                    } else {
+                        const areaNum = parseFloat(secondPart.replace(',', '.'));
+                        const ownerName = parts[2] || (existingApt ? existingApt.ownerName : '');
+                        const rawPhone = parts[3] || (existingApt ? existingApt.phone : '');
+                        const normPhone = smartNormalizePhone(rawPhone);
+                        if (normPhone) phoneNormalizedCount++;
+
+                        if (idStr && !isNaN(areaNum) && areaNum > 0) {
+                            importedApts.push({
+                                id: idStr,
+                                ownerName: ownerName,
+                                phone: normPhone,
+                                area: areaNum,
+                                attended: existingApt ? existingApt.attended : false
+                            });
+                        }
                     }
                 }
             });
@@ -1503,8 +2238,144 @@
             }
 
             await saveBatchApartmentsToCloud(importedApts, false);
-            showToast(`Đã thêm thành công ${importedApts.length} căn hộ từ danh sách!`, "success");
+            showToast(`Đã cập nhật ${importedApts.length} căn hộ (Chuẩn hóa ${phoneNormalizedCount} SĐT về 0...)!`, "success");
             document.getElementById('paste-import-input').value = '';
+        }
+
+        async function handleQuickUpsertApartment() {
+            const idInput = document.getElementById('quick-apt-id');
+            const ownerInput = document.getElementById('quick-apt-owner');
+            const phoneInput = document.getElementById('quick-apt-phone');
+            const areaInput = document.getElementById('quick-apt-area');
+
+            const aptId = normalizeAptCode(idInput?.value || '');
+            if (!aptId) {
+                showToast("Vui lòng nhập Mã Căn Hộ!", "error");
+                return;
+            }
+
+            const existing = state.apartments.find(a => a.id === aptId);
+            const ownerName = (ownerInput?.value || '').trim() || (existing ? existing.ownerName : '');
+            const normPhone = smartNormalizePhone(phoneInput?.value || '') || (existing ? existing.phone : '');
+            const areaVal = parseFloat(areaInput?.value) || (existing ? existing.area : 65.0);
+
+            try {
+                await setDoc(doc(apartmentsColRef, aptId), {
+                    ownerName: ownerName,
+                    phone: normPhone,
+                    area: areaVal,
+                    attended: existing ? existing.attended : false,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+
+                if (idInput) idInput.value = '';
+                if (ownerInput) ownerInput.value = '';
+                if (phoneInput) phoneInput.value = '';
+                if (areaInput) areaInput.value = '';
+
+                showToast(`Đã lưu căn hộ ${aptId} (SĐT chuẩn: ${normPhone || 'Trống'})!`, "success");
+            } catch (e) {
+                console.error("Quick upsert error:", e);
+                showToast("Lỗi khi lưu căn hộ!", "error");
+            }
+        }
+
+        async function normalizeAllExistingPhonesInCloud() {
+            if (state.apartments.length === 0) {
+                showToast("Chưa có dữ liệu căn hộ!", "error");
+                return;
+            }
+            const updatedList = state.apartments.map(apt => ({
+                ...apt,
+                phone: smartNormalizePhone(apt.phone || '')
+            }));
+            await saveBatchApartmentsToCloud(updatedList, false);
+            showToast("Đã quét và chuẩn hóa toàn bộ SĐT (+84 -> 0) trên Cloud!", "success");
+        }
+
+        async function updateSingleApartmentPhone(aptId, rawPhoneVal) {
+            const normPhone = smartNormalizePhone(rawPhoneVal);
+            try {
+                await setDoc(doc(apartmentsColRef, aptId), {
+                    phone: normPhone,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
+                showToast(`Đã cập nhật SĐT căn ${aptId}: ${normPhone || 'Đã xóa'}`, "success");
+            } catch (e) {
+                console.error("Error updating phone:", e);
+                showToast("Lỗi cập nhật SĐT!", "error");
+            }
+        }
+
+        function renderAdminEvaluationsTable() {
+            const tbody = document.getElementById('admin-evaluations-table-body');
+            if (!tbody) return;
+
+            const evals = [...(state.evaluations || [])].sort((a, b) => (b.submittedAt || '').localeCompare(a.submittedAt || ''));
+            if (evals.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-500">Chưa có phiếu đánh giá nào từ cư dân</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = evals.map(ev => `
+                <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80">
+                    <td class="p-3 font-mono text-slate-500">${ev.displayTime || '--'}</td>
+                    <td class="p-3 font-extrabold text-slate-900 dark:text-white">${ev.aptId}</td>
+                    <td class="p-3 font-semibold">${ev.ownerName || '--'}</td>
+                    <td class="p-3 font-mono font-bold text-emerald-600 dark:text-emerald-400">${ev.phone || '--'}</td>
+                    <td class="p-3 text-center">
+                        <span class="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-300 font-mono font-black">
+                            ${Number(ev.avgScore || 5).toFixed(2)} ★
+                        </span>
+                    </td>
+                    <td class="p-3 max-w-xs truncate" title="${ev.comment || ''}">${ev.comment || '<span class="text-slate-400">--</span>'}</td>
+                    <td class="p-3 text-right">
+                        <button onclick="deleteEvaluation('${ev.aptId}')" class="text-rose-500 hover:text-rose-600 p-1.5 rounded-lg hover:bg-rose-500/10 transition" title="Xóa phiếu đánh giá">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        async function deleteEvaluation(aptId) {
+            try {
+                await deleteDoc(doc(evaluationsColRef, aptId));
+                showToast(`Đã xóa phiếu đánh giá của căn ${aptId}`, "info");
+            } catch (e) {
+                console.error("Delete evaluation error:", e);
+                showToast("Lỗi khi xóa đánh giá!", "error");
+            }
+        }
+
+        function exportEvaluationsToExcel() {
+            if (!state.evaluations || state.evaluations.length === 0) {
+                showToast("Chưa có dữ liệu đánh giá BQT để xuất Excel!", "error");
+                return;
+            }
+
+            const rows = state.evaluations.map((ev, idx) => ({
+                'STT': idx + 1,
+                'Thời Gian': ev.displayTime || '',
+                'Mã Căn Hộ': ev.aptId,
+                'Chủ Sở Hữu': ev.ownerName || '',
+                'SĐT Chính Chủ (Chuẩn 0)': smartNormalizePhone(ev.phone || ''),
+                'Diện Tích (m²)': ev.area || 0,
+                'Điểm Trung Bình (/5)': ev.avgScore || 5,
+                '1. An Ninh & PCCC': ev.ratings?.security || 5,
+                '2. Vệ Sinh & Cảnh Quan': ev.ratings?.hygiene || 5,
+                '3. Kỹ Thuật & Bảo Trì': ev.ratings?.technical || 5,
+                '4. Dịch Vụ CSKH': ev.ratings?.service || 5,
+                '5. Minh Bạch Tài Chính': ev.ratings?.finance || 5,
+                '6. Hoạt Động BQT': ev.ratings?.bqt || 5,
+                'Ý Kiến Đóng Góp': ev.comment || ''
+            }));
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Danh Gia BQT Van Hanh");
+            XLSX.writeFile(workbook, `EcoHome_DanhGia_VanHanh_BQT_${new Date().toISOString().slice(0,10)}.xlsx`);
+            showToast("Đã xuất file Excel Báo Cáo Đánh Giá BQT!", "success");
         }
 
         function onManualInputAreaChange() {
@@ -1761,7 +2632,13 @@
 
             try {
                 const docRef = doc(apartmentsColRef, aptId);
-                await setDoc(docRef, { area: apt.area, ownerName: apt.ownerName || '', attended: newStatus, updatedAt: new Date().toISOString() }, { merge: true });
+                await setDoc(docRef, {
+                    area: apt.area,
+                    ownerName: apt.ownerName || '',
+                    phone: smartNormalizePhone(apt.phone || ''),
+                    attended: newStatus,
+                    updatedAt: new Date().toISOString()
+                }, { merge: true });
                 showToast(`Căn hộ ${aptId}: ${newStatus ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
             } catch (e) {
                 console.error("Error toggling attendance:", e);
@@ -1791,7 +2668,9 @@
             const filterStatus = document.getElementById('admin-filter-status')?.value || 'all';
 
             const filtered = state.apartments.filter(apt => {
-                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal));
+                const matchesSearch = apt.id.toLowerCase().includes(searchVal) || 
+                                      (apt.ownerName && apt.ownerName.toLowerCase().includes(searchVal)) ||
+                                      (apt.phone && apt.phone.includes(searchVal));
                 let matchesBuilding = true;
                 if (filterBuilding !== 'all') {
                     const idUpper = apt.id.toUpperCase();
@@ -1809,7 +2688,7 @@
             if (countEl) countEl.innerText = `(${filtered.length} / ${state.apartments.length} căn)`;
 
             if (filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-slate-500">Không tìm thấy căn hộ phù hợp</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="6" class="p-6 text-center text-slate-500">Không tìm thấy căn hộ phù hợp</td></tr>`;
                 return;
             }
 
@@ -1817,6 +2696,13 @@
                 <tr class="hover:bg-slate-100 dark:hover:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800/80">
                     <td class="p-3 font-extrabold text-slate-900 dark:text-white">${apt.id}</td>
                     <td class="p-3 font-semibold text-slate-800 dark:text-slate-200">${apt.ownerName || '<span class="text-slate-400 font-normal">--</span>'}</td>
+                    <td class="p-3">
+                        <div class="flex items-center gap-1.5">
+                            <input type="text" value="${apt.phone || ''}" placeholder="Nhập SĐT (+84/09...)"
+                                onchange="updateSingleApartmentPhone('${apt.id}', this.value)"
+                                class="w-36 px-2.5 py-1 text-xs font-mono font-bold bg-white dark:bg-slate-950 border border-slate-300 dark:border-slate-700 rounded-lg focus:ring-2 focus:ring-emerald-500 text-emerald-700 dark:text-emerald-400 outline-none">
+                        </div>
+                    </td>
                     <td class="p-3 font-bold text-slate-700 dark:text-slate-300 font-mono">${formatNumber(apt.area)} m²</td>
                     <td class="p-3 text-center">
                         <button onclick="toggleAttendance('${apt.id}')" class="px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 mx-auto ${apt.attended ? 'bg-emerald-600 text-white shadow-md shadow-emerald-500/20' : 'bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-slate-700'}">
@@ -1960,6 +2846,7 @@
                     'STT': index + 1,
                     'Mã Căn Hộ': apt.id,
                     'Chủ Sở Hữu': apt.ownerName || '',
+                    'Số Điện Thoại (Chuẩn 0)': smartNormalizePhone(apt.phone || ''),
                     'Khối Tòa': blockName,
                     'Diện Tích (m²)': apt.area,
                     'Tỷ Lệ Đóng Góp (%)': parseFloat(contribPercent.toFixed(4)),
@@ -1972,7 +2859,7 @@
             XLSX.utils.book_append_sheet(workbook, worksheet, "Danh Sach Can Ho");
 
             XLSX.writeFile(workbook, `EcoHome_NhonBinh_DiemDanh_${new Date().toISOString().slice(0,10)}.xlsx`);
-            showToast("Đã xuất file Excel thành công!", "success");
+            showToast("Đã xuất file Excel Căn Hộ & SĐT thành công!", "success");
         }
 
         function updateLiveClock() {
@@ -2016,7 +2903,7 @@
             setTimeout(() => {
                 toast.classList.remove('translate-y-0', 'opacity-100');
                 toast.classList.add('translate-y-20', 'opacity-0');
-            }, 3000);
+            }, 3200);
         }
 
         /* Bind all global handlers explicitly to window object */
@@ -2033,6 +2920,10 @@
         window.switchAdminTab = switchAdminTab;
         window.handleFileUpload = handleFileUpload;
         window.handlePasteImport = handlePasteImport;
+        window.fillSamplePasteData = fillSamplePasteData;
+        window.handleQuickUpsertApartment = handleQuickUpsertApartment;
+        window.normalizeAllExistingPhonesInCloud = normalizeAllExistingPhonesInCloud;
+        window.updateSingleApartmentPhone = updateSingleApartmentPhone;
         window.onManualInputAreaChange = onManualInputAreaChange;
         window.onManualInputPercentChange = onManualInputPercentChange;
         window.executeAddManualIncrement = executeAddManualIncrement;
@@ -2053,11 +2944,21 @@
         window.deleteManualIncrement = deleteManualIncrement;
         window.clearAllManualIncrements = clearAllManualIncrements;
         window.exportApartmentsToExcel = exportApartmentsToExcel;
+        window.exportEvaluationsToExcel = exportEvaluationsToExcel;
         window.renderAdminTable = renderAdminTable;
+        window.handleVerifyResident = handleVerifyResident;
+        window.resetResidentVerifyStep = resetResidentVerifyStep;
+        window.setCategoryRating = setCategoryRating;
+        window.submitResidentEvaluation = submitResidentEvaluation;
+        window.closeEvalSuccessModal = closeEvalSuccessModal;
+        window.previewNormalizedPhone = previewNormalizedPhone;
+        window.quickSelectAptForEvaluation = quickSelectAptForEvaluation;
+        window.deleteEvaluation = deleteEvaluation;
 
         /* Initialization */
         window.addEventListener('DOMContentLoaded', () => {
             applyTheme(state.theme);
+            renderEvaluationAnalytics();
             initFirebaseAndSync();
             updateLiveClock();
             setInterval(updateLiveClock, 1000);
@@ -2070,7 +2971,7 @@
         window.addEventListener('hashchange', () => {
             if (window.location.hash === '#admin') {
                 openAdminView();
-            } else {
+            } else if (window.location.hash !== '#evaluation-section') {
                 closeAdminView();
             }
         });
