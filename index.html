@@ -209,7 +209,7 @@
                         </h2>
                         <p class="text-sm text-slate-500 mt-1">Hệ thống tiếp nhận, đồng bộ và phân tích dữ liệu trực tiếp từ đánh giá của cư dân.</p>
                     </div>
-                    <button onclick="openResidentVerifyModal()" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2 border border-amber-600">
+                    <button id="btn-resident-eval" onclick="openResidentVerifyModal()" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition flex items-center gap-2 border border-amber-600">
                         <i class="fa-solid fa-pen-to-square"></i> Cư Dân Vào Đánh Giá Ngay
                     </button>
                 </div>
@@ -469,7 +469,21 @@
             <!-- Tab 3: Evaluations & Settings -->
             <div id="tab-content-eval" class="hidden bg-white p-6 rounded-b-xl rounded-tr-xl border border-slate-200 shadow-sm space-y-8 flex-1">
                 
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 md:grid-cols-2 gap-8">
+                    <!-- Khóa/Mở Hệ Thống -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <div class="w-8 h-8 bg-purple-100 text-purple-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-toggle-on"></i></div>
+                            <h4 class="font-bold text-sm text-slate-800">Cổng Check-in & Đánh Giá</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Tạm khóa hệ thống để chặn cư dân vào check-in.</p>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="toggleSystemLock()" id="admin-lock-btn" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-lock text-base"></i> Đang Khóa - Nhấn để Mở
+                            </button>
+                        </div>
+                    </div>
+
                     <!-- Cài đặt Kỳ Đánh Giá -->
                     <div class="space-y-4">
                         <div class="flex items-center gap-2 border-b border-slate-200 pb-2">
@@ -603,7 +617,8 @@
             defaultYear: new Date().getFullYear(),
             isAdmin: false,
             currentAptForEval: null,
-            totalAreaOverride: DEFAULT_TOTAL_AREA
+            totalAreaOverride: DEFAULT_TOTAL_AREA,
+            isCheckinOpen: false // Default to locked
         };
 
         // ================= UTILITIES =================
@@ -701,9 +716,12 @@
                         if (data.defaultQuarter) state.defaultQuarter = data.defaultQuarter;
                         if (data.defaultYear) state.defaultYear = data.defaultYear;
                         if (data.totalAreaOverride) state.totalAreaOverride = data.totalAreaOverride;
+                        if (data.isCheckinOpen !== undefined) state.isCheckinOpen = data.isCheckinOpen;
+                        
                         populatePeriodSelects();
                         renderAdminCategories();
                         renderEvaluationAnalytics();
+                        updateLockUI();
                     }
                 }, err => console.error("Settings Error:", err));
 
@@ -1010,7 +1028,52 @@
             showToast("Lưu kỳ đánh giá mặc định thành công", 'success');
         }
 
+        function updateLockUI() {
+            // Public Button
+            const publicBtn = document.getElementById('btn-resident-eval');
+            if (publicBtn) {
+                if (state.isCheckinOpen) {
+                    publicBtn.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Cư Dân Vào Đánh Giá Ngay`;
+                    publicBtn.classList.remove('bg-slate-400', 'hover:bg-slate-500', 'border-slate-400');
+                    publicBtn.classList.add('bg-amber-500', 'hover:bg-amber-600', 'border-amber-600');
+                    publicBtn.onclick = openResidentVerifyModal;
+                } else {
+                    publicBtn.innerHTML = `<i class="fa-solid fa-lock"></i> Hệ thống đang tạm khóa`;
+                    publicBtn.classList.remove('bg-amber-500', 'hover:bg-amber-600', 'border-amber-600');
+                    publicBtn.classList.add('bg-slate-400', 'hover:bg-slate-500', 'border-slate-400');
+                    publicBtn.onclick = () => showToast("Hệ thống điểm danh & đánh giá đang được tạm khóa bởi Ban Tổ Chức.", "info");
+                }
+            }
+
+            // Admin Button
+            const adminBtn = document.getElementById('admin-lock-btn');
+            if (adminBtn) {
+                if (state.isCheckinOpen) {
+                    adminBtn.innerHTML = `<i class="fa-solid fa-lock-open text-base"></i> Đang Mở - Nhấn để Khóa`;
+                    adminBtn.className = "w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2";
+                } else {
+                    adminBtn.innerHTML = `<i class="fa-solid fa-lock text-base"></i> Đang Khóa - Nhấn để Mở`;
+                    adminBtn.className = "w-full py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2";
+                }
+            }
+        }
+
+        async function toggleSystemLock() {
+            const newState = !state.isCheckinOpen;
+            try {
+                await setDoc(docSettings, { isCheckinOpen: newState }, {merge:true});
+                showToast(newState ? "Đã MỞ cổng Check-in & Đánh giá!" : "Đã KHÓA cổng Check-in & Đánh giá!", "success");
+            } catch(e) {
+                console.error(e);
+                showToast("Lỗi khi cập nhật trạng thái hệ thống!", "error");
+            }
+        }
+
         function openResidentVerifyModal() {
+            if(!state.isCheckinOpen && !state.isAdmin) {
+                showToast("Hệ thống điểm danh & đánh giá đang được tạm khóa bởi Ban Tổ Chức.", "info");
+                return;
+            }
             document.getElementById('resident-eval-modal').classList.remove('opacity-0', 'pointer-events-none');
             document.getElementById('eval-step-1').classList.remove('hidden');
             document.getElementById('eval-step-2').classList.add('hidden');
@@ -1539,6 +1602,7 @@
         window.exportEvaluationsToExcel = exportEvaluationsToExcel;
         window.exportApartmentsToExcel = exportApartmentsToExcel;
         window.generatePDFReport = generatePDFReport;
+        window.toggleSystemLock = toggleSystemLock;
 
         // Init
         document.addEventListener('DOMContentLoaded', initApp);
