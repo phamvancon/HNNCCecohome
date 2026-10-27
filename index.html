@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hội Nghị Nhà Chung Cư & Đánh Giá Vận Hành Ecohome Nhơn Bình 2026</title>
+    <title>Hội Nghị Nhà Chung Cư & Đánh Giá Vận Hành Ecohome Nhơn Bình</title>
     
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -16,7 +16,7 @@
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Canvas Confetti & SheetJS -->
+    <!-- Thư viện hỗ trợ: Confetti (Pháo hoa), SheetJS (Excel), Html2Pdf (PDF) -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -32,27 +32,6 @@
                     },
                     colors: {
                         brand: { 50: '#f0fdf4', 500: '#10b981', 600: '#059669', 700: '#047857' }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'shake': 'shake 0.45s cubic-bezier(.36,.07,.19,.97) both',
-                        'scale-up': 'scaleUp 0.3s ease-out forwards',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { opacity: '1', boxShadow: '0 0 20px rgba(16, 185, 129, 0.4)' },
-                            '50%': { opacity: '0.85', boxShadow: '0 0 35px rgba(16, 185, 129, 0.7)' },
-                        },
-                        shake: {
-                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
-                        },
-                        scaleUp: {
-                            '0%': { opacity: '0', transform: 'scale(0.95)' },
-                            '100%': { opacity: '1', transform: 'scale(1)' }
-                        }
                     }
                 }
             }
@@ -61,7 +40,7 @@
     <style>
         body { 
             font-family: 'Plus Jakarta Sans', system-ui, sans-serif; 
-            background-color: #f8fafc; /* bg-slate-50 */
+            background-color: #f8fafc; /* Nền sáng nhạt, bỏ chế độ Dark Mode */
             color: #0f172a;
         }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
@@ -77,29 +56,21 @@
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
 
-        .view-transition {
-            transition: opacity 0.3s ease, transform 0.3s ease;
+        .animate-shake {
+            animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both;
         }
-
-        @media print {
-            body * { visibility: hidden; }
-            #pdf-report-printable, #pdf-report-printable * { visibility: visible; }
-            #pdf-report-printable {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                padding: 0 !important;
-                margin: 0 !important;
-            }
-            .no-print { display: none !important; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-1px, 0, 0); }
+            20%, 80% { transform: translate3d(2px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+            40%, 60% { transform: translate3d(4px, 0, 0); }
         }
     </style>
 </head>
-<body class="h-full flex flex-col text-slate-900 bg-slate-50 antialiased min-h-screen selection:bg-emerald-500 selection:text-white">
+<body class="h-full flex flex-col text-slate-900 bg-slate-50 antialiased min-h-screen selection:bg-emerald-500 selection:text-white relative">
 
     <!-- ==================== PUBLIC VIEW ==================== -->
-    <div id="public-view" class="view-transition min-h-screen flex flex-col bg-slate-50">
+    <div id="public-view" class="min-h-screen flex flex-col bg-slate-50 transition-all duration-300">
 
         <!-- Header -->
         <header class="glass-card sticky top-0 z-30 border-b border-slate-200 shadow-sm">
@@ -140,24 +111,24 @@
             <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-emerald-600 font-bold">
                     <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span>
-                    Đồng bộ thời gian thực
+                    Đồng bộ & Lưu trữ thời gian thực
                 </div>
                 <div class="flex items-center gap-2 font-mono font-bold text-slate-600">
                     <i class="fa-regular fa-clock text-emerald-500"></i>
-                    <span id="live-clock-date">--</span> | <span id="live-clock-time" class="text-emerald-700">00:00</span>
+                    <span id="live-clock-date">--</span> | <span id="live-clock-time" class="text-emerald-700">00:00:00</span>
                 </div>
             </div>
         </div>
 
         <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
             
-            <!-- Dashboard HNNCC -->
+            <!-- TIẾN ĐỘ ĐIỂM DANH -->
             <section class="space-y-4">
                 <div class="glass-card rounded-2xl p-6 shadow-lg relative overflow-hidden border border-slate-200">
                     <div class="flex flex-col lg:flex-row justify-between gap-6 relative z-10">
                         <div>
                             <h2 class="text-xl font-black text-slate-800">Tiến Độ Tham Dự Hội Nghị</h2>
-                            <p class="text-sm text-slate-500 mt-1">Căn cứ: Mốc 30% (Đủ điều kiện tổ chức) • Mốc 50% (Đủ điều kiện biểu quyết)</p>
+                            <p class="text-sm text-slate-500 mt-1">Căn cứ pháp lý: Mốc 30% (Đủ điều kiện tổ chức) • Mốc 50% (Đủ điều kiện biểu quyết)</p>
                             <div class="mt-3" id="status-badge-container"></div>
                         </div>
                         <div class="bg-slate-50 p-4 rounded-xl border border-slate-200 shadow-inner flex flex-col justify-center min-w-[200px] text-right">
@@ -174,7 +145,7 @@
                             <span class="text-[10px] font-bold text-rose-700 bg-rose-100 border border-rose-200 px-2 py-0.5 rounded shadow-sm">50% BIỂU QUYẾT</span>
                         </div>
                         <div class="w-full bg-slate-200 h-6 rounded-full overflow-hidden p-0.5 border border-slate-300 relative z-10">
-                            <div id="progress-bar-fill" class="h-full bg-emerald-500 rounded-full transition-all duration-700 relative" style="width: 0%;"></div>
+                            <div id="progress-bar-fill" class="h-full bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full transition-all duration-700 relative shadow-inner" style="width: 0%;"></div>
                             <div class="absolute top-0 bottom-0 left-[30%] w-0.5 bg-blue-400 z-20"></div>
                             <div class="absolute top-0 bottom-0 left-[50%] w-0.5 bg-rose-400 z-20"></div>
                         </div>
@@ -200,11 +171,11 @@
                     </div>
                 </div>
                 
-                <!-- Table Public -->
+                <!-- Bảng Danh Sách Công Khai -->
                 <div class="glass-card rounded-xl overflow-hidden shadow text-sm border border-slate-200">
                     <div class="p-4 bg-white border-b border-slate-200 flex flex-col sm:flex-row justify-between gap-3">
-                        <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm mã căn (VD: B10101)..." class="w-full sm:w-64 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
-                        <select id="filter-status" onchange="renderTable()" class="w-full sm:w-auto text-xs py-2 px-3 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                        <input type="text" id="search-input" oninput="renderTable()" placeholder="Tìm mã căn (VD: B10101, B1-0101)..." class="w-full sm:w-64 px-3 py-2 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 uppercase">
+                        <select id="filter-status" onchange="renderTable()" class="w-full sm:w-auto text-xs py-2 px-3 bg-slate-50 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500 font-bold">
                             <option value="all">Tất cả trạng thái</option>
                             <option value="attended">Đã tham dự</option>
                             <option value="absent">Chưa tham dự</option>
@@ -228,57 +199,76 @@
                 </div>
             </section>
 
-            <!-- Evaluation Dashboard Section -->
+            <!-- BẢNG ĐÁNH GIÁ & PHÂN TÍCH -->
             <section id="evaluation-section" class="pt-6 border-t-2 border-dashed border-slate-300">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                     <div>
                         <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
-                            <i class="fa-solid fa-ranking-star text-amber-500"></i>
-                            Đánh Giá Đơn Vị Vận Hành & BQT
+                            <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-ranking-star"></i></div>
+                            Bảng Tin Đánh Giá Đơn Vị Vận Hành
                         </h2>
-                        <p class="text-sm text-slate-500">Kênh tiếp nhận ý kiến, chấm điểm chất lượng dịch vụ minh bạch từ cư dân.</p>
+                        <p class="text-sm text-slate-500 mt-1">Hệ thống tiếp nhận, đồng bộ và phân tích dữ liệu trực tiếp từ đánh giá của cư dân.</p>
                     </div>
-                    <button onclick="openResidentVerifyModal()" class="px-5 py-3 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2">
+                    <button onclick="openResidentVerifyModal()" class="px-6 py-3.5 bg-amber-500 hover:bg-amber-600 text-white font-bold rounded-xl shadow-lg transition-transform hover:scale-105 flex items-center gap-2 border border-amber-600">
                         <i class="fa-solid fa-pen-to-square"></i> Cư Dân Vào Đánh Giá Ngay
                     </button>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                    <!-- Overall Stats -->
-                    <div class="glass-card rounded-2xl p-6 border border-slate-200 shadow-md lg:col-span-1 flex flex-col items-center justify-center text-center">
-                        <h3 class="text-sm font-bold text-slate-500 uppercase tracking-wider mb-2">Chỉ Số Hài Lòng Chung</h3>
-                        <div class="text-6xl font-black text-amber-500 font-mono mb-2 drop-shadow-sm" id="eval-overall-score">0.0</div>
-                        <div class="flex text-amber-400 text-xl mb-3" id="eval-overall-stars">
-                            <i class="fa-solid fa-star text-slate-200"></i><i class="fa-solid fa-star text-slate-200"></i><i class="fa-solid fa-star text-slate-200"></i><i class="fa-solid fa-star text-slate-200"></i><i class="fa-solid fa-star text-slate-200"></i>
+                    <!-- Tổng quan -->
+                    <div class="space-y-4 lg:col-span-1">
+                        <!-- Thẻ Điểm BQL -->
+                        <div class="glass-card rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden bg-white/80">
+                            <div class="absolute top-0 right-0 p-1.5 text-[9px] text-white font-bold bg-blue-500 rounded-bl-lg">VẬN HÀNH (BQL)</div>
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Chỉ Số Hài Lòng BQL</h3>
+                            <div class="text-5xl font-black text-blue-600 font-mono mb-2 drop-shadow-sm" id="eval-bql-score">0.0</div>
+                            <div class="flex text-blue-400 text-lg mb-2" id="eval-bql-stars"></div>
                         </div>
-                        <p class="text-xs text-slate-500 font-medium">Bình quân gia quyền dựa trên <strong class="text-slate-800" id="eval-total-area">0 m²</strong> đã tham gia.</p>
-                        <div class="mt-4 w-full text-left bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600">
-                            <div class="flex justify-between mb-1"><span>Lượt đánh giá:</span> <strong id="eval-total-count">0 phiếu</strong></div>
-                            <div class="flex justify-between"><span>Cập nhật lúc:</span> <strong id="eval-last-update">Chưa có</strong></div>
+                        
+                        <!-- Thẻ Điểm BQT -->
+                        <div class="glass-card rounded-2xl p-5 border border-slate-200 shadow-sm flex flex-col items-center justify-center text-center relative overflow-hidden bg-white/80">
+                            <div class="absolute top-0 right-0 p-1.5 text-[9px] text-white font-bold bg-amber-500 rounded-bl-lg">BAN QUẢN TRỊ</div>
+                            <h3 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2">Chỉ Số Tín Nhiệm BQT</h3>
+                            <div class="text-5xl font-black text-amber-500 font-mono mb-2 drop-shadow-sm" id="eval-bqt-score">0.0</div>
+                            <div class="flex text-amber-400 text-lg mb-2" id="eval-bqt-stars"></div>
+                        </div>
+
+                        <div class="w-full text-left bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs text-slate-600 font-medium space-y-1.5 shadow-sm">
+                            <div class="flex justify-between items-center"><span class="flex items-center gap-1"><i class="fa-solid fa-chart-area text-slate-400"></i> DT Đánh giá:</span> <strong id="eval-total-area" class="text-slate-800 font-mono">0 m²</strong></div>
+                            <div class="flex justify-between items-center"><span class="flex items-center gap-1"><i class="fa-solid fa-users text-slate-400"></i> Tổng số phiếu:</span> <strong id="eval-total-count" class="text-emerald-600">0</strong></div>
+                            <div class="flex justify-between items-center"><span class="flex items-center gap-1"><i class="fa-solid fa-clock-rotate-left text-slate-400"></i> Cập nhật:</span> <strong id="eval-last-update" class="text-slate-800">Chưa có</strong></div>
                         </div>
                     </div>
 
-                    <!-- Category Breakdown -->
-                    <div class="glass-card rounded-2xl p-6 border border-slate-200 shadow-md lg:col-span-2">
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="text-sm font-bold text-slate-700 uppercase">Chi Tiết Theo Hạng Mục</h3>
-                            <select id="eval-public-period-filter" onchange="renderEvaluationAnalytics()" class="text-xs py-1.5 px-2 bg-slate-100 border border-slate-300 rounded-lg font-bold text-slate-700 outline-none focus:ring-2 focus:ring-emerald-500">
-                                <option value="ALL">Tất cả kỳ đánh giá</option>
-                            </select>
+                    <!-- Phân tích chi tiết & Lọc theo kỳ -->
+                    <div class="glass-card rounded-2xl p-6 border border-slate-200 shadow-md lg:col-span-2 flex flex-col bg-white/90">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-3 border-b border-slate-100 pb-3">
+                            <h3 class="text-sm font-bold text-slate-800 uppercase flex items-center gap-2">
+                                <i class="fa-solid fa-chart-bar text-emerald-500"></i> Phân Tích Theo Hạng Mục
+                            </h3>
+                            <div class="flex items-center gap-2 bg-slate-50 p-1.5 rounded-lg border border-slate-200">
+                                <i class="fa-solid fa-filter text-slate-400 text-xs ml-1"></i>
+                                <select id="eval-public-period-filter" onchange="renderEvaluationAnalytics()" class="text-xs py-1 px-2 bg-white border border-slate-200 rounded font-bold text-slate-700 outline-none focus:ring-1 focus:ring-emerald-500">
+                                    <!-- Injected via JS -->
+                                </select>
+                            </div>
                         </div>
-                        <div id="eval-categories-progress" class="space-y-4">
-                            <div class="text-center text-sm text-slate-400 py-4">Chưa có dữ liệu đánh giá</div>
+                        <div id="eval-categories-progress" class="space-y-6 flex-1 overflow-y-auto custom-scrollbar pr-2">
+                            <div class="text-center text-sm text-slate-400 py-10">Chưa có dữ liệu đánh giá</div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Recent Feedback -->
+                <!-- Bảng tin Live Feed -->
                 <div class="glass-card rounded-2xl border border-slate-200 shadow-md mt-6 overflow-hidden">
-                    <div class="bg-slate-100 px-5 py-3 border-b border-slate-200 flex justify-between items-center">
-                        <h3 class="font-bold text-slate-700 text-sm">Luồng Ý Kiến Mới Nhất</h3>
-                        <span class="text-xs text-slate-500">SĐT được ẩn bảo mật (***)</span>
+                    <div class="bg-gradient-to-r from-slate-100 to-white px-5 py-3 border-b border-slate-200 flex justify-between items-center">
+                        <h3 class="font-bold text-slate-800 text-sm flex items-center gap-2">
+                            <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-rose-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-rose-500"></span></span>
+                            Luồng Ý Kiến Mới Nhất
+                        </h3>
+                        <span class="text-[10px] text-slate-500 bg-slate-200 px-2 py-0.5 rounded-md font-medium">SĐT được bảo mật mã hóa (***)</span>
                     </div>
-                    <div class="p-5 max-h-80 overflow-y-auto custom-scrollbar" id="recent-feedbacks-container">
+                    <div class="p-0 max-h-96 overflow-y-auto custom-scrollbar bg-slate-50/50" id="recent-feedbacks-container">
                         <!-- Feedbacks injected here -->
                     </div>
                 </div>
@@ -287,227 +277,302 @@
 
         <footer class="bg-white border-t border-slate-200 py-6 mt-12 text-center text-xs text-slate-500">
             <p class="font-bold text-slate-700">Ban Quản Trị / Ban Tổ Chức Hội Nghị Nhà Chung Cư Ecohome Nhơn Bình 2026</p>
+            <p class="mt-1">Dữ liệu được lưu trữ an toàn & đồng bộ thời gian thực qua Cloud Firestore.</p>
         </footer>
     </div>
 
     <!-- ==================== MODALS ==================== -->
     
-    <!-- Admin Login Modal -->
+    <!-- Admin Login Modal (Mượt mà) -->
     <div id="admin-login-modal" class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300">
         <div id="admin-login-card" class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-sm p-6 transform scale-95 transition-transform duration-300 relative">
-            <button onclick="closeAdminLoginModal()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            <button onclick="closeAdminLoginModal()" class="absolute top-3 right-3 text-slate-400 hover:text-slate-600 bg-slate-100 rounded-full w-8 h-8 flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark text-lg"></i></button>
             <div class="text-center mb-5">
-                <div class="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-xl mb-2">
+                <div class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto text-2xl mb-3 shadow-inner">
                     <i class="fa-solid fa-shield-halved"></i>
                 </div>
-                <h3 class="font-black text-lg text-slate-800">Cổng Quản Trị</h3>
-                <p class="text-xs text-slate-500">Nhập mật khẩu Admin (pvceco) để vào</p>
+                <h3 class="font-black text-xl text-slate-800">Cổng Quản Trị Viên</h3>
+                <p class="text-xs text-slate-500 mt-1">Nhập mật khẩu Admin <span class="font-mono bg-slate-100 px-1 rounded text-slate-600">pvceco</span> để tiếp tục</p>
             </div>
             <form onsubmit="handleAdminLogin(event)" class="space-y-4">
-                <div>
-                    <input type="password" id="admin-pass-input" placeholder="Mật khẩu..." required class="w-full px-4 py-3 text-center text-sm font-bold bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500">
+                <div class="relative">
+                    <i class="fa-solid fa-lock absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                    <input type="password" id="admin-pass-input" placeholder="Nhập mật khẩu..." required class="w-full pl-10 pr-4 py-3.5 text-sm font-bold bg-slate-50 border border-slate-300 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition-all text-slate-800 tracking-wider">
                 </div>
-                <div id="auth-error-msg" class="text-xs text-rose-500 text-center font-semibold hidden">Mật khẩu không chính xác!</div>
-                <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl text-sm transition">Đăng Nhập</button>
+                <div id="auth-error-msg" class="text-xs text-rose-500 text-center font-bold hidden flex items-center justify-center gap-1"><i class="fa-solid fa-circle-exclamation"></i> Mật khẩu không chính xác!</div>
+                <button type="submit" class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl text-sm transition shadow-lg flex items-center justify-center gap-2">
+                    Mở Khóa Hệ Thống <i class="fa-solid fa-arrow-right"></i>
+                </button>
             </form>
         </div>
     </div>
 
-    <!-- Resident Verify & Evaluation Modal -->
+    <!-- Modal Xác thực & Gửi đánh giá cho Cư dân -->
     <div id="resident-eval-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-300 overflow-y-auto">
         <div class="bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl my-8 relative flex flex-col max-h-[90vh]">
             <div class="p-4 border-b border-slate-100 flex justify-between items-center sticky top-0 bg-white/95 backdrop-blur z-10 rounded-t-2xl">
-                <h3 class="font-black text-lg text-slate-800" id="eval-modal-title">Xác Thực Chủ Sở Hữu</h3>
-                <button onclick="closeResidentVerifyModal()" class="text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center"><i class="fa-solid fa-xmark"></i></button>
+                <h3 class="font-black text-lg text-slate-800 flex items-center gap-2" id="eval-modal-title"><i class="fa-solid fa-fingerprint text-emerald-500"></i> Xác Thực Chủ Sở Hữu</h3>
+                <button onclick="closeResidentVerifyModal()" class="text-slate-400 hover:text-slate-700 w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center transition-colors"><i class="fa-solid fa-xmark"></i></button>
             </div>
             
             <div class="p-6 overflow-y-auto custom-scrollbar flex-1">
                 <!-- Step 1: Verify -->
                 <div id="eval-step-1" class="space-y-5">
-                    <div class="bg-blue-50 text-blue-800 p-3 rounded-xl text-xs border border-blue-100 flex gap-2">
-                        <i class="fa-solid fa-circle-info mt-0.5"></i>
-                        <span>Vui lòng nhập Mã Căn và Số Điện Thoại. Hệ thống hỗ trợ viết tắt mã căn (VD: B10101). Số điện thoại sẽ tự động chuẩn hóa về dạng 09...</span>
+                    <div class="bg-blue-50 text-blue-800 p-3.5 rounded-xl text-xs border border-blue-100 flex gap-3 shadow-sm">
+                        <i class="fa-solid fa-circle-info text-lg mt-0.5"></i>
+                        <div>
+                            <p class="font-bold mb-1">Hướng dẫn xác thực:</p>
+                            <ul class="list-disc list-inside space-y-0.5 text-blue-700/80">
+                                <li><strong>Mã căn:</strong> Có thể viết tắt (VD: <code class="bg-blue-100 px-1 rounded">B10101</code>, <code class="bg-blue-100 px-1 rounded">b1 0101</code> sẽ tự động hiểu là <code class="bg-blue-100 px-1 rounded font-bold">B1-0101</code>).</li>
+                                <li><strong>SĐT:</strong> Tự động chuẩn hóa mã vùng (VD: <code class="bg-blue-100 px-1 rounded">+849...</code>, <code class="bg-blue-100 px-1 rounded">849...</code> chuyển thành <code class="bg-blue-100 px-1 rounded font-bold">09...</code>). Nếu căn hộ chưa gắn SĐT, hệ thống sẽ lưu SĐT bạn nhập làm số chính chủ.</li>
+                            </ul>
+                        </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Mã Căn Hộ <span class="text-rose-500">*</span></label>
-                            <input type="text" id="verify-apt-code" placeholder="Ví dụ: B1-0101" class="w-full px-4 py-2.5 text-sm uppercase bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none">
+                            <input type="text" id="verify-apt-code" placeholder="Ví dụ: B10101" class="w-full px-4 py-3 text-sm uppercase bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none font-bold text-slate-800">
                         </div>
                         <div>
                             <label class="block text-xs font-bold text-slate-700 mb-1">Số Điện Thoại <span class="text-rose-500">*</span></label>
-                            <input type="tel" id="verify-phone" placeholder="09xxxx..." class="w-full px-4 py-2.5 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none">
+                            <input type="tel" id="verify-phone" placeholder="09xxxx..." class="w-full px-4 py-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none font-mono font-bold text-slate-800">
                         </div>
                     </div>
-                    <div id="verify-error-msg" class="text-rose-500 text-xs font-semibold hidden">Mã căn không tồn tại hoặc SĐT không khớp!</div>
-                    <button onclick="handleVerifyResident()" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow transition">Kiểm Tra Xác Thực</button>
+                    <div id="verify-error-msg" class="text-rose-500 text-xs font-bold hidden bg-rose-50 p-2.5 rounded-lg border border-rose-100 text-center">Mã căn không tồn tại hoặc SĐT không khớp với đăng ký!</div>
+                    <button onclick="handleVerifyResident()" class="w-full py-3.5 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center gap-2">
+                        Kiểm Tra Tín Nhiệm <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                    </button>
                 </div>
 
                 <!-- Step 2: Evaluate Form -->
                 <div id="eval-step-2" class="hidden space-y-6">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-3 bg-emerald-50 rounded-xl border border-emerald-100 gap-3">
-                        <div>
-                            <div class="text-sm font-black text-emerald-800" id="eval-apt-display">Căn hộ: ---</div>
-                            <div class="text-xs text-emerald-600 mt-0.5">SĐT: <span id="eval-phone-display">---</span></div>
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 bg-emerald-50 rounded-xl border border-emerald-200 gap-4 shadow-sm">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-emerald-200 text-emerald-700 rounded-full flex items-center justify-center text-xl shadow-sm"><i class="fa-solid fa-house-chimney-user"></i></div>
+                            <div>
+                                <div class="text-sm font-black text-emerald-900" id="eval-apt-display">Căn hộ: ---</div>
+                                <div class="text-xs text-emerald-700/80 font-mono mt-0.5">SĐT: <span id="eval-phone-display">---</span></div>
+                            </div>
                         </div>
                         <div class="w-full sm:w-auto">
-                            <label class="block text-[10px] font-bold text-slate-500 mb-1 uppercase">Chọn Kỳ Đánh Giá</label>
-                            <select id="eval-period-select" class="w-full px-3 py-1.5 text-xs font-bold bg-white border border-emerald-200 rounded-lg outline-none focus:border-emerald-500 text-emerald-800 shadow-sm"></select>
+                            <label class="block text-[10px] font-bold text-emerald-800/60 mb-1 uppercase tracking-wider">Kỳ Đánh Giá (Quý/Năm)</label>
+                            <select id="eval-period-select" class="w-full px-3 py-2 text-xs font-bold bg-white border border-emerald-300 rounded-lg outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 text-emerald-900 shadow-sm cursor-pointer"></select>
                         </div>
                     </div>
 
-                    <div id="eval-categories-form-container" class="space-y-4">
-                        <!-- Injected via JS -->
+                    <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                        <p class="text-xs text-slate-600 font-medium mb-4 text-center">Vui lòng chấm điểm các tiêu chí dưới đây (1: Rất kém ➔ 5: Rất tốt). Dữ liệu sẽ tự động đồng bộ lên Bảng tin.</p>
+                        <div id="eval-categories-form-container" class="space-y-4">
+                            <!-- Injected via JS -->
+                        </div>
                     </div>
 
                     <div>
                         <label class="block text-xs font-bold text-slate-700 mb-1">Ý kiến đóng góp thêm (Tùy chọn)</label>
-                        <textarea id="eval-comment" rows="3" placeholder="Nhập ý kiến hoặc đề xuất của bạn..." class="w-full p-3 text-xs bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none"></textarea>
+                        <textarea id="eval-comment" rows="3" placeholder="Nhập ý kiến, đề xuất, hoặc khiếu nại của bạn..." class="w-full p-3 text-sm bg-slate-50 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 outline-none resize-none"></textarea>
                     </div>
                 </div>
             </div>
             
-            <div id="eval-footer" class="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl hidden flex justify-end gap-2">
-                <button onclick="resetResidentVerifyStep()" class="px-4 py-2 bg-slate-200 text-slate-700 text-xs font-bold rounded-xl">Quay lại</button>
-                <button onclick="submitResidentEvaluation()" class="px-6 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-md">Gửi Phiếu Đánh Giá</button>
+            <div id="eval-footer" class="p-4 border-t border-slate-100 bg-slate-50 rounded-b-2xl hidden flex justify-between items-center gap-2">
+                <button onclick="resetResidentVerifyStep()" class="px-4 py-2 bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 text-xs font-bold rounded-xl transition">Quay lại</button>
+                <button onclick="submitResidentEvaluation()" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-600 text-white text-sm font-bold rounded-xl shadow-lg shadow-amber-500/30 transition flex items-center gap-2">
+                    <i class="fa-solid fa-paper-plane"></i> Gửi Phiếu Đánh Giá
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- ==================== ADMIN VIEW ==================== -->
+    <!-- ==================== ADMIN VIEW (TRANG QUẢN TRỊ ẨN) ==================== -->
     <div id="admin-page-view" class="hidden min-h-screen w-full flex-col bg-slate-50 z-40 absolute top-0 left-0">
         <header class="bg-slate-800 text-white sticky top-0 z-30 shadow-md">
             <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center gap-3">
-                    <i class="fa-solid fa-shield-halved text-emerald-400 text-xl"></i>
+                    <div class="bg-slate-700 p-2 rounded-lg"><i class="fa-solid fa-shield-halved text-emerald-400 text-lg"></i></div>
                     <div>
                         <h1 class="font-bold text-sm">Bảng Quản Trị Hệ Thống</h1>
-                        <p class="text-[10px] text-slate-400">Admin Mode - Lưu trên Firebase</p>
+                        <p class="text-[10px] text-slate-400">Admin Mode - Lưu trên Firestore <span class="bg-emerald-500/20 text-emerald-300 px-1 rounded ml-1">Live</span></p>
                     </div>
                 </div>
                 <div class="flex gap-2">
-                    <button onclick="closeAdminView()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1"><i class="fa-solid fa-arrow-left"></i> Trang Chính</button>
-                    <button onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-xs font-semibold flex items-center gap-1"><i class="fa-solid fa-lock"></i> Đăng xuất</button>
+                    <button onclick="closeAdminView()" class="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition"><i class="fa-solid fa-earth-asia"></i> Web Công Cộng</button>
+                    <button onclick="handleAdminLogout()" class="px-3 py-1.5 bg-rose-600 hover:bg-rose-500 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition shadow"><i class="fa-solid fa-lock"></i> Khóa & Đăng Xuất</button>
                 </div>
             </div>
         </header>
 
-        <div class="max-w-7xl mx-auto px-4 py-6 w-full space-y-6">
-            <!-- Tabs -->
-            <div class="flex gap-2 border-b border-slate-300 pb-2 overflow-x-auto text-xs font-bold">
-                <button onclick="switchAdminTab('import')" id="tab-btn-import" class="py-2 px-4 rounded-t-lg bg-white border-t border-x border-slate-300 text-emerald-600">Nạp Dữ Liệu</button>
-                <button onclick="switchAdminTab('manage')" id="tab-btn-manage" class="py-2 px-4 rounded-t-lg text-slate-600 hover:text-slate-900">Quản Lý Căn Hộ</button>
-                <button onclick="switchAdminTab('eval')" id="tab-btn-eval" class="py-2 px-4 rounded-t-lg text-slate-600 hover:text-slate-900">Quản Lý Đánh Giá & Báo Cáo</button>
+        <div class="max-w-7xl mx-auto px-4 py-6 w-full flex-1 flex flex-col space-y-6">
+            <!-- Tabs Menu -->
+            <div class="flex gap-1 border-b border-slate-300 pb-0 overflow-x-auto text-xs font-bold hide-scrollbar">
+                <button onclick="switchAdminTab('import')" id="tab-btn-import" class="py-2.5 px-5 rounded-t-xl bg-white border-t border-x border-slate-300 text-emerald-600 shadow-sm relative top-[1px]"><i class="fa-solid fa-file-import mr-1"></i> Nạp Dữ Liệu</button>
+                <button onclick="switchAdminTab('manage')" id="tab-btn-manage" class="py-2.5 px-5 rounded-t-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"><i class="fa-solid fa-list mr-1"></i> Quản Lý Căn Hộ</button>
+                <button onclick="switchAdminTab('eval')" id="tab-btn-eval" class="py-2.5 px-5 rounded-t-xl text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition"><i class="fa-solid fa-star-half-stroke mr-1"></i> Cài Đặt Đánh Giá & Báo Cáo</button>
             </div>
 
-            <!-- Tab: Import -->
-            <div id="tab-content-import" class="bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
-                <div class="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center cursor-pointer hover:bg-slate-50 transition" onclick="document.getElementById('excel-file-input').click()">
-                    <input type="file" id="excel-file-input" accept=".xlsx, .xls" class="hidden" onchange="handleFileUpload(event)">
-                    <i class="fa-solid fa-file-excel text-3xl text-emerald-500 mb-2"></i>
-                    <h4 class="font-bold text-sm text-slate-700">Tải Lên File Excel Danh Sách</h4>
-                    <p class="text-xs text-slate-500 mt-1">Tự động nhận diện Mã Căn, Chủ Hộ, Diện Tích. SĐT sẽ được chuẩn hóa thành 09...</p>
+            <!-- Tab 1: Import -->
+            <div id="tab-content-import" class="bg-white p-6 rounded-b-xl rounded-tr-xl border border-slate-200 shadow-sm space-y-6 flex-1">
+                <div class="bg-blue-50 border border-blue-200 p-4 rounded-xl text-xs text-blue-800">
+                    <strong class="flex items-center gap-1 text-sm mb-1"><i class="fa-solid fa-wand-magic-sparkles"></i> Hệ thống chuẩn hóa tự động:</strong>
+                    - Tự động nhận diện cột Mã Căn, Chủ Hộ, SĐT, Diện Tích từ Excel.<br>
+                    - Tự động sửa số điện thoại: <code class="bg-white px-1 rounded border border-blue-200">+849... -> 09...</code>, <code class="bg-white px-1 rounded border border-blue-200">849... -> 09...</code>, <code class="bg-white px-1 rounded border border-blue-200">912... -> 0912...</code>.<br>
+                    - Tự động sửa mã căn: <code class="bg-white px-1 rounded border border-blue-200">B10101 -> B1-0101</code>.
+                </div>
+
+                <div class="border-2 border-dashed border-emerald-300 hover:border-emerald-500 bg-emerald-50/30 rounded-xl p-8 text-center cursor-pointer transition group" onclick="document.getElementById('excel-file-input').click()">
+                    <input type="file" id="excel-file-input" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileUpload(event)">
+                    <div class="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl group-hover:scale-110 transition shadow-sm"><i class="fa-solid fa-file-excel"></i></div>
+                    <h4 class="font-bold text-base text-slate-800">Tải Lên File Excel Danh Sách Cư Dân</h4>
+                    <p class="text-xs text-slate-500 mt-1 max-w-md mx-auto">Nhấp vào đây để chọn file. Hệ thống sẽ quét, chuẩn hóa dữ liệu và đồng bộ lên Cloud tự động.</p>
                 </div>
                 
-                <div>
-                    <label class="block text-xs font-bold text-slate-700 mb-1">Hoặc dán văn bản (MãCăn, DiệnTích, SĐT):</label>
-                    <textarea id="paste-import-input" rows="4" class="w-full p-2 border border-slate-300 rounded-lg text-xs font-mono"></textarea>
-                    <button onclick="handlePasteImport()" class="mt-2 px-4 py-2 bg-slate-800 text-white text-xs font-bold rounded-lg">Nạp danh sách</button>
+                <div class="border-t border-slate-100 pt-6">
+                    <label class="block text-xs font-bold text-slate-700 mb-2">Hoặc dán văn bản trực tiếp (Cấu trúc: MãCăn, DiệnTích, ChủHộ, SĐT):</label>
+                    <textarea id="paste-import-input" rows="4" placeholder="VD: B1-0101, 68.5, Nguyễn Văn A, +84912345678" class="w-full p-3 border border-slate-300 rounded-xl text-xs font-mono focus:ring-2 focus:ring-emerald-500 outline-none bg-slate-50"></textarea>
+                    <button onclick="handlePasteImport()" class="mt-3 px-5 py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-plus"></i> Nạp danh sách từ văn bản
+                    </button>
                 </div>
             </div>
 
-            <!-- Tab: Manage Apartments -->
-            <div id="tab-content-manage" class="hidden bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-slate-800">Danh Sách Căn Hộ <span id="admin-table-count" class="text-emerald-600 font-normal"></span></h3>
-                    <button onclick="exportApartmentsToExcel()" class="px-3 py-1.5 bg-emerald-600 text-white text-xs font-bold rounded-lg"><i class="fa-solid fa-file-excel"></i> Xuất Excel</button>
+            <!-- Tab 2: Manage Apartments -->
+            <div id="tab-content-manage" class="hidden bg-white p-6 rounded-b-xl rounded-tr-xl border border-slate-200 shadow-sm space-y-4 flex-1 flex flex-col">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h3 class="font-bold text-base text-slate-800">Danh Sách Căn Hộ Trên Cloud</h3>
+                        <p class="text-xs text-slate-500">Tổng số: <span id="admin-table-count" class="font-bold text-emerald-600">0</span> căn.</p>
+                    </div>
+                    <button onclick="exportApartmentsToExcel()" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2">
+                        <i class="fa-solid fa-file-excel"></i> Xuất File Excel
+                    </button>
                 </div>
-                <div class="flex gap-2">
-                    <input type="text" id="admin-search-input" oninput="renderAdminTable()" placeholder="Tìm căn (B10101)..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                    <input type="text" id="admin-search-input" oninput="renderAdminTable()" placeholder="Tìm căn (Hỗ trợ viết tắt, VD: b10101)..." class="w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-xl text-xs bg-slate-50 focus:ring-2 focus:ring-emerald-500 outline-none uppercase font-bold text-slate-700">
                 </div>
-                <div class="max-h-96 overflow-y-auto custom-scrollbar border border-slate-200 rounded-lg">
+                <div class="flex-1 overflow-y-auto custom-scrollbar border border-slate-200 rounded-xl max-h-[500px]">
                     <table class="w-full text-left text-xs">
-                        <thead class="bg-slate-100 sticky top-0 font-bold text-slate-600">
+                        <thead class="bg-slate-100 sticky top-0 font-bold text-slate-600 shadow-sm z-10">
                             <tr>
-                                <th class="p-2">Mã Căn</th>
-                                <th class="p-2">Chủ Hộ</th>
-                                <th class="p-2">SĐT</th>
-                                <th class="p-2">Diện Tích</th>
-                                <th class="p-2 text-center">Đã Tham Dự</th>
-                                <th class="p-2 text-right">Xóa</th>
+                                <th class="p-3">Mã Căn</th>
+                                <th class="p-3">Chủ Hộ</th>
+                                <th class="p-3">SĐT Chính Chủ</th>
+                                <th class="p-3 text-right">Diện Tích (m²)</th>
+                                <th class="p-3 text-center">Trạng Thái Tham Dự</th>
+                                <th class="p-3 text-center">Thao Tác</th>
                             </tr>
                         </thead>
-                        <tbody id="admin-table-body" class="divide-y divide-slate-100 text-slate-700"></tbody>
+                        <tbody id="admin-table-body" class="divide-y divide-slate-100 text-slate-700 bg-white"></tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- Tab: Evaluations & Export -->
-            <div id="tab-content-eval" class="hidden bg-white p-6 rounded-xl border border-slate-200 shadow-sm space-y-6">
-                <!-- Settings -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-sm text-slate-800 border-b border-slate-200 pb-2">Kỳ Đánh Giá Mặc Định</h4>
-                        <div class="flex gap-2 items-end">
+            <!-- Tab 3: Evaluations & Settings -->
+            <div id="tab-content-eval" class="hidden bg-white p-6 rounded-b-xl rounded-tr-xl border border-slate-200 shadow-sm space-y-8 flex-1">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Cài đặt Kỳ Đánh Giá -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <div class="w-8 h-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-calendar-days"></i></div>
+                            <h4 class="font-bold text-sm text-slate-800">Cài Đặt Kỳ Đánh Giá Mặc Định</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Mặc định hiển thị khi cư dân mở form đánh giá.</p>
+                        <div class="flex gap-3 items-end bg-slate-50 p-4 rounded-xl border border-slate-200">
                             <div class="w-1/2">
                                 <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Kỳ (Quý/Năm)</label>
-                                <select id="admin-default-quarter" class="w-full text-xs p-2 border rounded-lg bg-slate-50">
+                                <select id="admin-default-quarter" class="w-full text-xs py-2 px-3 border border-slate-300 rounded-lg bg-white font-bold outline-none">
                                     <option value="Q1">Quý 1</option><option value="Q2">Quý 2</option><option value="Q3">Quý 3</option><option value="Q4">Quý 4</option><option value="YEAR">Cả Năm</option>
                                 </select>
                             </div>
                             <div class="w-1/2">
                                 <label class="block text-[10px] uppercase font-bold text-slate-500 mb-1">Năm</label>
-                                <select id="admin-default-year" class="w-full text-xs p-2 border rounded-lg bg-slate-50">
+                                <select id="admin-default-year" class="w-full text-xs py-2 px-3 border border-slate-300 rounded-lg bg-white font-bold outline-none">
                                     <option value="2025">2025</option><option value="2026">2026</option><option value="2027">2027</option>
                                 </select>
                             </div>
-                            <button onclick="saveDefaultEvalPeriod()" class="px-3 py-2 bg-slate-800 text-white rounded-lg text-xs font-bold whitespace-nowrap"><i class="fa-solid fa-floppy-disk"></i> Lưu</button>
+                            <button onclick="saveDefaultEvalPeriod()" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-lg text-xs font-bold whitespace-nowrap shadow transition"><i class="fa-solid fa-floppy-disk"></i> Lưu</button>
                         </div>
                     </div>
-                    <div class="space-y-3">
-                        <h4 class="font-bold text-sm text-slate-800 border-b border-slate-200 pb-2">Xuất Báo Cáo Phân Tích</h4>
-                        <div class="flex flex-wrap gap-2">
-                            <button onclick="exportEvaluationsToExcel()" class="px-4 py-2 bg-emerald-600 text-white text-xs font-bold rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-file-excel"></i> Xuất Excel (Chi Tiết)</button>
-                            <!-- <button onclick="triggerPrintPdfReport()" class="px-4 py-2 bg-rose-600 text-white text-xs font-bold rounded-lg flex items-center gap-1.5"><i class="fa-solid fa-file-pdf"></i> Xuất PDF Báo Cáo</button> -->
+
+                    <!-- Xuất Báo Cáo -->
+                    <div class="space-y-4">
+                        <div class="flex items-center gap-2 border-b border-slate-200 pb-2">
+                            <div class="w-8 h-8 bg-rose-100 text-rose-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-file-export"></i></div>
+                            <h4 class="font-bold text-sm text-slate-800">Xuất Báo Cáo Phân Tích (Excel/PDF)</h4>
+                        </div>
+                        <p class="text-xs text-slate-500">Dữ liệu sẽ được tổng hợp theo các kỳ đánh giá.</p>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="exportEvaluationsToExcel()" class="w-full py-3 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-excel text-base"></i> Xuất Báo Cáo Excel (3 Sheet)
+                            </button>
+                            <button onclick="generatePDFReport()" class="w-full py-3 bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold rounded-xl shadow transition flex items-center justify-center gap-2">
+                                <i class="fa-solid fa-file-pdf text-base"></i> Tải Báo Cáo Tổng Hợp PDF
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- Category Manager -->
-                <div class="space-y-3 border-t border-slate-200 pt-4">
-                    <h4 class="font-bold text-sm text-slate-800">Quản Lý Các Hạng Mục Đánh Giá</h4>
-                    <p class="text-[10px] text-slate-500">Chỉnh sửa tên, thêm hoặc bớt các tiêu chí đánh giá BQT & Vận hành.</p>
-                    <div id="admin-eval-categories-list" class="space-y-2 max-h-60 overflow-y-auto custom-scrollbar pr-2"></div>
-                    <div class="flex gap-2 pt-2 border-t border-slate-100">
-                        <input type="text" id="new-category-name" placeholder="Tên hạng mục mới..." class="w-full px-2 py-1.5 border rounded-lg text-xs">
-                        <input type="text" id="new-category-icon" placeholder="Icon (VD: fa-broom)" value="fa-star" class="w-32 px-2 py-1.5 border rounded-lg text-xs font-mono">
-                        <button onclick="addNewCategory()" class="px-3 py-1.5 bg-blue-600 text-white text-xs font-bold rounded-lg whitespace-nowrap"><i class="fa-solid fa-plus"></i> Thêm</button>
+                <!-- Quản Lý Hạng Mục -->
+                <div class="space-y-4 border-t border-slate-200 pt-6">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <div class="w-8 h-8 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center"><i class="fa-solid fa-list-check"></i></div>
+                            <div>
+                                <h4 class="font-bold text-sm text-slate-800">Cấu Hình Hạng Mục Đánh Giá</h4>
+                                <p class="text-[10px] text-slate-500">Thay đổi tên, icon hoặc thêm/xóa tiêu chí. Sẽ đồng bộ ngay với form của cư dân.</p>
+                            </div>
+                        </div>
+                        <button onclick="saveEvaluationCategories()" class="px-5 py-2 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl shadow transition flex items-center gap-2">
+                            <i class="fa-solid fa-cloud-arrow-up"></i> Lưu Lên Cloud
+                        </button>
                     </div>
-                    <button onclick="saveEvaluationCategories()" class="mt-2 w-full py-2 bg-slate-800 text-white text-xs font-bold rounded-lg shadow">Lưu Cấu Hình Hạng Mục Lên Cloud</button>
+                    
+                    <div class="bg-slate-50 border border-slate-200 rounded-xl p-4">
+                        <div id="admin-eval-categories-list" class="space-y-2 max-h-64 overflow-y-auto custom-scrollbar pr-2 mb-4"></div>
+                        <div class="flex flex-col sm:flex-row gap-2 pt-4 border-t border-slate-200">
+                            <input type="text" id="new-category-name" placeholder="Tên hạng mục mới (VD: Cảnh quan)..." class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-xs outline-none focus:border-emerald-500">
+                            <select id="new-category-group" class="w-full sm:w-32 px-3 py-2 border border-slate-300 rounded-lg text-xs font-bold outline-none focus:border-emerald-500 bg-white">
+                                <option value="BQL">Thuộc BQL</option>
+                                <option value="BQT">Thuộc BQT</option>
+                            </select>
+                            <input type="text" id="new-category-icon" placeholder="Icon Class (VD: fa-tree)" value="fa-star" class="w-full sm:w-32 px-3 py-2 border border-slate-300 rounded-lg text-xs font-mono outline-none focus:border-emerald-500">
+                            <button onclick="addNewCategory()" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold rounded-lg whitespace-nowrap shadow transition"><i class="fa-solid fa-plus"></i> Thêm Hạng Mục</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Toast -->
-    <div id="toast" class="fixed bottom-5 right-5 z-[60] transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-900 text-white px-4 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-xs font-semibold">
-        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400"></i>
+    <!-- Hidden Template for PDF Export -->
+    <div id="pdf-report-printable" class="hidden bg-white p-8 font-sans text-slate-900 max-w-4xl mx-auto text-sm" style="width: 210mm; min-height: 297mm; background: white;">
+        <!-- Injected via JS -->
+    </div>
+
+    <!-- Toast Thông báo -->
+    <div id="toast" class="fixed bottom-5 right-5 z-[60] transform translate-y-20 opacity-0 transition-all duration-300 bg-slate-800 text-white px-5 py-3 rounded-xl shadow-2xl flex items-center space-x-3 text-xs font-bold border border-slate-700">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-emerald-400 text-lg"></i>
         <span id="toast-msg">Thông báo...</span>
     </div>
 
     <script type="module">
+        // ================= FIREBASE IMPORTS =================
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, deleteDoc, onSnapshot, collection, writeBatch, getDocs } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
+        // ================= CONSTANTS & CONFIG =================
         const ADMIN_PASS = "pvceco";
         const DEFAULT_TOTAL_AREA = 27734.30;
+        
         const DEFAULT_CATEGORIES = [
-            { id: "cat1", name: "An ninh & PCCC", icon: "fa-shield-halved" },
-            { id: "cat2", name: "Vệ sinh & Cảnh quan", icon: "fa-broom" },
-            { id: "cat3", name: "Kỹ thuật & Bảo trì", icon: "fa-wrench" },
-            { id: "cat4", name: "Dịch vụ CSKH", icon: "fa-headset" },
-            { id: "cat5", name: "Minh bạch tài chính", icon: "fa-file-invoice-dollar" },
-            { id: "cat6", name: "Hoạt động của BQT", icon: "fa-users-gear" }
+            { id: "cat1", name: "An ninh & PCCC", icon: "fa-shield-halved", group: "BQL" },
+            { id: "cat2", name: "Vệ sinh & Cảnh quan", icon: "fa-broom", group: "BQL" },
+            { id: "cat3", name: "Kỹ thuật & Bảo trì", icon: "fa-wrench", group: "BQL" },
+            { id: "cat4", name: "Dịch vụ CSKH", icon: "fa-headset", group: "BQL" },
+            { id: "cat7", name: "Quản lý tài chính & Thu chi phí DV", icon: "fa-money-check-dollar", group: "BQL" },
+            { id: "cat5", name: "Minh bạch tài chính", icon: "fa-file-invoice-dollar", group: "BQT" },
+            { id: "cat6", name: "Hoạt động của BQT", icon: "fa-users-gear", group: "BQT" }
         ];
 
         const firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -524,29 +589,36 @@
         const db = getFirestore(app);
         const appId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-2026';
         
+        // Rules: Strict Paths
         const colApt = collection(db, 'artifacts', appId, 'public', 'data', 'apartments');
         const colEval = collection(db, 'artifacts', appId, 'public', 'data', 'evaluations');
         const docSettings = doc(db, 'artifacts', appId, 'public', 'data', 'config', 'settings');
 
+        // ================= GLOBAL STATE =================
         let state = {
             apartments: [],
             evaluations: [],
             categories: [...DEFAULT_CATEGORIES],
             defaultQuarter: 'Q1',
-            defaultYear: 2026,
+            defaultYear: new Date().getFullYear(),
             isAdmin: false,
-            currentAptForEval: null
+            currentAptForEval: null,
+            totalAreaOverride: DEFAULT_TOTAL_AREA
         };
 
-        /* Util: Phone & Code Normalization */
+        // ================= UTILITIES =================
+
+        // 1. Smart Phone Normalizer (+84 -> 0, etc.)
         function smartNormalizePhone(phone) {
             if (!phone) return "";
-            let cleaned = String(phone).replace(/\D/g, "");
+            let cleaned = String(phone).replace(/\D/g, ""); // Xóa ký tự không phải số
             if (cleaned.startsWith("84")) cleaned = "0" + cleaned.slice(2);
+            else if (cleaned.length === 9 && !cleaned.startsWith("0")) cleaned = "0" + cleaned; // Lỗi mất số 0 Excel
             else if (!cleaned.startsWith("0") && cleaned.length > 0) cleaned = "0" + cleaned;
             return cleaned;
         }
 
+        // 2. Smart Apartment Code Normalizer (B10101, b1 0101, NO10101 -> B1-0101)
         function canonicalizeAptKey(val) {
             let str = String(val).toUpperCase().replace(/\s+/g, '');
             str = str.replace(/^NO(\d)/, 'B$1'); // NO10101 -> B10101
@@ -559,70 +631,103 @@
             return (parseFloat(num) || 0).toLocaleString('vi-VN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         }
 
+        function timeAgo(isoString) {
+            if(!isoString) return 'Chưa có';
+            const date = new Date(isoString);
+            const now = new Date();
+            const diff = Math.floor((now - date) / 1000);
+            if (diff < 60) return "Vừa xong";
+            if (diff < 3600) return `${Math.floor(diff/60)} phút trước`;
+            if (diff < 86400) return `${Math.floor(diff/3600)} giờ trước`;
+            return date.toLocaleDateString('vi-VN');
+        }
+
         function showToast(msg, type = 'info') {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = msg;
-            document.getElementById('toast-icon').className = `fa-solid ${type === 'success' ? 'fa-circle-check text-emerald-400' : type === 'error' ? 'fa-circle-xmark text-rose-400' : 'fa-circle-info text-blue-400'}`;
+            const icon = document.getElementById('toast-icon');
+            if (type === 'success') icon.className = 'fa-solid fa-circle-check text-emerald-400 text-lg';
+            else if (type === 'error') icon.className = 'fa-solid fa-circle-xmark text-rose-400 text-lg';
+            else icon.className = 'fa-solid fa-circle-info text-blue-400 text-lg';
+            
             toast.classList.remove('translate-y-20', 'opacity-0');
             setTimeout(() => toast.classList.add('translate-y-20', 'opacity-0'), 3000);
         }
 
-        /* Initial Sync */
+        function detectCurrentSystemPeriod() {
+            const now = new Date();
+            const m = now.getMonth();
+            const year = now.getFullYear();
+            let q = m < 3 ? 'Q1' : m < 6 ? 'Q2' : m < 9 ? 'Q3' : 'Q4';
+            return { year, quarter: q, str: `${year}_${q}` };
+        }
+
+        // ================= INIT & FIRESTORE REALTIME =================
         async function initApp() {
             try {
+                // Rule 3: Auth Before Queries
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try { await signInWithCustomToken(auth, __initial_auth_token); } catch(e) { await signInAnonymously(auth); }
-                } else await signInAnonymously(auth);
+                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
+                    catch(e) { await signInAnonymously(auth); }
+                } else {
+                    await signInAnonymously(auth);
+                }
                 
-                document.getElementById('sync-status-badge').innerHTML = `<i class="fa-solid fa-cloud text-teal-500 mr-1"></i>Đã kết nối Cloud`;
+                document.getElementById('sync-status-badge').innerHTML = `<i class="fa-solid fa-cloud text-emerald-500 mr-1"></i>Đã kết nối Firestore`;
+                document.getElementById('sync-status-badge').classList.replace('bg-teal-50', 'bg-emerald-50');
+                document.getElementById('sync-status-badge').classList.replace('text-teal-600', 'text-emerald-700');
+                document.getElementById('sync-status-badge').classList.replace('border-teal-100', 'border-emerald-200');
                 
-                // Detect initial period
-                const now = new Date();
-                const m = now.getMonth();
-                state.defaultYear = now.getFullYear();
-                state.defaultQuarter = m < 3 ? 'Q1' : m < 6 ? 'Q2' : m < 9 ? 'Q3' : 'Q4';
+                // Set default period intelligently
+                const cur = detectCurrentSystemPeriod();
+                state.defaultYear = cur.year;
+                state.defaultQuarter = cur.quarter;
 
-                // Listeners
+                // Rule 2: No Complex Queries (Fetch all, process local)
                 onSnapshot(colApt, snap => {
                     state.apartments = snap.docs.map(d => ({ id: d.id, ...d.data() }));
                     renderAll();
-                });
+                }, err => console.error("Apt Error:", err));
+
                 onSnapshot(colEval, snap => {
                     state.evaluations = snap.docs.map(d => ({ id: d.id, ...d.data() }));
-                    renderAll();
-                });
+                    renderEvaluationAnalytics();
+                }, err => console.error("Eval Error:", err));
+
                 onSnapshot(docSettings, snap => {
                     if (snap.exists()) {
                         const data = snap.data();
                         if (data.categories) state.categories = data.categories;
                         if (data.defaultQuarter) state.defaultQuarter = data.defaultQuarter;
                         if (data.defaultYear) state.defaultYear = data.defaultYear;
+                        if (data.totalAreaOverride) state.totalAreaOverride = data.totalAreaOverride;
                         populatePeriodSelects();
                         renderAdminCategories();
+                        renderEvaluationAnalytics();
                     }
-                });
+                }, err => console.error("Settings Error:", err));
 
             } catch (err) {
                 document.getElementById('sync-status-badge').innerHTML = `<i class="fa-solid fa-cloud-slash text-rose-500 mr-1"></i>Lỗi kết nối`;
+                document.getElementById('sync-status-badge').classList.replace('bg-teal-50', 'bg-rose-50');
+                document.getElementById('sync-status-badge').classList.replace('text-teal-600', 'text-rose-700');
+                document.getElementById('sync-status-badge').classList.replace('border-teal-100', 'border-rose-200');
             }
         }
 
-        /* Render Core */
+        // ================= RENDERING =================
         function renderAll() {
             renderPublicDashboard();
             renderTable();
-            renderEvaluationAnalytics();
-            if (state.isAdmin) {
-                renderAdminTable();
-            }
+            if (state.isAdmin) renderAdminTable();
         }
 
         function renderPublicDashboard() {
             let attendedArea = 0, units = 0;
             state.apartments.forEach(a => { if (a.attended) { attendedArea += a.area; units++; } });
             
-            const totalArea = DEFAULT_TOTAL_AREA;
-            const percentArea = (attendedArea / totalArea) * 100;
+            const totalArea = state.totalAreaOverride;
+            const percentArea = totalArea > 0 ? (attendedArea / totalArea) * 100 : 0;
             
             document.getElementById('metric-total-area').innerText = formatNum(totalArea);
             document.getElementById('metric-attended-area').innerText = formatNum(attendedArea);
@@ -632,39 +737,51 @@
             document.getElementById('progress-bar-fill').style.width = `${Math.min(percentArea, 100)}%`;
 
             const badge = document.getElementById('status-badge-container');
-            if (percentArea >= 50) badge.innerHTML = `<span class="px-3 py-1 bg-emerald-100 text-emerald-700 font-bold rounded-lg border border-emerald-300"><i class="fa-solid fa-check-double"></i> Đã đủ 50% (Biểu quyết)</span>`;
-            else if (percentArea >= 30) badge.innerHTML = `<span class="px-3 py-1 bg-blue-100 text-blue-700 font-bold rounded-lg border border-blue-300"><i class="fa-solid fa-check"></i> Đã đủ 30% (Tổ chức)</span>`;
-            else badge.innerHTML = `<span class="px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-lg border border-slate-300">Chưa đạt mốc 30%</span>`;
+            if (percentArea >= 50) {
+                badge.innerHTML = `<span class="px-3.5 py-1.5 bg-emerald-100 text-emerald-800 font-bold rounded-lg border border-emerald-300 shadow-sm inline-flex items-center gap-1.5 animate-bounce"><i class="fa-solid fa-check-double"></i> ĐÃ ĐỦ 50% (ĐIỀU KIỆN BIỂU QUYẾT)</span>`;
+            }
+            else if (percentArea >= 30) badge.innerHTML = `<span class="px-3.5 py-1.5 bg-blue-100 text-blue-800 font-bold rounded-lg border border-blue-300 shadow-sm inline-flex items-center gap-1.5"><i class="fa-solid fa-check"></i> Đã đủ 30% (ĐK Tổ chức)</span>`;
+            else badge.innerHTML = `<span class="px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-lg border border-slate-300 inline-flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30%</span>`;
         }
 
         function renderTable() {
             const search = (document.getElementById('search-input')?.value || '').toLowerCase();
             const filter = document.getElementById('filter-status')?.value || 'all';
             const tbody = document.getElementById('apartment-table-body');
+            if(!tbody) return;
             
             const filtered = state.apartments.filter(a => {
-                if (search && !a.id.toLowerCase().includes(search) && !(a.ownerName || '').toLowerCase().includes(search)) return false;
+                const searchMatch = a.id.toLowerCase().includes(search) || canonicalizeAptKey(search).toLowerCase().includes(a.id.toLowerCase()) || (a.ownerName || '').toLowerCase().includes(search);
+                if (search && !searchMatch) return false;
                 if (filter === 'attended' && !a.attended) return false;
                 if (filter === 'absent' && a.attended) return false;
                 return true;
             }).sort((a,b) => a.id.localeCompare(b.id));
 
             tbody.innerHTML = filtered.map((a, i) => `
-                <tr class="hover:bg-slate-50 border-b border-slate-100">
-                    <td class="py-2.5 px-4 font-mono text-slate-400">${i+1}</td>
-                    <td class="py-2.5 px-4 font-bold text-slate-800">${a.id}</td>
-                    <td class="py-2.5 px-4 text-slate-600">${a.ownerName || '--'}</td>
-                    <td class="py-2.5 px-4 text-slate-500">Khối ${a.id.split('-')[0]}</td>
-                    <td class="py-2.5 px-4 text-right font-mono font-bold">${formatNum(a.area)}</td>
-                    <td class="py-2.5 px-4 text-center">
-                        ${a.attended ? `<span class="px-2 py-0.5 bg-emerald-100 text-emerald-700 rounded text-[10px] font-bold">Đã tham dự</span>` : `<span class="px-2 py-0.5 bg-slate-100 text-slate-500 rounded text-[10px]">Chưa tham dự</span>`}
+                <tr class="hover:bg-slate-50 border-b border-slate-100 transition-colors">
+                    <td class="py-3 px-4 font-mono text-slate-400">${i+1}</td>
+                    <td class="py-3 px-4 font-black text-slate-800">${a.id}</td>
+                    <td class="py-3 px-4 text-slate-700 font-semibold">${a.ownerName || '<span class="text-slate-400 font-normal">--</span>'}</td>
+                    <td class="py-3 px-4 text-slate-500 font-medium">Khối ${a.id.split('-')[0] || '--'}</td>
+                    <td class="py-3 px-4 text-right font-mono font-bold text-slate-700">${formatNum(a.area)}</td>
+                    <td class="py-3 px-4 text-center">
+                        ${a.attended ? `<span class="px-2.5 py-1 bg-emerald-100 text-emerald-800 rounded-md text-[11px] font-bold border border-emerald-200"><i class="fa-solid fa-check"></i> Đã tham dự</span>` : `<span class="px-2.5 py-1 bg-slate-100 text-slate-500 rounded-md text-[11px] font-medium border border-slate-200">Chưa</span>`}
                     </td>
                 </tr>
-            `).join('') || `<tr><td colspan="6" class="text-center py-4 text-slate-400">Không tìm thấy dữ liệu</td></tr>`;
+            `).join('') || `<tr><td colspan="6" class="text-center py-8 text-slate-500">Không tìm thấy dữ liệu phù hợp.</td></tr>`;
         }
 
-        /* Admin Logic */
+        // ================= ADMIN: AUTH & TABS =================
         function openAdminLoginModal() {
+            if(state.isAdmin) {
+                // If already logged in, just open view
+                document.getElementById('admin-page-view').classList.remove('hidden');
+                document.getElementById('admin-page-view').classList.add('flex');
+                document.getElementById('public-view').classList.add('hidden');
+                renderAdminTable();
+                return;
+            }
             const m = document.getElementById('admin-login-modal');
             const c = document.getElementById('admin-login-card');
             m.classList.remove('opacity-0', 'pointer-events-none');
@@ -683,11 +800,14 @@
                 closeAdminLoginModal();
                 document.getElementById('admin-page-view').classList.remove('hidden');
                 document.getElementById('admin-page-view').classList.add('flex');
+                document.getElementById('public-view').classList.add('hidden');
                 document.getElementById('public-admin-btn-text').innerText = "Bảng Quản Trị (Mở)";
+                
                 renderAdminTable();
                 renderAdminCategories();
                 document.getElementById('admin-pass-input').value = '';
                 document.getElementById('auth-error-msg').classList.add('hidden');
+                showToast("Đăng nhập Admin thành công!", "success");
             } else {
                 document.getElementById('auth-error-msg').classList.remove('hidden');
                 const c = document.getElementById('admin-login-card');
@@ -697,22 +817,34 @@
         function closeAdminView() {
             document.getElementById('admin-page-view').classList.add('hidden');
             document.getElementById('admin-page-view').classList.remove('flex');
+            document.getElementById('public-view').classList.remove('hidden');
         }
         function handleAdminLogout() {
             state.isAdmin = false;
             closeAdminView();
             document.getElementById('public-admin-btn-text').innerText = "Quản Lý (Admin)";
-            showToast("Đã khóa phiên đăng nhập Admin");
+            showToast("Đã khóa phiên đăng nhập Admin", "info");
         }
         function switchAdminTab(tab) {
             ['import', 'manage', 'eval'].forEach(t => {
-                document.getElementById(`tab-btn-${t}`).className = t === tab ? "py-2 px-4 rounded-t-lg bg-white border-t border-x border-slate-300 text-emerald-600" : "py-2 px-4 rounded-t-lg text-slate-600 hover:text-slate-900";
-                document.getElementById(`tab-content-${t}`).classList.toggle('hidden', t !== tab);
+                const btn = document.getElementById(`tab-btn-${t}`);
+                const content = document.getElementById(`tab-content-${t}`);
+                if(t === tab) {
+                    btn.classList.add('bg-white', 'border-t', 'border-x', 'border-slate-300', 'text-emerald-600', 'relative', 'top-[1px]');
+                    btn.classList.remove('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                    content.classList.remove('hidden');
+                    content.classList.add('flex', 'flex-col');
+                } else {
+                    btn.classList.remove('bg-white', 'border-t', 'border-x', 'border-slate-300', 'text-emerald-600', 'relative', 'top-[1px]');
+                    btn.classList.add('text-slate-600', 'hover:text-slate-900', 'hover:bg-slate-100');
+                    content.classList.add('hidden');
+                    content.classList.remove('flex', 'flex-col');
+                }
             });
             if(tab === 'manage') renderAdminTable();
         }
 
-        /* Data Import */
+        // ================= ADMIN: DATA IMPORT & MANAGE =================
         async function handleFileUpload(e) {
             const file = e.target.files[0];
             if (!file) return;
@@ -725,7 +857,6 @@
                     
                     let codeIdx = -1, areaIdx = -1, phoneIdx = -1, ownerIdx = -1;
                     
-                    // Simple heuristic header finding
                     for(let r=0; r<Math.min(json.length, 10); r++) {
                         const row = json[r] || [];
                         for(let c=0; c<row.length; c++) {
@@ -744,7 +875,8 @@
                         const row = json[i];
                         if(!row || !row[codeIdx]) continue;
                         const id = canonicalizeAptKey(row[codeIdx]);
-                        const area = parseFloat(String(row[areaIdx]).replace(',','.'));
+                        const rawArea = String(row[areaIdx]).replace(',', '.').replace(/[^0-9\.]/g, '');
+                        const area = parseFloat(rawArea);
                         if(id && !isNaN(area) && area > 10) {
                             apts.push({
                                 id, area, 
@@ -757,10 +889,16 @@
                     if(apts.length > 0) {
                         const batch = writeBatch(db);
                         apts.forEach(a => batch.set(doc(colApt, a.id), a, {merge:true}));
+                        
+                        // Update total area setting based on imported
+                        const totalImportedArea = apts.reduce((sum, a) => sum + a.area, 0);
+                        batch.set(docSettings, { totalAreaOverride: totalImportedArea }, {merge: true});
+
                         await batch.commit();
-                        showToast(`Đã nạp ${apts.length} căn hộ`, 'success');
+                        showToast(`Đã nạp ${apts.length} căn hộ. Tổng DT: ${formatNum(totalImportedArea)}`, 'success');
                     }
                 } catch(err) {
+                    console.error(err);
                     showToast("Lỗi đọc file Excel", 'error');
                 }
             };
@@ -777,47 +915,68 @@
                 const parts = l.split(/[,|\t]+/);
                 if (parts.length >= 2) {
                     const id = canonicalizeAptKey(parts[0]);
-                    const area = parseFloat(parts[1].replace(',','.'));
-                    if (id && area) {
-                        batch.set(doc(colApt, id), { id, area, ownerName: parts[2]||'', phone: smartNormalizePhone(parts[3]||''), attended: false }, {merge:true});
+                    const rawArea = parts[1].replace(',', '.').replace(/[^0-9\.]/g, '');
+                    const area = parseFloat(rawArea);
+                    if (id && !isNaN(area)) {
+                        const pName = parts[2] ? parts[2].trim() : '';
+                        const pPhone = parts[3] ? smartNormalizePhone(parts[3]) : '';
+                        batch.set(doc(colApt, id), { id, area, ownerName: pName, phone: pPhone, attended: false }, {merge:true});
                         count++;
                     }
                 }
             });
             if (count>0) {
                 await batch.commit();
-                showToast(`Đã nạp ${count} căn hộ`, 'success');
+                showToast(`Đã nạp ${count} căn hộ từ văn bản`, 'success');
                 document.getElementById('paste-import-input').value = '';
             }
         }
 
         async function toggleAttendedAdmin(id) {
             const a = state.apartments.find(x => x.id === id);
-            if(a) await setDoc(doc(colApt, id), {attended: !a.attended}, {merge:true});
+            if(a) {
+                await setDoc(doc(colApt, id), {attended: !a.attended}, {merge:true});
+                showToast(`Căn hộ ${id}: ${!a.attended ? 'Đã tham dự' : 'Hủy tham dự'}`, 'success');
+            }
         }
+
         async function deleteAptAdmin(id) {
-            if(confirm('Xóa căn hộ này?')) await deleteDoc(doc(colApt, id));
+            if(confirm(`Xóa hoàn toàn căn hộ ${id} khỏi hệ thống?`)) {
+                await deleteDoc(doc(colApt, id));
+                showToast(`Đã xóa ${id}`, 'info');
+            }
         }
 
         function renderAdminTable() {
             const s = (document.getElementById('admin-search-input')?.value || '').toLowerCase();
-            document.getElementById('admin-table-body').innerHTML = state.apartments.filter(a => a.id.toLowerCase().includes(s)).map(a => `
-                <tr class="border-b border-slate-100 hover:bg-slate-50">
-                    <td class="p-2 font-bold">${a.id}</td>
-                    <td class="p-2">${a.ownerName||'--'}</td>
-                    <td class="p-2 font-mono text-blue-600">${a.phone||'--'}</td>
-                    <td class="p-2">${a.area}</td>
-                    <td class="p-2 text-center">
-                        <button onclick="toggleAttendedAdmin('${a.id}')" class="px-2 py-1 rounded text-xs text-white ${a.attended?'bg-emerald-500':'bg-slate-300'}">${a.attended?'Đã Tham Dự':'Chưa'}</button>
+            const tbody = document.getElementById('admin-table-body');
+            if(!tbody) return;
+
+            const filtered = state.apartments.filter(a => 
+                a.id.toLowerCase().includes(s) || canonicalizeAptKey(s).toLowerCase().includes(a.id.toLowerCase())
+            );
+
+            document.getElementById('admin-table-count').innerText = filtered.length;
+
+            tbody.innerHTML = filtered.map(a => `
+                <tr class="border-b border-slate-100 hover:bg-slate-50 transition">
+                    <td class="p-3 font-bold text-slate-800">${a.id}</td>
+                    <td class="p-3 text-slate-700">${a.ownerName||'--'}</td>
+                    <td class="p-3 font-mono text-blue-600 font-bold">${a.phone||'--'}</td>
+                    <td class="p-3 text-right font-mono font-bold">${formatNum(a.area)}</td>
+                    <td class="p-3 text-center">
+                        <button onclick="toggleAttendedAdmin('${a.id}')" class="px-3 py-1.5 rounded-lg text-[11px] font-bold text-white transition ${a.attended?'bg-emerald-500 hover:bg-emerald-600 shadow-md':'bg-slate-300 hover:bg-slate-400 text-slate-700'}">
+                            ${a.attended?'<i class="fa-solid fa-check"></i> Đã Tham Dự':'Chưa'}
+                        </button>
                     </td>
-                    <td class="p-2 text-right">
-                        <button onclick="deleteAptAdmin('${a.id}')" class="text-rose-500"><i class="fa-solid fa-trash"></i></button>
+                    <td class="p-3 text-center">
+                        <button onclick="deleteAptAdmin('${a.id}')" class="text-rose-500 hover:text-rose-700 p-2 bg-rose-50 rounded-lg transition"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
             `).join('');
         }
 
-        /* Evaluations Logic */
+        // ================= EVALUATIONS: RESIDENT =================
         function populatePeriodSelects() {
             const sPublic = document.getElementById('eval-public-period-filter');
             const sModal = document.getElementById('eval-period-select');
@@ -834,7 +993,12 @@
             });
 
             if(sModal) { sModal.innerHTML = opts.join(''); sModal.value = defVal; }
-            if(sPublic) { sPublic.innerHTML = `<option value="ALL">Tất cả kỳ đánh giá</option>` + opts.join(''); sPublic.value = 'ALL'; }
+            if(sPublic) { 
+                const curVal = sPublic.value; // keep selected if any
+                sPublic.innerHTML = `<option value="ALL">-- Tất cả kỳ đánh giá --</option>` + opts.join(''); 
+                if(curVal && curVal !== 'ALL') sPublic.value = curVal;
+                else sPublic.value = 'ALL';
+            }
             if(sAdminQ) sAdminQ.value = state.defaultQuarter;
             if(sAdminY) sAdminY.value = state.defaultYear;
         }
@@ -843,7 +1007,7 @@
             const q = document.getElementById('admin-default-quarter').value;
             const y = parseInt(document.getElementById('admin-default-year').value);
             await setDoc(docSettings, { defaultQuarter: q, defaultYear: y }, {merge:true});
-            showToast("Lưu kỳ đánh giá mặc định", 'success');
+            showToast("Lưu kỳ đánh giá mặc định thành công", 'success');
         }
 
         function openResidentVerifyModal() {
@@ -851,7 +1015,12 @@
             document.getElementById('eval-step-1').classList.remove('hidden');
             document.getElementById('eval-step-2').classList.add('hidden');
             document.getElementById('eval-footer').classList.add('hidden');
-            document.getElementById('eval-modal-title').innerText = "Xác Thực Cư Dân";
+            document.getElementById('eval-modal-title').innerHTML = `<i class="fa-solid fa-fingerprint text-emerald-500"></i> Xác Thực Cư Dân`;
+            document.getElementById('verify-error-msg').classList.add('hidden');
+            
+            // Auto select default period
+            const sModal = document.getElementById('eval-period-select');
+            if(sModal) sModal.value = `${state.defaultYear}_${state.defaultQuarter}`;
         }
         function closeResidentVerifyModal() {
             document.getElementById('resident-eval-modal').classList.add('opacity-0', 'pointer-events-none');
@@ -860,7 +1029,7 @@
             document.getElementById('eval-step-1').classList.remove('hidden');
             document.getElementById('eval-step-2').classList.add('hidden');
             document.getElementById('eval-footer').classList.add('hidden');
-            document.getElementById('eval-modal-title').innerText = "Xác Thực Cư Dân";
+            document.getElementById('eval-modal-title').innerHTML = `<i class="fa-solid fa-fingerprint text-emerald-500"></i> Xác Thực Cư Dân`;
         }
 
         async function handleVerifyResident() {
@@ -874,17 +1043,18 @@
             const errEl = document.getElementById('verify-error-msg');
             
             if (!apt) {
-                errEl.innerText = "Mã căn không tồn tại trong hệ thống!";
+                errEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Mã căn <strong class="text-rose-700">${id}</strong> không tồn tại trong hệ thống!`;
                 errEl.classList.remove('hidden');
                 return;
             }
             if (apt.phone && apt.phone !== phone) {
-                errEl.innerText = "Số điện thoại không khớp với dữ liệu đã đăng ký!";
+                errEl.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> Số điện thoại không khớp với dữ liệu gốc!`;
                 errEl.classList.remove('hidden');
                 return;
             }
+            
+            // Auto bind phone if empty
             if (!apt.phone && phone) {
-                // Auto assign phone if empty
                 await setDoc(doc(colApt, id), {phone: phone}, {merge:true});
                 apt.phone = phone;
             }
@@ -894,39 +1064,74 @@
             
             // Build form
             document.getElementById('eval-apt-display').innerText = `Căn hộ: ${apt.id}`;
-            document.getElementById('eval-phone-display').innerText = apt.phone;
+            document.getElementById('eval-phone-display').innerText = apt.phone || 'Chưa ĐK';
             
-            const formHTML = state.categories.map(c => `
-                <div class="bg-white p-4 rounded-xl border border-slate-200">
-                    <div class="flex justify-between items-center mb-2">
-                        <span class="font-bold text-sm text-slate-800"><i class="fa-solid ${c.icon} text-emerald-500 w-5"></i> ${c.name}</span>
-                        <span class="text-xs font-mono font-bold text-amber-500" id="val-${c.id}">0 / 5</span>
+            // Build form grouped by BQL / BQT
+            let formHTML = '';
+            
+            // Group BQL
+            const catsBQL = state.categories.filter(c => c.group === 'BQL' || !c.group);
+            if(catsBQL.length > 0) {
+                formHTML += `<div class="mb-5"><h4 class="font-black text-blue-700 text-xs mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-building-user"></i> Phần I: Đánh giá Đơn vị Vận Hành (BQL)</h4><div class="space-y-3">`;
+                formHTML += catsBQL.map(c => `
+                    <div class="bg-white p-4 rounded-xl border border-blue-100 shadow-sm flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-sm text-slate-800 flex items-center gap-2"><div class="w-6 text-center"><i class="fa-solid ${c.icon} text-blue-500 text-lg"></i></div> ${c.name}</span>
+                            <span class="text-xs font-mono font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded border border-blue-200" id="val-${c.id}">5 / 5</span>
+                        </div>
+                        <input type="range" min="1" max="5" value="5" class="w-full accent-blue-500 cursor-pointer h-2 bg-slate-200 rounded-lg appearance-none" id="range-${c.id}" oninput="document.getElementById('val-${c.id}').innerText = this.value + ' / 5'">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-bold px-1"><span>1 (Kém)</span><span>3 (Tạm)</span><span>5 (Tốt)</span></div>
                     </div>
-                    <input type="range" min="1" max="5" value="5" class="w-full accent-emerald-500" id="range-${c.id}" oninput="document.getElementById('val-${c.id}').innerText = this.value + ' / 5'">
-                </div>
-            `).join('');
+                `).join('');
+                formHTML += `</div></div>`;
+            }
+
+            // Group BQT
+            const catsBQT = state.categories.filter(c => c.group === 'BQT');
+            if(catsBQT.length > 0) {
+                formHTML += `<div class="mb-2"><h4 class="font-black text-amber-600 text-xs mb-3 uppercase flex items-center gap-2"><i class="fa-solid fa-users-gear"></i> Phần II: Đánh giá Ban Quản Trị (BQT)</h4><div class="space-y-3">`;
+                formHTML += catsBQT.map(c => `
+                    <div class="bg-white p-4 rounded-xl border border-amber-100 shadow-sm flex flex-col gap-2">
+                        <div class="flex justify-between items-center">
+                            <span class="font-bold text-sm text-slate-800 flex items-center gap-2"><div class="w-6 text-center"><i class="fa-solid ${c.icon} text-amber-500 text-lg"></i></div> ${c.name}</span>
+                            <span class="text-xs font-mono font-black text-amber-600 bg-amber-50 px-2 py-0.5 rounded border border-amber-200" id="val-${c.id}">5 / 5</span>
+                        </div>
+                        <input type="range" min="1" max="5" value="5" class="w-full accent-amber-500 cursor-pointer h-2 bg-slate-200 rounded-lg appearance-none" id="range-${c.id}" oninput="document.getElementById('val-${c.id}').innerText = this.value + ' / 5'">
+                        <div class="flex justify-between text-[10px] text-slate-400 font-bold px-1"><span>1 (Kém)</span><span>3 (Tạm)</span><span>5 (Tốt)</span></div>
+                    </div>
+                `).join('');
+                formHTML += `</div></div>`;
+            }
+
             document.getElementById('eval-categories-form-container').innerHTML = formHTML;
-            state.categories.forEach(c => document.getElementById(`val-${c.id}`).innerText = '5 / 5');
+            document.getElementById('eval-comment').value = ''; // clear previous
 
             document.getElementById('eval-step-1').classList.add('hidden');
             document.getElementById('eval-step-2').classList.remove('hidden');
             document.getElementById('eval-footer').classList.remove('hidden');
-            document.getElementById('eval-modal-title').innerText = "Phiếu Đánh Giá";
+            document.getElementById('eval-modal-title').innerHTML = `<i class="fa-solid fa-star-half-stroke text-amber-500"></i> Phiếu Đánh Giá Vận Hành`;
         }
 
         async function submitResidentEvaluation() {
             if(!state.currentAptForEval) return;
             const apt = state.currentAptForEval;
-            const period = document.getElementById('eval-period-select').value; // e.g. 2026_Q1
+            const period = document.getElementById('eval-period-select').value; 
             
             let scores = {};
             let total = 0;
+            let sumBQL = 0, countBQL = 0;
+            let sumBQT = 0, countBQT = 0;
+
             state.categories.forEach(c => {
                 const val = parseInt(document.getElementById(`range-${c.id}`).value) || 5;
                 scores[c.id] = val;
                 total += val;
+                if(c.group === 'BQT') { sumBQT += val; countBQT++; }
+                else { sumBQL += val; countBQL++; }
             });
             const avg = total / state.categories.length;
+            const avgBQL = countBQL > 0 ? sumBQL / countBQL : 0;
+            const avgBQT = countBQT > 0 ? sumBQT / countBQT : 0;
             const comment = document.getElementById('eval-comment').value.trim();
 
             const evalId = `${apt.id}_${period}`;
@@ -937,10 +1142,13 @@
                 period: period,
                 scores: scores,
                 average: avg,
+                avgBQL: avgBQL,
+                avgBQT: avgBQT,
                 comment: comment,
                 timestamp: new Date().toISOString()
             };
 
+            // Lưu Firebase - OnSnapshot sẽ tự kích hoạt render lại Analytics
             await setDoc(doc(colEval, evalId), docData);
             
             // Auto check-in if not yet
@@ -948,11 +1156,12 @@
                 await setDoc(doc(colApt, apt.id), {attended: true}, {merge:true});
             }
 
-            if(typeof confetti === 'function') confetti({particleCount: 100, spread: 70, origin: { y: 0.6 }});
+            if(typeof confetti === 'function') confetti({particleCount: 150, spread: 80, origin: { y: 0.6 }});
             closeResidentVerifyModal();
-            showToast("Đã gửi phiếu đánh giá thành công!", 'success');
+            showToast("Đã gửi phiếu đánh giá thành công! Dữ liệu đã lên Bảng tin.", 'success');
         }
 
+        // ================= EVALUATIONS: ANALYTICS & ADMIN =================
         function renderEvaluationAnalytics() {
             const periodFilter = document.getElementById('eval-public-period-filter')?.value || 'ALL';
             
@@ -961,13 +1170,22 @@
                 : state.evaluations.filter(e => e.period === periodFilter);
 
             let totalArea = 0;
-            let weightedSum = 0;
+            let weightedSumBQL = 0;
+            let weightedSumBQT = 0;
+            
             let catScores = {};
             state.categories.forEach(c => catScores[c.id] = { sum: 0, count: 0 });
 
             filteredEvals.forEach(e => {
                 totalArea += e.area;
-                weightedSum += (e.average * e.area);
+                
+                // Fallback tính lại nếu dữ liệu cũ chưa có avgBQL/avgBQT
+                let eBQL = e.avgBQL || e.average; 
+                let eBQT = e.avgBQT || e.average;
+                
+                weightedSumBQL += (eBQL * e.area);
+                weightedSumBQT += (eBQT * e.area);
+                
                 state.categories.forEach(c => {
                     if (e.scores[c.id]) {
                         catScores[c.id].sum += (e.scores[c.id] * e.area);
@@ -976,110 +1194,291 @@
                 });
             });
 
-            const overall = totalArea > 0 ? (weightedSum / totalArea).toFixed(1) : "0.0";
-            document.getElementById('eval-overall-score').innerText = overall;
-            document.getElementById('eval-total-area').innerText = `${formatNum(totalArea)} m²`;
-            document.getElementById('eval-total-count').innerText = `${filteredEvals.length} phiếu`;
+            const overallBQL = totalArea > 0 ? (weightedSumBQL / totalArea).toFixed(1) : "0.0";
+            const overallBQT = totalArea > 0 ? (weightedSumBQT / totalArea).toFixed(1) : "0.0";
             
+            document.getElementById('eval-bql-score').innerText = overallBQL;
+            document.getElementById('eval-bqt-score').innerText = overallBQT;
+            document.getElementById('eval-total-area').innerText = `${formatNum(totalArea)} m²`;
+            document.getElementById('eval-total-count').innerText = `${filteredEvals.length}`;
+            
+            const lastUpdate = state.evaluations.length > 0 
+                ? [...state.evaluations].sort((a,b) => b.timestamp.localeCompare(a.timestamp))[0].timestamp 
+                : null;
+            document.getElementById('eval-last-update').innerText = timeAgo(lastUpdate);
+
             // Stars
-            const starsHTML = Array(5).fill(0).map((_, i) => `<i class="fa-solid fa-star ${i < Math.round(overall) ? 'text-amber-400' : 'text-slate-200'}"></i>`).join('');
-            document.getElementById('eval-overall-stars').innerHTML = starsHTML;
+            document.getElementById('eval-bql-stars').innerHTML = Array(5).fill(0).map((_, i) => `<i class="fa-solid fa-star ${i < Math.round(overallBQL) ? 'text-blue-500 drop-shadow-sm' : 'text-slate-200'}"></i>`).join('');
+            document.getElementById('eval-bqt-stars').innerHTML = Array(5).fill(0).map((_, i) => `<i class="fa-solid fa-star ${i < Math.round(overallBQT) ? 'text-amber-400 drop-shadow-sm' : 'text-slate-200'}"></i>`).join('');
 
-            // Categories
-            const catHtml = state.categories.map(c => {
-                const s = catScores[c.id];
-                const avg = s.count > 0 ? (s.sum / s.count) : 0;
-                const pct = (avg / 5) * 100;
-                return `
-                    <div>
-                        <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
-                            <span><i class="fa-solid ${c.icon} w-4 text-emerald-500"></i> ${c.name}</span>
-                            <span>${avg.toFixed(1)} <i class="fa-solid fa-star text-amber-400"></i></span>
-                        </div>
-                        <div class="w-full bg-slate-100 h-2 rounded-full overflow-hidden">
-                            <div class="bg-amber-400 h-full" style="width: ${pct}%"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-            document.getElementById('eval-categories-progress').innerHTML = catHtml || '<div class="text-sm text-slate-400 text-center">Chưa có dữ liệu</div>';
+            // Categories Progress (Grouped)
+            const renderGroupProgress = (groupName, colorClass, title, icon) => {
+                const cats = state.categories.filter(c => groupName === 'BQL' ? (c.group === 'BQL' || !c.group) : c.group === groupName);
+                if(cats.length === 0) return '';
+                
+                let html = `<div class="mb-6"><h4 class="font-bold text-slate-800 text-xs uppercase mb-3 border-b border-slate-100 pb-2"><i class="fa-solid ${icon} mr-1"></i> ${title}</h4>`;
+                html += cats.map(c => {
+                    const s = catScores[c.id];
+                    const avg = s.count > 0 ? (s.sum / s.count) : 0;
+                    const pct = (avg / 5) * 100;
+                    let barColor = colorClass;
+                    if(avg <= 3) barColor = 'bg-rose-400';
 
-            // Feedbacks
-            const feedHtml = [...filteredEvals].sort((a,b) => b.timestamp.localeCompare(a.timestamp)).slice(0, 10).map(e => {
+                    return `
+                        <div class="mb-3">
+                            <div class="flex justify-between text-xs font-bold text-slate-700 mb-1">
+                                <span class="flex items-center gap-1.5"><i class="fa-solid ${c.icon} w-4 text-slate-400 text-center"></i> ${c.name}</span>
+                                <span class="font-mono text-slate-800">${avg.toFixed(1)} <i class="fa-solid fa-star text-amber-400 text-[10px]"></i></span>
+                            </div>
+                            <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200 shadow-inner">
+                                <div class="${barColor} h-full transition-all duration-700" style="width: ${pct}%"></div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                html += `</div>`;
+                return html;
+            };
+
+            let catHtml = renderGroupProgress('BQL', 'bg-blue-400', 'Đánh giá Đơn vị Vận Hành', 'fa-building-user');
+            catHtml += renderGroupProgress('BQT', 'bg-amber-400', 'Đánh giá Ban Quản Trị', 'fa-users-gear');
+            
+            document.getElementById('eval-categories-progress').innerHTML = catHtml || '<div class="text-sm text-slate-400 text-center py-10">Chưa có dữ liệu</div>';
+
+            // Feedbacks (Live feed style)
+            const feedHtml = [...filteredEvals].sort((a,b) => b.timestamp.localeCompare(a.timestamp)).map(e => {
                 const hiddenPhone = e.phone ? e.phone.slice(0,4) + "***" + e.phone.slice(-3) : '---';
-                const date = new Date(e.timestamp).toLocaleString('vi-VN');
+                const periodLabel = e.period ? e.period.replace('_', ' ') : '';
+                
+                // Hiển thị 2 điểm
+                const eBQL = (e.avgBQL || e.average).toFixed(1);
+                const eBQT = (e.avgBQT || e.average).toFixed(1);
+
                 return `
-                    <div class="mb-3 pb-3 border-b border-slate-100 last:border-0 last:mb-0">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-xs font-bold text-slate-800"><i class="fa-solid fa-user-circle text-slate-400"></i> ${hiddenPhone} (${e.aptId})</span>
-                            <span class="text-[10px] text-slate-400">${date}</span>
+                    <div class="mb-3 p-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition relative">
+                        <div class="flex justify-between items-start mb-1.5">
+                            <div class="flex items-center gap-2">
+                                <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 flex items-center justify-center text-xs font-bold shadow-inner">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+                                <div>
+                                    <span class="text-xs font-black text-slate-800">${hiddenPhone} <span class="text-slate-400 font-medium">(${e.aptId})</span></span>
+                                    <div class="text-[10px] text-slate-400 flex items-center gap-1"><i class="fa-regular fa-clock"></i> ${timeAgo(e.timestamp)} • ${periodLabel}</div>
+                                </div>
+                            </div>
+                            <div class="flex flex-col gap-1 items-end">
+                                <span class="text-[10px] text-blue-600 font-mono font-bold bg-blue-50 px-1.5 py-0.5 rounded border border-blue-100" title="Điểm Vận hành">BQL: ${eBQL}★</span>
+                                <span class="text-[10px] text-amber-600 font-mono font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100" title="Điểm BQT">BQT: ${eBQT}★</span>
+                            </div>
                         </div>
-                        <div class="text-xs text-amber-500 mb-1 font-mono font-bold">${e.average.toFixed(1)} ★</div>
-                        <p class="text-xs text-slate-600 italic">"${e.comment || 'Không có ý kiến thêm'}"</p>
+                        ${e.comment ? `<p class="text-xs text-slate-600 italic bg-slate-50 p-2 rounded-lg mt-2 border-l-2 border-emerald-400">"${e.comment}"</p>` : ''}
                     </div>
                 `;
             }).join('');
-            document.getElementById('recent-feedbacks-container').innerHTML = feedHtml || '<div class="text-sm text-slate-400 text-center">Chưa có ý kiến</div>';
+            document.getElementById('recent-feedbacks-container').innerHTML = feedHtml || '<div class="text-sm text-slate-400 text-center py-10">Chưa có ý kiến đánh giá</div>';
         }
 
-        /* Admin Category Manager */
         function renderAdminCategories() {
             const list = document.getElementById('admin-eval-categories-list');
             if(!list) return;
             list.innerHTML = state.categories.map((c, i) => `
-                <div class="flex items-center gap-2 bg-slate-50 p-2 border rounded-lg">
-                    <i class="fa-solid ${c.icon} w-6 text-center text-slate-500"></i>
-                    <input type="text" class="flex-1 px-2 py-1 text-xs border rounded" value="${c.name}" onchange="state.categories[${i}].name=this.value">
-                    <input type="text" class="w-24 px-2 py-1 text-xs border rounded font-mono text-slate-500" value="${c.icon}" onchange="state.categories[${i}].icon=this.value">
-                    <button onclick="state.categories.splice(${i}, 1); renderAdminCategories();" class="text-rose-500 px-2"><i class="fa-solid fa-trash"></i></button>
+                <div class="flex items-center gap-2 sm:gap-3 bg-white p-3 border border-slate-200 rounded-xl shadow-sm hover:shadow transition flex-wrap sm:flex-nowrap">
+                    <div class="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center text-slate-500 shrink-0"><i class="fa-solid ${c.icon}"></i></div>
+                    <input type="text" class="flex-1 min-w-[120px] px-3 py-1.5 text-xs font-bold border border-slate-200 rounded-lg focus:border-emerald-500 outline-none" value="${c.name}" onchange="state.categories[${i}].name=this.value">
+                    <select class="w-28 px-2 py-1.5 text-xs border border-slate-200 rounded-lg outline-none focus:border-emerald-500 font-bold ${c.group === 'BQT' ? 'text-amber-600 bg-amber-50' : 'text-blue-600 bg-blue-50'}" onchange="state.categories[${i}].group=this.value; renderAdminCategories();">
+                        <option value="BQL" ${(!c.group || c.group === 'BQL') ? 'selected' : ''}>Nhóm BQL</option>
+                        <option value="BQT" ${c.group === 'BQT' ? 'selected' : ''}>Nhóm BQT</option>
+                    </select>
+                    <input type="text" class="w-24 px-3 py-1.5 text-xs border border-slate-200 rounded-lg font-mono text-slate-500 outline-none" value="${c.icon}" onchange="state.categories[${i}].icon=this.value">
+                    <button onclick="state.categories.splice(${i}, 1); renderAdminCategories();" class="text-rose-500 hover:text-rose-700 bg-rose-50 p-2 rounded-lg transition shrink-0"><i class="fa-solid fa-trash"></i></button>
                 </div>
             `).join('');
         }
         async function addNewCategory() {
             const name = document.getElementById('new-category-name').value.trim();
+            const group = document.getElementById('new-category-group').value;
             const icon = document.getElementById('new-category-icon').value.trim() || 'fa-star';
             if(name) {
-                state.categories.push({ id: 'cat_' + Date.now(), name, icon });
+                state.categories.push({ id: 'cat_' + Date.now(), name, icon, group });
                 document.getElementById('new-category-name').value = '';
                 renderAdminCategories();
             }
         }
         async function saveEvaluationCategories() {
             await setDoc(docSettings, { categories: state.categories }, {merge:true});
-            showToast("Đã lưu cấu hình hạng mục", 'success');
+            showToast("Đã lưu cấu hình hạng mục lên Cloud!", 'success');
         }
 
-        /* Export Features */
+        // ================= EXPORTS =================
         function exportEvaluationsToExcel() {
-            if(state.evaluations.length === 0) return showToast('Không có dữ liệu', 'error');
-            const data = state.evaluations.map(e => {
+            if(state.evaluations.length === 0) return showToast('Không có dữ liệu đánh giá', 'error');
+            
+            // Sheet 1: Chi tiết
+            const dataDetails = state.evaluations.map(e => {
                 let row = {
-                    'Kỳ': e.period,
+                    'Kỳ': e.period.replace('_', ' '),
                     'Mã Căn': e.aptId,
                     'SĐT': e.phone,
                     'Diện Tích': e.area,
-                    'Điểm TB': e.average
+                    'Điểm TB Vận Hành (BQL)': e.avgBQL || e.average,
+                    'Điểm TB BQT': e.avgBQT || e.average
                 };
-                state.categories.forEach(c => row[c.name] = e.scores[c.id] || 0);
-                row['Ghi chú'] = e.comment;
-                row['Thời gian'] = new Date(e.timestamp).toLocaleString('vi-VN');
+                state.categories.forEach(c => row[`[${c.group||'BQL'}] ${c.name}`] = e.scores[c.id] || 0);
+                row['Ý kiến đóng góp'] = e.comment || '';
+                row['Thời gian gửi'] = new Date(e.timestamp).toLocaleString('vi-VN');
                 return row;
             });
+
+            // Sheet 2: Tổng hợp theo Kỳ
+            let summaryMap = {};
+            state.evaluations.forEach(e => {
+                if(!summaryMap[e.period]) {
+                    summaryMap[e.period] = { count: 0, sumAvgBQL: 0, sumAvgBQT: 0, area: 0 };
+                    state.categories.forEach(c => summaryMap[e.period][c.id] = 0);
+                }
+                summaryMap[e.period].count++;
+                summaryMap[e.period].area += e.area;
+                summaryMap[e.period].sumAvgBQL += ((e.avgBQL || e.average) * e.area);
+                summaryMap[e.period].sumAvgBQT += ((e.avgBQT || e.average) * e.area);
+                state.categories.forEach(c => summaryMap[e.period][c.id] += (e.scores[c.id] * e.area));
+            });
+
+            const dataSummary = Object.keys(summaryMap).map(period => {
+                let d = summaryMap[period];
+                let row = {
+                    'Kỳ Đánh Giá': period.replace('_', ' '),
+                    'Số Phiếu': d.count,
+                    'Tổng Diện Tích Tham Gia': d.area,
+                    'Tín Nhiệm Vận Hành (BQL)': (d.sumAvgBQL / d.area).toFixed(2),
+                    'Tín Nhiệm BQT': (d.sumAvgBQT / d.area).toFixed(2)
+                };
+                state.categories.forEach(c => {
+                    row[`TB [${c.group||'BQL'}] ${c.name}`] = (d[c.id] / d.area).toFixed(2);
+                });
+                return row;
+            });
+
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "DanhGia");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dataSummary), "TongHop_TheoKy");
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dataDetails), "ChiTiet_Phieu");
             XLSX.writeFile(wb, `DanhGia_VanhHanh_${new Date().getTime()}.xlsx`);
-        }
-        function exportApartmentsToExcel() {
-            if(state.apartments.length === 0) return showToast('Không có dữ liệu', 'error');
-            const data = state.apartments.map(a => ({
-                'Mã Căn': a.id, 'Chủ Hộ': a.ownerName, 'SĐT': a.phone, 'Diện Tích': a.area, 'Tham Dự': a.attended ? 'Có' : 'Không'
-            }));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "CanHo");
-            XLSX.writeFile(wb, `DanhSach_CanHo_${new Date().getTime()}.xlsx`);
+            showToast("Đã xuất file Excel!", "success");
         }
 
-        /* Clock Update */
+        function exportApartmentsToExcel() {
+            if(state.apartments.length === 0) return showToast('Không có dữ liệu căn hộ', 'error');
+            const data = state.apartments.map((a, i) => ({
+                'STT': i+1, 'Mã Căn': a.id, 'Chủ Hộ': a.ownerName, 'SĐT': a.phone, 'Diện Tích': a.area, 'Đã Tham Dự': a.attended ? 'Có' : 'Không'
+            }));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), "DanhSachCanHo");
+            XLSX.writeFile(wb, `DanhSach_CanHo_${new Date().getTime()}.xlsx`);
+            showToast("Đã xuất file Excel!", "success");
+        }
+
+        function generatePDFReport() {
+            const printEl = document.getElementById('pdf-report-printable');
+            if(state.evaluations.length === 0) return showToast("Chưa có dữ liệu để xuất PDF", "error");
+            
+            const overallBQL = document.getElementById('eval-bql-score').innerText;
+            const overallBQT = document.getElementById('eval-bqt-score').innerText;
+            const evalArea = document.getElementById('eval-total-area').innerText;
+            const evalCount = document.getElementById('eval-total-count').innerText;
+            const curDate = new Date().toLocaleDateString('vi-VN');
+
+            // Bảng điểm trung bình
+            let catScores = {};
+            let totalArea = 0;
+            state.categories.forEach(c => catScores[c.id] = { sum: 0, count: 0 });
+            state.evaluations.forEach(e => {
+                totalArea += e.area;
+                state.categories.forEach(c => {
+                    if (e.scores[c.id]) {
+                        catScores[c.id].sum += (e.scores[c.id] * e.area);
+                        catScores[c.id].count += e.area;
+                    }
+                });
+            });
+
+            const renderCatRowsPDF = (groupName) => {
+                return state.categories
+                    .filter(c => groupName === 'BQL' ? (c.group === 'BQL' || !c.group) : c.group === groupName)
+                    .map((c, i) => {
+                        const avg = catScores[c.id].count > 0 ? (catScores[c.id].sum / catScores[c.id].count).toFixed(2) : '0.00';
+                        return `<tr><td style="padding:8px;border:1px solid #cbd5e1">${i+1}</td><td style="padding:8px;border:1px solid #cbd5e1">${c.name}</td><td style="padding:8px;border:1px solid #cbd5e1;text-align:right"><strong>${avg} / 5</strong></td></tr>`;
+                    }).join('');
+            };
+
+            const comments = [...state.evaluations].filter(e=>e.comment).slice(0, 15).map(e => `<li>Mã ${e.aptId}: "${e.comment}"</li>`).join('');
+
+            const html = `
+                <div style="text-align:center; margin-bottom: 20px;">
+                    <h2 style="margin:0;font-size:20px;text-transform:uppercase">Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam</h2>
+                    <h3 style="margin:5px 0 20px 0;font-size:16px;">Độc lập - Tự do - Hạnh phúc</h3>
+                    <h1 style="font-size:24px;color:#047857;text-transform:uppercase">BÁO CÁO TỔNG HỢP KẾT QUẢ ĐÁNH GIÁ</h1>
+                    <h3 style="margin:0;font-size:16px;">Cụm Nhà Chung Cư Ecohome Nhơn Bình</h3>
+                    <p style="font-style:italic">Quy Nhơn, Ngày xuất báo cáo: ${curDate}</p>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">1. TỔNG QUAN TÍN NHIỆM</h3>
+                    <p>Tổng số phiếu thu về: <strong>${evalCount}</strong> phiếu</p>
+                    <p>Đại diện cho tổng diện tích: <strong>${evalArea}</strong></p>
+                    <table style="width:100%; margin-top:10px;">
+                        <tr>
+                            <td style="width:50%">Điểm Hài Lòng Vận Hành (BQL): <strong style="font-size:18px;color:#2563eb">${overallBQL} / 5.0</strong></td>
+                            <td style="width:50%">Điểm Tín Nhiệm Ban Quản Trị: <strong style="font-size:18px;color:#d97706">${overallBQT} / 5.0</strong></td>
+                        </tr>
+                    </table>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">2. ĐIỂM CHI TIẾT CÁC HẠNG MỤC</h3>
+                    
+                    <h4 style="color:#2563eb; margin-bottom:5px">A. Đơn vị Vận hành (BQL)</h4>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:15px;">
+                        <thead style="background:#f1f5f9"><tr>
+                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left;width:10%">STT</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left">Hạng Mục Đánh Giá</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:right">Điểm Bình Quân</th>
+                        </tr></thead>
+                        <tbody>${renderCatRowsPDF('BQL')}</tbody>
+                    </table>
+
+                    <h4 style="color:#d97706; margin-bottom:5px">B. Ban Quản Trị (BQT)</h4>
+                    <table style="width:100%;border-collapse:collapse;">
+                        <thead style="background:#f1f5f9"><tr>
+                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left;width:10%">STT</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left">Hạng Mục Đánh Giá</th>
+                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:right">Điểm Bình Quân</th>
+                        </tr></thead>
+                        <tbody>${renderCatRowsPDF('BQT')}</tbody>
+                    </table>
+                </div>
+                <div style="margin-bottom: 40px;">
+                    <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">3. TÓM TẮT Ý KIẾN ĐÓNG GÓP TỪ CƯ DÂN</h3>
+                    <ul style="line-height:1.6;font-style:italic">${comments || '<li>Không có ý kiến bổ sung.</li>'}</ul>
+                </div>
+                <div style="display:flex;justify-content:space-around;margin-top:50px;text-align:center;">
+                    <div><p style="font-weight:bold">ĐẠI DIỆN ĐƠN VỊ VẬN HÀNH</p><p style="font-style:italic;margin-top:60px">(Ký và ghi rõ họ tên)</p></div>
+                    <div><p style="font-weight:bold">TRƯỞNG BAN QUẢN TRỊ</p><p style="font-style:italic;margin-top:60px">(Ký và ghi rõ họ tên)</p></div>
+                </div>
+            `;
+            printEl.innerHTML = html;
+            printEl.classList.remove('hidden');
+            
+            showToast("Đang tạo PDF...", "info");
+            html2pdf().set({
+                margin: [15, 15],
+                filename: `BaoCao_DanhGia_Ecohome_${curDate.replace(/\//g,'')}.pdf`,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(printEl).save().then(() => {
+                printEl.classList.add('hidden');
+                showToast("Đã tải xuống PDF!", "success");
+            });
+        }
+
+        // ================= CLOCK =================
         setInterval(() => {
             const n = new Date();
             document.getElementById('live-clock-date').innerText = n.toLocaleDateString('vi-VN');
@@ -1111,6 +1510,7 @@
         window.renderAdminCategories = renderAdminCategories;
         window.exportEvaluationsToExcel = exportEvaluationsToExcel;
         window.exportApartmentsToExcel = exportApartmentsToExcel;
+        window.generatePDFReport = generatePDFReport;
 
         // Init
         document.addEventListener('DOMContentLoaded', initApp);
