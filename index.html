@@ -95,7 +95,7 @@
 
                     <div class="flex items-center justify-between md:justify-end gap-2.5">
                         <button onclick="switchPublicTab('evaluation')" class="px-3 py-2 text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl transition border border-amber-200 shadow-sm flex items-center gap-1.5">
-                            <i class="fa-solid fa-star text-amber-500"></i> Đánh Giá BQT
+                            <i class="fa-solid fa-star text-amber-500"></i> Đánh Giá 
                         </button>
                         <button onclick="openAdminLoginModal()" id="public-admin-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2">
                             <i class="fa-solid fa-user-shield text-emerald-400"></i>
@@ -111,7 +111,7 @@
             <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-emerald-600 font-bold">
                     <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span>
-                    <span class="tracking-wide hidden sm:inline">Hệ thống đồng bộ Realtime Cloud</span>
+                    <span class="tracking-wide hidden sm:inline">Hệ thống đồng bộ PVC Cloud</span>
                 </div>
                 <div class="flex items-center gap-2.5 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-inner">
                     <i class="fa-regular fa-clock text-amber-500 animate-pulse text-sm"></i>
@@ -1541,56 +1541,66 @@
         function exportEvaluationsToExcel() {
             if(state.evaluations.length === 0) return showToast('Không có dữ liệu đánh giá', 'error');
             
-            // Sheet 1: Chi tiết
-            const dataDetails = state.evaluations.map(e => {
-                let row = {
-                    'Kỳ': e.period.replace('_', ' '),
-                    'Mã Căn': e.aptId,
-                    'SĐT': e.phone,
-                    'Diện Tích': e.area,
-                    'Điểm TB Vận Hành (BQL)': e.avgBQL || e.average,
-                    'Điểm TB BQT': e.avgBQT || e.average
-                };
-                state.categories.forEach(c => row[`[${c.group||'BQL'}] ${c.name}`] = e.scores[c.id] || 0);
-                row['Ý kiến đóng góp'] = e.comment || '';
-                row['Thời gian gửi'] = new Date(e.timestamp).toLocaleString('vi-VN');
-                return row;
-            });
-
-            // Sheet 2: Tổng hợp theo Kỳ
-            let summaryMap = {};
-            state.evaluations.forEach(e => {
-                if(!summaryMap[e.period]) {
-                    summaryMap[e.period] = { count: 0, sumAvgBQL: 0, sumAvgBQT: 0, area: 0 };
-                    state.categories.forEach(c => summaryMap[e.period][c.id] = 0);
-                }
-                summaryMap[e.period].count++;
-                summaryMap[e.period].area += e.area;
-                summaryMap[e.period].sumAvgBQL += ((e.avgBQL || e.average) * e.area);
-                summaryMap[e.period].sumAvgBQT += ((e.avgBQT || e.average) * e.area);
-                state.categories.forEach(c => summaryMap[e.period][c.id] += (e.scores[c.id] * e.area));
-            });
-
-            const dataSummary = Object.keys(summaryMap).map(period => {
-                let d = summaryMap[period];
-                let row = {
-                    'Kỳ Đánh Giá': period.replace('_', ' '),
-                    'Số Phiếu': d.count,
-                    'Tổng Diện Tích Tham Gia': d.area,
-                    'Tín Nhiệm Vận Hành (BQL)': (d.sumAvgBQL / d.area).toFixed(2),
-                    'Tín Nhiệm BQT': (d.sumAvgBQT / d.area).toFixed(2)
-                };
-                state.categories.forEach(c => {
-                    row[`TB [${c.group||'BQL'}] ${c.name}`] = (d[c.id] / d.area).toFixed(2);
+            try {
+                // Sheet 1: Chi tiết
+                const dataDetails = state.evaluations.map(e => {
+                    let row = {
+                        'Kỳ': (e.period || 'Mặc định').replace('_', ' '),
+                        'Mã Căn': e.aptId || '---',
+                        'SĐT': e.phone || '',
+                        'Diện Tích': e.area || 0,
+                        'Điểm TB Vận Hành (BQL)': e.avgBQL !== undefined ? e.avgBQL : (e.average || 5),
+                        'Điểm TB BQT': e.avgBQT !== undefined ? e.avgBQT : (e.average || 5)
+                    };
+                    state.categories.forEach(c => row[`[${c.group||'BQL'}] ${c.name}`] = (e.scores && e.scores[c.id]) ? e.scores[c.id] : 0);
+                    row['Ý kiến đóng góp'] = e.comment || '';
+                    row['Thời gian gửi'] = e.timestamp ? new Date(e.timestamp).toLocaleString('vi-VN') : 'Không rõ';
+                    return row;
                 });
-                return row;
-            });
 
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dataSummary), "TongHop_TheoKy");
-            XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dataDetails), "ChiTiet_Phieu");
-            XLSX.writeFile(wb, `DanhGia_VanhHanh_${new Date().getTime()}.xlsx`);
-            showToast("Đã xuất file Excel!", "success");
+                // Sheet 2: Tổng hợp theo Kỳ
+                let summaryMap = {};
+                state.evaluations.forEach(e => {
+                    const p = e.period || 'Mặc định';
+                    if(!summaryMap[p]) {
+                        summaryMap[p] = { count: 0, sumAvgBQL: 0, sumAvgBQT: 0, area: 0 };
+                        state.categories.forEach(c => summaryMap[p][c.id] = 0);
+                    }
+                    const area = e.area || 0;
+                    const eBQL = e.avgBQL !== undefined ? e.avgBQL : (e.average || 5);
+                    const eBQT = e.avgBQT !== undefined ? e.avgBQT : (e.average || 5);
+                    
+                    summaryMap[p].count++;
+                    summaryMap[p].area += area;
+                    summaryMap[p].sumAvgBQL += (eBQL * area);
+                    summaryMap[p].sumAvgBQT += (eBQT * area);
+                    state.categories.forEach(c => summaryMap[p][c.id] += (((e.scores && e.scores[c.id]) ? e.scores[c.id] : 0) * area));
+                });
+
+                const dataSummary = Object.keys(summaryMap).map(period => {
+                    let d = summaryMap[period];
+                    let row = {
+                        'Kỳ Đánh Giá': period.replace('_', ' '),
+                        'Số Phiếu': d.count,
+                        'Tổng Diện Tích Tham Gia': d.area,
+                        'Tín Nhiệm Vận Hành (BQL)': d.area > 0 ? (d.sumAvgBQL / d.area).toFixed(2) : "0.00",
+                        'Tín Nhiệm BQT': d.area > 0 ? (d.sumAvgBQT / d.area).toFixed(2) : "0.00"
+                    };
+                    state.categories.forEach(c => {
+                        row[`TB [${c.group||'BQL'}] ${c.name}`] = d.area > 0 ? (d[c.id] / d.area).toFixed(2) : "0.00";
+                    });
+                    return row;
+                });
+
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dataSummary), "TongHop_TheoKy");
+                XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(dataDetails), "ChiTiet_Phieu");
+                XLSX.writeFile(wb, `DanhGia_VanhHanh_${new Date().getTime()}.xlsx`);
+                showToast("Đã xuất file Excel!", "success");
+            } catch (error) {
+                console.error("Lỗi khi xuất file Excel:", error);
+                showToast("Lỗi cấu trúc dữ liệu cũ. Hãy thử xuất lại!", "error");
+            }
         }
 
         function exportApartmentsToExcel() {
@@ -1608,102 +1618,112 @@
             const printEl = document.getElementById('pdf-report-printable');
             if(state.evaluations.length === 0) return showToast("Chưa có dữ liệu để xuất PDF", "error");
             
-            const overallBQL = document.getElementById('eval-bql-score').innerText;
-            const overallBQT = document.getElementById('eval-bqt-score').innerText;
-            const evalArea = document.getElementById('eval-total-area').innerText;
-            const evalCount = document.getElementById('eval-total-count').innerText;
-            const curDate = new Date().toLocaleDateString('vi-VN');
+            try {
+                const overallBQL = document.getElementById('eval-bql-score') ? document.getElementById('eval-bql-score').innerText : '0.0';
+                const overallBQT = document.getElementById('eval-bqt-score') ? document.getElementById('eval-bqt-score').innerText : '0.0';
+                const evalArea = document.getElementById('eval-total-area') ? document.getElementById('eval-total-area').innerText : '0 m²';
+                const evalCount = document.getElementById('eval-total-count') ? document.getElementById('eval-total-count').innerText : '0';
+                const curDate = new Date().toLocaleDateString('vi-VN');
 
-            // Bảng điểm trung bình
-            let catScores = {};
-            let totalArea = 0;
-            state.categories.forEach(c => catScores[c.id] = { sum: 0, count: 0 });
-            state.evaluations.forEach(e => {
-                totalArea += e.area;
-                state.categories.forEach(c => {
-                    if (e.scores[c.id]) {
-                        catScores[c.id].sum += (e.scores[c.id] * e.area);
-                        catScores[c.id].count += e.area;
-                    }
+                // Bảng điểm trung bình
+                let catScores = {};
+                let totalArea = 0;
+                state.categories.forEach(c => catScores[c.id] = { sum: 0, count: 0 });
+                state.evaluations.forEach(e => {
+                    const area = e.area || 0;
+                    totalArea += area;
+                    state.categories.forEach(c => {
+                        if (e.scores && e.scores[c.id]) {
+                            catScores[c.id].sum += (e.scores[c.id] * area);
+                            catScores[c.id].count += area;
+                        }
+                    });
                 });
-            });
 
-            const renderCatRowsPDF = (groupName) => {
-                return state.categories
-                    .filter(c => groupName === 'BQL' ? (c.group === 'BQL' || !c.group) : c.group === groupName)
-                    .map((c, i) => {
-                        const avg = catScores[c.id].count > 0 ? (catScores[c.id].sum / catScores[c.id].count).toFixed(2) : '0.00';
-                        return `<tr><td style="padding:8px;border:1px solid #cbd5e1">${i+1}</td><td style="padding:8px;border:1px solid #cbd5e1">${c.name}</td><td style="padding:8px;border:1px solid #cbd5e1;text-align:right"><strong>${avg} / 5</strong></td></tr>`;
-                    }).join('');
-            };
+                const renderCatRowsPDF = (groupName) => {
+                    return state.categories
+                        .filter(c => groupName === 'BQL' ? (c.group === 'BQL' || !c.group) : c.group === groupName)
+                        .map((c, i) => {
+                            const avg = catScores[c.id].count > 0 ? (catScores[c.id].sum / catScores[c.id].count).toFixed(2) : '0.00';
+                            return `<tr><td style="padding:8px;border:1px solid #cbd5e1">${i+1}</td><td style="padding:8px;border:1px solid #cbd5e1">${c.name}</td><td style="padding:8px;border:1px solid #cbd5e1;text-align:right"><strong>${avg} / 5</strong></td></tr>`;
+                        }).join('');
+                };
 
-            const comments = [...state.evaluations].filter(e=>e.comment).slice(0, 15).map(e => `<li>Mã ${e.aptId}: "${e.comment}"</li>`).join('');
+                const comments = [...state.evaluations].filter(e=>e.comment).slice(0, 15).map(e => `<li>Mã ${e.aptId || '--'}: "${e.comment}"</li>`).join('');
 
-            const html = `
-                <div style="text-align:center; margin-bottom: 20px;">
-                    <h2 style="margin:0;font-size:20px;text-transform:uppercase">Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam</h2>
-                    <h3 style="margin:5px 0 20px 0;font-size:16px;">Độc lập - Tự do - Hạnh phúc</h3>
-                    <h1 style="font-size:24px;color:#047857;text-transform:uppercase">BÁO CÁO TỔNG HỢP KẾT QUẢ ĐÁNH GIÁ</h1>
-                    <h3 style="margin:0;font-size:16px;">Cụm Nhà Chung Cư Ecohome Nhơn Bình</h3>
-                    <p style="font-style:italic">Quy Nhơn, Ngày xuất báo cáo: ${curDate}</p>
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">1. TỔNG QUAN TÍN NHIỆM</h3>
-                    <p>Tổng số phiếu thu về: <strong>${evalCount}</strong> phiếu</p>
-                    <p>Đại diện cho tổng diện tích: <strong>${evalArea}</strong></p>
-                    <table style="width:100%; margin-top:10px;">
-                        <tr>
-                            <td style="width:50%">Điểm Hài Lòng Vận Hành (BQL): <strong style="font-size:18px;color:#2563eb">${overallBQL} / 5.0</strong></td>
-                            <td style="width:50%">Điểm Tín Nhiệm Ban Quản Trị: <strong style="font-size:18px;color:#d97706">${overallBQT} / 5.0</strong></td>
-                        </tr>
-                    </table>
-                </div>
-                <div style="margin-bottom: 20px;">
-                    <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">2. ĐIỂM CHI TIẾT CÁC HẠNG MỤC</h3>
-                    
-                    <h4 style="color:#2563eb; margin-bottom:5px">A. Đơn vị Vận hành (BQL)</h4>
-                    <table style="width:100%;border-collapse:collapse;margin-bottom:15px;">
-                        <thead style="background:#f1f5f9"><tr>
-                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left;width:10%">STT</th>
-                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left">Hạng Mục Đánh Giá</th>
-                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:right">Điểm Bình Quân</th>
-                        </tr></thead>
-                        <tbody>${renderCatRowsPDF('BQL')}</tbody>
-                    </table>
+                const html = `
+                    <div style="text-align:center; margin-bottom: 20px;">
+                        <h2 style="margin:0;font-size:20px;text-transform:uppercase">Cộng Hòa Xã Hội Chủ Nghĩa Việt Nam</h2>
+                        <h3 style="margin:5px 0 20px 0;font-size:16px;">Độc lập - Tự do - Hạnh phúc</h3>
+                        <h1 style="font-size:24px;color:#047857;text-transform:uppercase;margin-top:15px">BÁO CÁO TỔNG HỢP KẾT QUẢ ĐÁNH GIÁ</h1>
+                        <h3 style="margin:0;font-size:16px;">Cụm Nhà Chung Cư Ecohome Nhơn Bình</h3>
+                        <p style="font-style:italic">Quy Nhơn, Ngày xuất báo cáo: ${curDate}</p>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">1. TỔNG QUAN TÍN NHIỆM</h3>
+                        <p>Tổng số phiếu thu về: <strong>${evalCount}</strong> phiếu</p>
+                        <p>Đại diện cho tổng diện tích: <strong>${evalArea}</strong></p>
+                        <table style="width:100%; margin-top:10px;">
+                            <tr>
+                                <td style="width:50%">Điểm Hài Lòng Vận Hành (BQL): <strong style="font-size:18px;color:#2563eb">${overallBQL} / 5.0</strong></td>
+                                <td style="width:50%">Điểm Tín Nhiệm Ban Quản Trị: <strong style="font-size:18px;color:#d97706">${overallBQT} / 5.0</strong></td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">2. ĐIỂM CHI TIẾT CÁC HẠNG MỤC</h3>
+                        
+                        <h4 style="color:#2563eb; margin-bottom:5px">A. Đơn vị Vận hành (BQL)</h4>
+                        <table style="width:100%;border-collapse:collapse;margin-bottom:15px;">
+                            <thead style="background:#f1f5f9"><tr>
+                                <th style="padding:8px;border:1px solid #cbd5e1;text-align:left;width:10%">STT</th>
+                                <th style="padding:8px;border:1px solid #cbd5e1;text-align:left">Hạng Mục Đánh Giá</th>
+                                <th style="padding:8px;border:1px solid #cbd5e1;text-align:right">Điểm Bình Quân</th>
+                            </tr></thead>
+                            <tbody>${renderCatRowsPDF('BQL')}</tbody>
+                        </table>
 
-                    <h4 style="color:#d97706; margin-bottom:5px">B. Ban Quản Trị (BQT)</h4>
-                    <table style="width:100%;border-collapse:collapse;">
-                        <thead style="background:#f1f5f9"><tr>
-                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left;width:10%">STT</th>
-                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:left">Hạng Mục Đánh Giá</th>
-                            <th style="padding:8px;border:1px solid #cbd5e1;text-align:right">Điểm Bình Quân</th>
-                        </tr></thead>
-                        <tbody>${renderCatRowsPDF('BQT')}</tbody>
-                    </table>
-                </div>
-                <div style="margin-bottom: 40px;">
-                    <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">3. TÓM TẮT Ý KIẾN ĐÓNG GÓP TỪ CƯ DÂN</h3>
-                    <ul style="line-height:1.6;font-style:italic">${comments || '<li>Không có ý kiến bổ sung.</li>'}</ul>
-                </div>
-                <div style="display:flex;justify-content:space-around;margin-top:50px;text-align:center;">
-                    <div><p style="font-weight:bold">ĐẠI DIỆN ĐƠN VỊ VẬN HÀNH</p><p style="font-style:italic;margin-top:60px">(Ký và ghi rõ họ tên)</p></div>
-                    <div><p style="font-weight:bold">TRƯỞNG BAN QUẢN TRỊ</p><p style="font-style:italic;margin-top:60px">(Ký và ghi rõ họ tên)</p></div>
-                </div>
-            `;
-            printEl.innerHTML = html;
-            printEl.classList.remove('hidden');
-            
-            showToast("Đang tạo PDF...", "info");
-            html2pdf().set({
-                margin: [15, 15],
-                filename: `BaoCao_DanhGia_Ecohome_${curDate.replace(/\//g,'')}.pdf`,
-                image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            }).from(printEl).save().then(() => {
-                printEl.classList.add('hidden');
-                showToast("Đã tải xuống PDF!", "success");
-            });
+                        <h4 style="color:#d97706; margin-bottom:5px">B. Ban Quản Trị (BQT)</h4>
+                        <table style="width:100%;border-collapse:collapse;">
+                            <thead style="background:#f1f5f9"><tr>
+                                <th style="padding:8px;border:1px solid #cbd5e1;text-align:left;width:10%">STT</th>
+                                <th style="padding:8px;border:1px solid #cbd5e1;text-align:left">Hạng Mục Đánh Giá</th>
+                                <th style="padding:8px;border:1px solid #cbd5e1;text-align:right">Điểm Bình Quân</th>
+                            </tr></thead>
+                            <tbody>${renderCatRowsPDF('BQT')}</tbody>
+                        </table>
+                    </div>
+                    <div style="margin-bottom: 40px;">
+                        <h3 style="color:#0f172a;border-bottom:2px solid #10b981;padding-bottom:5px">3. TÓM TẮT Ý KIẾN ĐÓNG GÓP TỪ CƯ DÂN</h3>
+                        <ul style="line-height:1.6;font-style:italic">${comments || '<li>Không có ý kiến bổ sung.</li>'}</ul>
+                    </div>
+                    <div style="display:flex;justify-content:space-around;margin-top:50px;text-align:center;">
+                        <div><p style="font-weight:bold">ĐẠI DIỆN ĐƠN VỊ VẬN HÀNH</p><p style="font-style:italic;margin-top:60px">(Ký và ghi rõ họ tên)</p></div>
+                        <div><p style="font-weight:bold">TRƯỞNG BAN QUẢN TRỊ</p><p style="font-style:italic;margin-top:60px">(Ký và ghi rõ họ tên)</p></div>
+                    </div>
+                `;
+                printEl.innerHTML = html;
+                printEl.classList.remove('hidden');
+                
+                showToast("Đang tạo PDF...", "info");
+                html2pdf().set({
+                    margin: [15, 15],
+                    filename: `BaoCao_DanhGia_Ecohome_${curDate.replace(/\//g,'')}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true },
+                    jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                }).from(printEl).save().then(() => {
+                    printEl.classList.add('hidden');
+                    showToast("Đã tải xuống PDF!", "success");
+                }).catch(err => {
+                    console.error("Lỗi thư viện PDF:", err);
+                    printEl.classList.add('hidden');
+                    showToast("Lỗi khi tạo PDF!", "error");
+                });
+            } catch (error) {
+                console.error("Lỗi xuất PDF: ", error);
+                showToast("Lỗi cấu trúc dữ liệu cũ. Hãy thử xuất lại!", "error");
+            }
         }
 
         // ================= CLOCK =================
