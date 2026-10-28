@@ -1472,6 +1472,9 @@
                     // Hiển thị 2 điểm an toàn
                     const eBQL = (e.avgBQL !== undefined ? e.avgBQL : (e.average || 5)).toFixed(1);
                     const eBQT = (e.avgBQT !== undefined ? e.avgBQT : (e.average || 5)).toFixed(1);
+                    
+                    // Xử lý ký tự đặc biệt, tránh phá vỡ giao diện HTML
+                    const safeComment = (e.comment || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
 
                     return `
                         <div class="mb-3 p-3 bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md transition relative">
@@ -1490,7 +1493,7 @@
                                     <span class="text-[10px] text-amber-600 font-mono font-bold bg-amber-50 px-1.5 py-0.5 rounded border border-amber-100" title="Điểm BQT">BQT: ${eBQT}★</span>
                                 </div>
                             </div>
-                            ${e.comment ? `<p class="text-xs text-slate-600 italic bg-slate-50 p-2 rounded-lg mt-2 border-l-2 border-emerald-400">"${e.comment}"</p>` : ''}
+                            ${safeComment ? `<p class="text-xs text-slate-600 italic bg-slate-50 p-2 rounded-lg mt-2 border-l-2 border-emerald-400">"${safeComment}"</p>` : ''}
                         </div>
                     `;
                 }).join('');
@@ -1813,24 +1816,40 @@
 
             const sorted = [...state.evaluations].sort((a,b) => (b.timestamp || "").localeCompare(a.timestamp || ""));
 
-            tbody.innerHTML = sorted.map(e => `
+            tbody.innerHTML = sorted.map(e => {
+                // Thoát ký tự an toàn để tránh bị lỗi nút xóa khi ý kiến có dấu ngoặc kép (") hoặc (<)
+                const safeComment = (e.comment || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+                
+                return `
                 <tr class="hover:bg-slate-50 transition border-b border-slate-100">
                     <td class="p-3 font-bold text-slate-800 whitespace-nowrap">${e.aptId} <br><span class="text-[9px] text-slate-400 font-mono">${e.period}</span></td>
                     <td class="p-3 text-[10px] text-slate-500 whitespace-nowrap">${timeAgo(e.timestamp)}<br><span class="text-[9px] text-slate-400">${new Date(e.timestamp).toLocaleDateString('vi-VN')}</span></td>
-                    <td class="p-3 text-slate-700 italic" title="${e.comment || ''}">${e.comment || '<span class="text-slate-400 not-italic">(Không có ý kiến)</span>'}</td>
+                    <td class="p-3 text-slate-700 italic" title="${safeComment}">${safeComment || '<span class="text-slate-400 not-italic">(Không có ý kiến)</span>'}</td>
                     <td class="p-3 text-center">
                         <button onclick="deleteEvaluationAdmin('${e.id}')" class="text-rose-500 hover:text-rose-700 p-2 bg-rose-50 rounded-lg transition" title="Xóa phiếu đánh giá này"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 </tr>
-            `).join('') || `<tr><td colspan="4" class="text-center py-6 text-slate-500">Chưa có phiếu đánh giá nào.</td></tr>`;
+                `;
+            }).join('') || `<tr><td colspan="4" class="text-center py-6 text-slate-500">Chưa có phiếu đánh giá nào.</td></tr>`;
         };
 
         window.deleteEvaluationAdmin = async function(evalId) {
             if(confirm("Bạn có chắc chắn muốn xóa vĩnh viễn phiếu đánh giá & ý kiến này không? Dữ liệu sẽ lập tức bị gỡ khỏi Bảng tin.")) {
                 try {
-                    await deleteDoc(doc(colEval, evalId));
+                    // Gọi trực tiếp Firebase Instance để đảm bảo thao tác xóa không bị mất ngữ cảnh (context loss)
+                    const dbInstance = getFirestore();
+                    const currentAppId = typeof __app_id !== 'undefined' ? __app_id : 'ecohome-2026';
+                    const docRef = doc(dbInstance, 'artifacts', currentAppId, 'public', 'data', 'evaluations', evalId);
+                    
+                    await deleteDoc(docRef);
+                    
+                    // Làm mới giao diện cục bộ ngay lập tức cho mượt mà
+                    state.evaluations = state.evaluations.filter(e => e.id !== evalId);
+                    renderEvaluationAnalytics();
+                    
                     showToast("Đã xóa phiếu đánh giá thành công!", "success");
                 } catch(e) {
+                    console.error("Lỗi xóa phiếu đánh giá:", e);
                     showToast("Lỗi khi xóa: " + e.message, "error");
                 }
             }
