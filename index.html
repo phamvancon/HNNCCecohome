@@ -94,9 +94,9 @@
                     </div>
 
                     <div class="flex items-center justify-between md:justify-end gap-2.5">
-                        <a href="#evaluation-section" class="px-3 py-2 text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl transition border border-amber-200 shadow-sm flex items-center gap-1.5">
+                        <button onclick="switchPublicTab('evaluation')" class="px-3 py-2 text-xs font-bold bg-amber-50 hover:bg-amber-100 text-amber-700 rounded-xl transition border border-amber-200 shadow-sm flex items-center gap-1.5">
                             <i class="fa-solid fa-star text-amber-500"></i> Đánh Giá BQT
-                        </a>
+                        </button>
                         <button onclick="openAdminLoginModal()" id="public-admin-btn" class="px-4 py-2 bg-slate-800 hover:bg-slate-900 text-white rounded-xl font-bold text-xs shadow-md transition flex items-center gap-2">
                             <i class="fa-solid fa-user-shield text-emerald-400"></i>
                             <span id="public-admin-btn-text">Quản Lý (Admin)</span>
@@ -111,17 +111,29 @@
             <div class="max-w-7xl mx-auto flex items-center justify-between gap-2 text-xs">
                 <div class="flex items-center gap-2 text-emerald-600 font-bold">
                     <span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span></span>
-                    Đồng bộ & Lưu trữ thời gian thực
+                    <span class="tracking-wide hidden sm:inline">Hệ thống đồng bộ Realtime Cloud</span>
                 </div>
-                <div class="flex items-center gap-2 font-mono font-bold text-slate-600">
-                    <i class="fa-regular fa-clock text-emerald-500"></i>
-                    <span id="live-clock-date">--</span> | <span id="live-clock-time" class="text-emerald-700">00:00:00</span>
+                <div class="flex items-center gap-2.5 bg-white px-3 py-1 rounded-lg border border-slate-200 shadow-inner">
+                    <i class="fa-regular fa-clock text-amber-500 animate-pulse text-sm"></i>
+                    <span id="live-clock-date" class="font-semibold text-slate-700">--</span>
+                    <span class="text-slate-300 font-bold">|</span>
+                    <span id="live-clock-time" class="font-mono font-black text-amber-600 tracking-widest">00:00:00</span>
                 </div>
             </div>
         </div>
 
-        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-8">
+        <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
             
+            <!-- TABS MENU CHO PUBLIC VIEW -->
+            <div class="flex gap-2 border-b border-slate-200 mb-2 overflow-x-auto hide-scrollbar font-bold text-sm">
+                <button onclick="switchPublicTab('attendance')" id="public-tab-attendance" class="px-5 py-3 border-b-2 border-emerald-500 text-emerald-600 whitespace-nowrap transition">
+                    <i class="fa-solid fa-chart-pie mr-1"></i> Tiến Độ Điểm Danh
+                </button>
+                <button onclick="switchPublicTab('evaluation')" id="public-tab-evaluation" class="px-5 py-3 border-b-2 border-transparent text-slate-500 hover:text-slate-800 whitespace-nowrap transition">
+                    <i class="fa-solid fa-star-half-stroke mr-1"></i> Bảng Tin Đánh Giá Vận Hành
+                </button>
+            </div>
+
             <!-- TIẾN ĐỘ ĐIỂM DANH -->
             <section id="attendance-progress-section" class="space-y-4 relative">
                 <!-- Overlay Ẩn Tiến Độ -->
@@ -205,12 +217,11 @@
                         </table>
                     </div>
                 </div>
-                </div> <!-- End of progress-content-wrapper -->
             </section>
 
             <!-- BẢNG ĐÁNH GIÁ & PHÂN TÍCH -->
-            <section id="evaluation-section" class="pt-6 border-t-2 border-dashed border-slate-300">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
+            <section id="evaluation-section" class="hidden space-y-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-4 rounded-2xl shadow-sm border border-slate-200">
                     <div>
                         <h2 class="text-2xl font-black text-slate-800 flex items-center gap-2">
                             <div class="w-10 h-10 bg-amber-100 text-amber-600 rounded-lg flex items-center justify-center text-xl"><i class="fa-solid fa-ranking-star"></i></div>
@@ -1698,8 +1709,10 @@
         // ================= CLOCK =================
         setInterval(() => {
             const n = new Date();
-            document.getElementById('live-clock-date').innerText = n.toLocaleDateString('vi-VN');
-            document.getElementById('live-clock-time').innerText = n.toLocaleTimeString('vi-VN');
+            const dateEl = document.getElementById('live-clock-date');
+            const timeEl = document.getElementById('live-clock-time');
+            if (dateEl) dateEl.innerText = n.toLocaleDateString('vi-VN');
+            if (timeEl) timeEl.innerText = n.toLocaleTimeString('vi-VN');
         }, 1000);
 
         // Expose to window
@@ -1730,6 +1743,32 @@
         window.generatePDFReport = generatePDFReport;
         window.toggleSystemLock = toggleSystemLock;
         window.toggleProgressVisibility = toggleProgressVisibility;
+
+        // Quản lý chuyển tab Public View
+        window.switchPublicTab = function(tab) {
+            const tabAtt = document.getElementById('public-tab-attendance');
+            const tabEval = document.getElementById('public-tab-evaluation');
+            const secAtt = document.getElementById('attendance-progress-section');
+            const secEval = document.getElementById('evaluation-section');
+
+            if(tab === 'attendance') {
+                tabAtt.classList.add('border-emerald-500', 'text-emerald-600');
+                tabAtt.classList.remove('border-transparent', 'text-slate-500');
+                tabEval.classList.add('border-transparent', 'text-slate-500');
+                tabEval.classList.remove('border-emerald-500', 'text-emerald-600');
+                
+                secAtt.classList.remove('hidden');
+                secEval.classList.add('hidden');
+            } else {
+                tabEval.classList.add('border-emerald-500', 'text-emerald-600');
+                tabEval.classList.remove('border-transparent', 'text-slate-500');
+                tabAtt.classList.add('border-transparent', 'text-slate-500');
+                tabAtt.classList.remove('border-emerald-500', 'text-emerald-600');
+
+                secAtt.classList.add('hidden');
+                secEval.classList.remove('hidden');
+            }
+        };
 
         // Bổ sung các hàm Global cho Quản lý check-in nhanh & xóa ý kiến
         window.handleQuickCheckinAdmin = async function(status) {
