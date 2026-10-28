@@ -133,7 +133,15 @@
 
                 <div id="progress-content-wrapper" class="space-y-4 transition-all duration-300">
                     <div class="glass-card rounded-2xl p-6 shadow-lg relative overflow-hidden border border-slate-200">
-                        <div class="flex flex-col lg:flex-row justify-between gap-6 relative z-10">
+                        <div class="flex flex-col lg:flex-row justify-between items-center gap-6 relative z-10">
+                            <div>
+                                <h2 class="text-xl font-black text-slate-800 flex items-center gap-2 mb-2">Tiến Độ Tham Dự Hội Nghị</h2>
+                                <div id="status-badge-container"></div>
+                            </div>
+                            <div class="text-center lg:text-right bg-slate-50 px-6 py-3 rounded-xl border border-slate-200 shadow-inner">
+                                <div class="text-4xl font-black text-emerald-600 font-mono drop-shadow-sm" id="metric-percent">0.00%</div>
+                                <div class="text-[10px] text-slate-500 font-bold uppercase mt-1 tracking-wider">Tổng diện tích tham gia</div>
+                            </div>
                         </div>
                     </div>
                     
@@ -811,19 +819,32 @@
             const totalArea = state.totalAreaOverride;
             const percentArea = totalArea > 0 ? (attendedArea / totalArea) * 100 : 0;
             
-            document.getElementById('metric-total-area').innerText = formatNum(totalArea);
-            document.getElementById('metric-attended-area').innerText = formatNum(attendedArea);
-            document.getElementById('metric-total-units').innerText = state.apartments.length;
-            document.getElementById('metric-attended-units').innerText = units;
-            document.getElementById('metric-percent').innerText = `${percentArea.toFixed(2)}%`;
-            document.getElementById('progress-bar-fill').style.width = `${Math.min(percentArea, 100)}%`;
+            const elTotalArea = document.getElementById('metric-total-area');
+            if (elTotalArea) elTotalArea.innerText = formatNum(totalArea);
+            
+            const elAttendedArea = document.getElementById('metric-attended-area');
+            if (elAttendedArea) elAttendedArea.innerText = formatNum(attendedArea);
+            
+            const elTotalUnits = document.getElementById('metric-total-units');
+            if (elTotalUnits) elTotalUnits.innerText = state.apartments.length;
+            
+            const elAttendedUnits = document.getElementById('metric-attended-units');
+            if (elAttendedUnits) elAttendedUnits.innerText = units;
+            
+            const elPercent = document.getElementById('metric-percent');
+            if (elPercent) elPercent.innerText = `${percentArea.toFixed(2)}%`;
+            
+            const elProgressFill = document.getElementById('progress-bar-fill');
+            if (elProgressFill) elProgressFill.style.width = `${Math.min(percentArea, 100)}%`;
 
             const badge = document.getElementById('status-badge-container');
-            if (percentArea >= 50) {
-                badge.innerHTML = `<span class="px-3.5 py-1.5 bg-emerald-100 text-emerald-800 font-bold rounded-lg border border-emerald-300 shadow-sm inline-flex items-center gap-1.5 animate-bounce"><i class="fa-solid fa-check-double"></i> ĐÃ ĐỦ 50% (ĐIỀU KIỆN BIỂU QUYẾT)</span>`;
+            if (badge) {
+                if (percentArea >= 50) {
+                    badge.innerHTML = `<span class="px-3.5 py-1.5 bg-emerald-100 text-emerald-800 font-bold rounded-lg border border-emerald-300 shadow-sm inline-flex items-center gap-1.5 animate-bounce"><i class="fa-solid fa-check-double"></i> ĐÃ ĐỦ 50% (ĐIỀU KIỆN BIỂU QUYẾT)</span>`;
+                }
+                else if (percentArea >= 30) badge.innerHTML = `<span class="px-3.5 py-1.5 bg-blue-100 text-blue-800 font-bold rounded-lg border border-blue-300 shadow-sm inline-flex items-center gap-1.5"><i class="fa-solid fa-check"></i> Đã đủ 30% (ĐK Tổ chức)</span>`;
+                else badge.innerHTML = `<span class="px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-lg border border-slate-300 inline-flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30%</span>`;
             }
-            else if (percentArea >= 30) badge.innerHTML = `<span class="px-3.5 py-1.5 bg-blue-100 text-blue-800 font-bold rounded-lg border border-blue-300 shadow-sm inline-flex items-center gap-1.5"><i class="fa-solid fa-check"></i> Đã đủ 30% (ĐK Tổ chức)</span>`;
-            else badge.innerHTML = `<span class="px-3 py-1 bg-slate-100 text-slate-600 font-bold rounded-lg border border-slate-300 inline-flex items-center gap-1"><i class="fa-solid fa-hourglass-half"></i> Chưa đạt mốc 30%</span>`;
         }
 
         function renderTable() {
